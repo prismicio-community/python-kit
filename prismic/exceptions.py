@@ -17,10 +17,12 @@ class Error(Exception):
 
 class InvalidTokenError(Error):
     """The provided access token is either invalid or expired"""
+    pass
 
 
 class AuthorizationNeededError(Error):
     """You need to provide an access token to access this repository"""
+    pass
 
 
 class HTTPError(Error):
@@ -37,7 +39,7 @@ class HTTPError(Error):
 
 
 class UnexpectedError(Error):
-    """Unexpected error while doing a HTTP request."""
+    """Unexpected error."""
 
     def __init__(self, message):
         self.message = message
