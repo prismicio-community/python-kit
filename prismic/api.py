@@ -8,51 +8,11 @@ This module implements the Prismic API.
 
 """
 
-import urllib
 import urllib2
-import json
-from .exceptions import (InvalidTokenError,
-                         AuthorizationNeededError, HTTPError, UnexpectedError)
+from core import GenericWSRequest
+from .exceptions import (InvalidTokenError, AuthorizationNeededError,
+                        HTTPError, UnexpectedError, RefMissing)
 
-
-class GenericWSRequest(object):
-    def __init__(self, url):
-        self.url = url
-        self.get_params = None
-        self.headers = None
-        self.response = None
-        self.response_contents = None
-
-    def set_get_params(self, params):
-        self.get_params = urllib.urlencode(params)
-
-    def set_headers(self, headers):
-        self.headers = headers
-
-    def accept_json(self):
-        headers = {
-            "Accept": "application/json"
-        }
-        self.set_headers(headers)
-
-    def get_url(self):
-        if self.get_params == None:
-            return self.url
-        else:
-            return self.url + "?" + self.get_params
-
-    def get(self):
-        print("Get the url " + self.get_url())
-        req = urllib2.Request(self.get_url(), headers=self.headers)
-        response = urllib2.urlopen(req)
-
-        self.response = response
-        self.response_contents = response.read()
-
-    def get_as_json(self):
-        self.accept_json()
-        self.get()
-        return json.loads(self.response_contents)
 
 def get(url, access_token):
     try:
@@ -62,7 +22,7 @@ def get(url, access_token):
 
         request = GenericWSRequest(url)
         request.set_get_params(values)
-        return Api(request.get_as_json(), access_token)
+        return Api(request.get_json(), access_token)
 
     except urllib2.HTTPError as http_error:
         if http_error.code == 401:
@@ -86,13 +46,19 @@ class Api(object):
 
         self.access_token = access_token
 
-    def get_ref_by_label(self, ref_label):
-        ref = [ref for ref in self.refs if ref.get("label") == ref_label]
-        return ref[0] if ref else None
+    def ref(self, label):
+        ref = [ref for ref in self.refs if ref.get("label") == label]
+        return Ref(ref[0]) if ref else None
 
-
-    def get_form(self, name):
+    def form(self, name):
         return SearchForm(self, self.forms.get(name))
+
+
+class Ref(object):
+    def __init__(self, data):
+        self.ref = data.get("ref")
+        self.label = data.get("label")
+        self.isMasterRef = data.get("scheduledAt")
 
 
 class SearchForm(object):
@@ -105,22 +71,43 @@ class SearchForm(object):
         self.fields = form.get("fields")
         self.fields_data = {}
 
-    def ref(self, ref):
-        self.fields_data.update({'ref': ref})
-
-    def ref_by_label(self, ref_label):
-        ref = self.api.get_ref_by_label(ref_label)
-        if ref:
-            self.fields_data.update({'ref': ref.get("id")})
+    def ref(self, label=None, ref_id=None):
+        if label:
+            ref = self.api.ref(label)
+            if ref:
+                self.fields_data.update({'ref': ref.ref})
+                return True
+            else:
+                return False
+        elif ref_id:
+            self.fields_data.update({'ref': ref_id})
             return True
-        else:
-            return False
+        return False
 
     def query(self, query):
-        self.fields_data.update({'query': query})
+        self.fields_data.update({'q': query})
+
+    def submit_preconditions(self):
+        if (self.fields_data.get('ref') == None):
+            raise RefMissing
 
     def submit(self):
+        self.submit_preconditions()
         request = GenericWSRequest(self.action)
         request.set_get_params(self.fields_data)
-        print request.get_as_json()
+        return [Document(doc) for doc in request.get_json()]
 
+
+class Document(object):
+
+    def __init__(self, data):
+        self.id = data.get("id")
+        self.type = data.get("type")
+        self.href = data.get("href")
+        self.tags = data.get("tags")
+        self.slugs = data.get("slugs")
+        self.fragments = data.get("fragments")
+
+    @property
+    def slug(self):
+        return self.slugs[0] if self.slugs else "-"

@@ -7,4 +7,4 @@ __version__ = '0.1'
 __author__ = 'prismic'
 __license__ = ''
 
-from .api import get, Api, SearchForm
+from .api import get, Api, SearchForm, Document

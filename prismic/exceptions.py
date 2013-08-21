@@ -47,3 +47,7 @@ class UnexpectedError(Error):
 
     def __str__(self):
         return self.message
+
+class RefMissing(Error):
+    """You need to provide the ref parameter."""
+    pass
