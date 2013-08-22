@@ -12,7 +12,7 @@ import urllib2
 from core import GenericWSRequest
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                         HTTPError, UnexpectedError, RefMissing)
-
+from fragments import *
 
 def get(url, access_token):
     try:
@@ -106,8 +106,25 @@ class Document(object):
         self.href = data.get("href")
         self.tags = data.get("tags")
         self.slugs = data.get("slugs")
-        self.fragments = data.get("fragments")
+        self.fragments = {}
+
+        fragments = data.get("data").get(self.type) if data.has_key("data") else {}
+
+        for (fragment_name, fragment_value) in fragments.iteritems():
+            if isinstance(fragment_value, list):
+                for i, fragment_value_element in enumerate(fragment_value):
+                    self.fragments["%s.%s[%d]" % (self.type, fragment_name, i)] = Fragment.make(fragment_value_element)
+            elif isinstance(fragment_value, dict):
+                self.fragments["%s.%s" % (self.type, fragment_name)] = Fragment.make(fragment_value)
 
     @property
     def slug(self):
         return self.slugs[0] if self.slugs else "-"
+
+    def get_image(self, field, view):
+        image = self.fragments.get(field)
+        return image.get_view(view) if image else None
+
+    def get_number(self, field):
+        return self.fragments.get(field)
+

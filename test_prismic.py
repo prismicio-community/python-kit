@@ -68,7 +68,21 @@ class TestSearchFormTestCase(PrismicTestCase):
         self.assertTrue(doc.slug == "-")
 
 
+class TestFragmentTestCase(PrismicTestCase):
+    def test_image(self):
+        doc_json = self.search_fixture_data[0]
+        doc = prismic.Document(doc_json)
+        self.assertTrue(doc.get_image("product.image", "main").width == 500)
+        self.assertTrue(doc.get_image("product.image", "icon").width == 250)
+        expected_html = """<img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" width="250" height="250">"""
+        self.assertTrue(expected_html == doc.get_image("product.image", "icon").as_html)
+
+    def test_number(self):
+        doc_json = self.search_fixture_data[0]
+        doc = prismic.Document(doc_json)
+        self.assertTrue(doc.get_number("product.price").value == 3.55)
+
 if __name__ == '__main__':
-    unittest.main()
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestSearchFormTestCase)
-    #unittest.TextTestRunner(verbosity=2).run(suite)
+    #unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentTestCase)
+    unittest.TextTestRunner(verbosity=2).run(suite)
