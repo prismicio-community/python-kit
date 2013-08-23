@@ -11,8 +11,9 @@ This module implements the Prismic API.
 import urllib2
 from core import GenericWSRequest
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
-                        HTTPError, UnexpectedError, RefMissing)
-from fragments import *
+                         HTTPError, UnexpectedError, RefMissing)
+from .fragments import Fragment
+
 
 def get(url, access_token):
     try:
@@ -26,12 +27,16 @@ def get(url, access_token):
 
     except urllib2.HTTPError as http_error:
         if http_error.code == 401:
-            raise AuthorizationNeededError() if (len(access_token) == 0) else InvalidTokenError()
+            if len(access_token) == 0:
+                raise AuthorizationNeededError()
+            else:
+                raise InvalidTokenError()
         else:
             raise HTTPError(http_error.code, http_error.reason)
 
     except urllib2.URLError as url_error:
         raise UnexpectedError("Unexpected error: %s" % url_error.reason)
+
 
 class Api(object):
 
@@ -55,6 +60,7 @@ class Api(object):
 
 
 class Ref(object):
+
     def __init__(self, data):
         self.ref = data.get("ref")
         self.label = data.get("label")
@@ -62,6 +68,7 @@ class Ref(object):
 
 
 class SearchForm(object):
+
     def __init__(self, api, form):
         self.api = api
 
@@ -89,7 +96,7 @@ class SearchForm(object):
 
     def submit_preconditions(self):
         if (self.fields_data.get('ref') == None):
-            raise RefMissing
+            raise RefMissing()
 
     def submit(self):
         self.submit_preconditions()
@@ -111,20 +118,31 @@ class Document(object):
         fragments = data.get("data").get(self.type) if data.has_key("data") else {}
 
         for (fragment_name, fragment_value) in fragments.iteritems():
+            f_key = "%s.%s" % (self.type, fragment_name)
+
             if isinstance(fragment_value, list):
-                for i, fragment_value_element in enumerate(fragment_value):
-                    self.fragments["%s.%s[%d]" % (self.type, fragment_name, i)] = Fragment.make(fragment_value_element)
+                self.fragments[f_key] = [Fragment.from_json(fragment_value_element)
+                                         for fragment_value_element in fragment_value]
             elif isinstance(fragment_value, dict):
-                self.fragments["%s.%s" % (self.type, fragment_name)] = Fragment.make(fragment_value)
+                self.fragments[f_key] = Fragment.from_json(fragment_value)
 
     @property
     def slug(self):
         return self.slugs[0] if self.slugs else "-"
 
-    def get_image(self, field, view):
-        image = self.fragments.get(field)
+    def get_fragment_type(self, field, f_type):
+        fragment = self.fragments.get(field)
+        return fragment if isinstance(fragment, f_type) else None
+
+    def get_image(self, field, view="main"):
+        image = self.get_fragment_type(field, Fragment.Image)
         return image.get_view(view) if image else None
 
     def get_number(self, field):
-        return self.fragments.get(field)
+        return self.get_fragment_type(field, Fragment.Number)
 
+    def get_color(self, field):
+        return self.get_fragment_type(field, Fragment.Color)
+
+    def get_text(self, field):
+        return self.get_fragment_type(field, Fragment.Text)

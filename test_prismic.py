@@ -49,11 +49,11 @@ class ApiTestCase(PrismicTestCase):
 
 
 class TestSearchFormTestCase(PrismicTestCase):
-    #def test_search_form(self):
-    #    everything = self.api.form("everything")
-    #    everything.ref("Master")
-    #    docs = everything.submit()
-    #    self.assertTrue(len(docs) == 20)
+    def test_search_form(self):
+        everything = self.api.form("everything")
+        everything.ref("Master")
+        docs = everything.submit()
+        self.assertTrue(len(docs) == 20)
 
     def test_document(self):
         docs = [prismic.Document(doc) for doc in self.search_fixture_data]
@@ -68,7 +68,13 @@ class TestSearchFormTestCase(PrismicTestCase):
         self.assertTrue(doc.slug == "-")
 
 
-class TestFragmentTestCase(PrismicTestCase):
+class TestFragmentsTestCase(PrismicTestCase):
+
+    def test_fragments(self):
+        doc_json = self.search_fixture_data[0]
+        doc = prismic.Document(doc_json)
+        print "fragments", doc.fragments
+
     def test_image(self):
         doc_json = self.search_fixture_data[0]
         doc = prismic.Document(doc_json)
@@ -80,9 +86,19 @@ class TestFragmentTestCase(PrismicTestCase):
     def test_number(self):
         doc_json = self.search_fixture_data[0]
         doc = prismic.Document(doc_json)
-        self.assertTrue(doc.get_number("product.price").value == 3.55)
+        self.assertTrue(doc.get_number("product.price").__str__() == "3.55")
+
+    def test_color(self):
+        doc_json = self.search_fixture_data[0]
+        doc = prismic.Document(doc_json)
+        self.assertTrue(doc.get_color("product.color").__str__() == "#ffeacd")
+
+    def test_text(self):
+        doc_json = self.search_fixture_data[0]
+        doc = prismic.Document(doc_json)
+        self.assertTrue(doc.get_text("product.allergens").__str__() == "Contains almonds, eggs, milk")
 
 if __name__ == '__main__':
     #unittest.main()
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentTestCase)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentsTestCase)
     unittest.TextTestRunner(verbosity=2).run(suite)
