@@ -13,6 +13,7 @@ from core import GenericWSRequest
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, UnexpectedError, RefMissing)
 from .fragments import Fragment
+import structured_text
 
 
 def get(url, access_token):
@@ -146,3 +147,16 @@ class Document(object):
 
     def get_text(self, field):
         return self.get_fragment_type(field, Fragment.Text)
+
+    def get_structured_text(self, field):
+        return self.get_fragment_type(field, structured_text.StructuredText)
+
+    def get_html(self, field, link_resolver):
+        fragment = self.fragments.get(field)
+        if (isinstance(fragment, structured_text.StructuredText) or
+            isinstance(fragment, structured_text.DocumentLink)):
+            return fragment.as_html(link_resolver)
+        elif fragment:
+            return fragment.as_html()
+        return None
+

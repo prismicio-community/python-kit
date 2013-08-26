@@ -6,10 +6,13 @@
 import prismic
 
 import unittest
+import logging
 import json
 from prismic.exceptions import (InvalidTokenError,
                                 AuthorizationNeededError, UnexpectedError)
 from test_prismic_fixtures import api_sample_data, search_sample_data
+
+logging.getLogger().setLevel( logging.DEBUG )
 
 class PrismicTestCase(unittest.TestCase):
     def setUp(self):
@@ -70,33 +73,131 @@ class TestSearchFormTestCase(PrismicTestCase):
 
 class TestFragmentsTestCase(PrismicTestCase):
 
-    def test_fragments(self):
+    def setUp(self):
+        super(TestFragmentsTestCase, self).setUp()
         doc_json = self.search_fixture_data[0]
-        doc = prismic.Document(doc_json)
-        print "fragments", doc.fragments
+        self.doc = prismic.Document(doc_json)
+
+    def test_fragments(self):
+        print "fragments", self.doc.fragments
 
     def test_image(self):
-        doc_json = self.search_fixture_data[0]
-        doc = prismic.Document(doc_json)
+        doc = self.doc
         self.assertTrue(doc.get_image("product.image", "main").width == 500)
         self.assertTrue(doc.get_image("product.image", "icon").width == 250)
         expected_html = """<img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" width="250" height="250">"""
         self.assertTrue(expected_html == doc.get_image("product.image", "icon").as_html)
 
     def test_number(self):
-        doc_json = self.search_fixture_data[0]
-        doc = prismic.Document(doc_json)
+        doc = self.doc
         self.assertTrue(doc.get_number("product.price").__str__() == "3.55")
 
     def test_color(self):
-        doc_json = self.search_fixture_data[0]
-        doc = prismic.Document(doc_json)
+        doc = self.doc
         self.assertTrue(doc.get_color("product.color").__str__() == "#ffeacd")
 
     def test_text(self):
-        doc_json = self.search_fixture_data[0]
-        doc = prismic.Document(doc_json)
+        doc = self.doc
         self.assertTrue(doc.get_text("product.allergens").__str__() == "Contains almonds, eggs, milk")
+
+    def test_structured_text_heading(self):
+        doc = self.doc
+        html = doc.get_html("product.short_lede", lambda x: "/x")
+        self.assertTrue(html == "<h2>Crispiness and softness, rolled into one</h2>")
+
+    def test_structured_text_paragraph(self):
+        p = prismic.structured_text.StructuredText([span_sample_data])
+        p_html = p.as_html(lambda x: "/x")
+        print "p_html: ", p_html
+        self.assertTrue(p_html == "To <strong><em>be</em></strong> or not <strong>be</strong> ?")
+
+    def test_structured_text_paragraph(self):
+        span_sample_data = {"type": "paragraph",
+        "text": "To be or not to be ?",
+        "spans": [
+            {
+                "start": 3,
+                "end": 5,
+                "type": "strong"
+            },
+            {
+                "start": 16,
+                "end": 18,
+                "type": "strong"
+            },
+            {
+                "start": 3,
+                "end": 5,
+                "type": "em"
+            }
+        ]}
+        p = prismic.structured_text.StructuredText([span_sample_data])
+        p_html = p.as_html(lambda x: "/x")
+        print "p_html: ", p_html
+        self.assertTrue(p_html == "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
+
+    # def test_structured_text_paragraph2(self):
+    #     span_sample_data = {"type": "paragraph",
+    #     "text": "To been or not be ?",
+    #     "spans": [
+    #         {
+    #             "start": 3,
+    #             "end": 5,
+    #             "type": "strong"
+    #         },
+    #         {
+    #             "start": 16,
+    #             "end": 18,
+    #             "type": "strong"
+    #         },
+    #         {
+    #             "start": 4,
+    #             "end": 6,
+    #             "type": "em"
+    #         }
+    #     ]}
+    #     p = prismic.structured_text.StructuredText([span_sample_data])
+    #     p_html = p.as_html(lambda x: "/x")
+    #     self.assertTrue(p_html == "To <strong>b<em>e</em></strong><em>e</em>n or not <strong>be</strong> ?")
+
+    # def test_st_a(self):
+    #     test_paragraph = {
+    #         "type": "paragraph",
+    #         "text": "bye",
+    #         "spans": [
+    #             {
+    #                 "start": 0,
+    #                 "end": 3,
+    #                 "type": "hyperlink",
+    #                 "data": {
+    #                     "type": "Link.document",
+    #                     "value": {
+    #                         "document": {
+    #                             "id": "UbiYbN_mqXkBOgE2",
+    #                             "type": "article",
+    #                             "tags": [
+    #                                 "blog"
+    #                             ],
+    #                             "slug": "-"
+    #                         },
+    #                         "isBroken": False
+    #                     }
+    #                 }
+    #             },
+    #             {
+    #                 "start": 0,
+    #                 "end": 3,
+    #                 "type": "strong"
+    #             }
+    #         ]
+    #     }
+    #     p = prismic.structured_text.StructuredText([test_paragraph])
+    #     p_html = p.as_html(lambda x: "/x")
+    #     print "p_html: ", p_html
+    #     self.assertTrue(p_html == """<a><strong>bye</strong></a>""")
+    #     log= logging.getLogger( "SomeTest.testSomething" )
+
+
 
 if __name__ == '__main__':
     #unittest.main()

@@ -45,9 +45,11 @@ class Fragment(object):
             self.slug = document.get("slug")
             self.is_broken = value.get("isBroken")
 
-        def as_html(self, documentLinkResolver):
-            return """<a href="%{link}s">%{slug}s</a>""" % {"link": documentLinkResolver, "slug": self.slug}
+        def as_html(self, documentlink_resolver):
+            return """<a href="%{link}s">%{slug}s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
 
+        def get_url(self, documentlink_resolver):
+            return documentlink_resolver(self)
 
     class WebLink(Link):
         def __init__(self, value):
@@ -55,7 +57,10 @@ class Fragment(object):
 
         @property
         def as_html(self):
-            return """<a href="%(url)s">%(url)s</a>""" % self.__dic__
+            return """<a href="%(url)s">%(url)s</a>""" % self.__dict__
+
+        def get_url(self):
+            return self.url
 
 
     class Image(FragmentElement):
@@ -88,6 +93,21 @@ class Fragment(object):
                 return self.main
             else:
                 return self.views.get(key)
+
+
+    class Embed(FragmentElement):
+        def __init__(self, value):
+            oembed = value.get("oembed")
+            self.type = oembed.get("type")
+            self.provider = oembed.get("provider_name")
+            self.provider = oembed.get("provider_name")
+            self.url = oembed.get("embed_url")
+            self.width = oembed.get("width")
+            self.height = oembed.get("height")
+            self.html = oembed.get("html")
+
+        def as_html(self):
+            return """<div data-oembed="%(url)s" data-oembed-type="%(type)s" data-oembed-provider="%(provider)s">%(html)s</div>""" % self.__dict__
 
     # Basic fragments
 

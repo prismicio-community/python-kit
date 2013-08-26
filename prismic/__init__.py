@@ -8,3 +8,4 @@ __author__ = 'prismic'
 __license__ = ''
 
 from .api import get, Api, SearchForm, Document
+import structured_text
