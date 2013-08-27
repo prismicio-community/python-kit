@@ -12,12 +12,14 @@ from prismic.exceptions import (InvalidTokenError,
                                 AuthorizationNeededError, UnexpectedError)
 from test_prismic_fixtures import api_sample_data, search_sample_data
 
-logging.getLogger().setLevel( logging.DEBUG )
+logging.basicConfig(level=logging.DEBUG)
+log = logging.getLogger(__name__)
+
 
 class PrismicTestCase(unittest.TestCase):
     def setUp(self):
         """Init the api url and the token identifier."""
-        self.api_url = "http://lesbonneschoses.wroom.io/api"
+        self.api_url = "http://lesbonneschoses.prismic.io/api"
         self.token = "MC5VZ2phOGRfbXFaOEl2UEpj.dO-_ve-_ve-_ve-_vSFRBzXvv71V77-977-9BO-_vVbvv71k77-9Cu-_ve-_vQTvv71177-9eQpcUE3vv70"
         self.api_fixture_data = json.loads(api_sample_data)
         self.search_fixture_data = json.loads(search_sample_data)
@@ -48,8 +50,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
 
 class ApiTestCase(PrismicTestCase):
     def test_get_ref(self):
-        self.assertTrue(self.api.get_ref("Master").ref == "UgjWQN_mqa8HvPJY")
-
+        self.assertTrue(self.api.ref("Master").ref == "UgjWQN_mqa8HvPJY")
 
 class TestSearchFormTestCase(PrismicTestCase):
     def test_search_form(self):
@@ -70,6 +71,11 @@ class TestSearchFormTestCase(PrismicTestCase):
         doc = prismic.Document(doc_json)
         self.assertTrue(doc.slug == "-")
 
+    def test_as_html(self):
+        doc_json = self.search_fixture_data[0]
+        doc = prismic.Document(doc_json)
+        print doc.as_html(lambda link_doc: "document/%s" % link_doc.id)
+
 
 class TestFragmentsTestCase(PrismicTestCase):
 
@@ -77,9 +83,6 @@ class TestFragmentsTestCase(PrismicTestCase):
         super(TestFragmentsTestCase, self).setUp()
         doc_json = self.search_fixture_data[0]
         self.doc = prismic.Document(doc_json)
-
-    def test_fragments(self):
-        print "fragments", self.doc.fragments
 
     def test_image(self):
         doc = self.doc
@@ -108,7 +111,6 @@ class TestFragmentsTestCase(PrismicTestCase):
     def test_structured_text_paragraph(self):
         p = prismic.structured_text.StructuredText([span_sample_data])
         p_html = p.as_html(lambda x: "/x")
-        print "p_html: ", p_html
         self.assertTrue(p_html == "To <strong><em>be</em></strong> or not <strong>be</strong> ?")
 
     def test_structured_text_paragraph(self):
@@ -133,73 +135,52 @@ class TestFragmentsTestCase(PrismicTestCase):
         ]}
         p = prismic.structured_text.StructuredText([span_sample_data])
         p_html = p.as_html(lambda x: "/x")
-        print "p_html: ", p_html
         self.assertTrue(p_html == "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
 
-    # def test_structured_text_paragraph2(self):
-    #     span_sample_data = {"type": "paragraph",
-    #     "text": "To been or not be ?",
-    #     "spans": [
-    #         {
-    #             "start": 3,
-    #             "end": 5,
-    #             "type": "strong"
-    #         },
-    #         {
-    #             "start": 16,
-    #             "end": 18,
-    #             "type": "strong"
-    #         },
-    #         {
-    #             "start": 4,
-    #             "end": 6,
-    #             "type": "em"
-    #         }
-    #     ]}
-    #     p = prismic.structured_text.StructuredText([span_sample_data])
-    #     p_html = p.as_html(lambda x: "/x")
-    #     self.assertTrue(p_html == "To <strong>b<em>e</em></strong><em>e</em>n or not <strong>be</strong> ?")
 
-    # def test_st_a(self):
-    #     test_paragraph = {
-    #         "type": "paragraph",
-    #         "text": "bye",
-    #         "spans": [
-    #             {
-    #                 "start": 0,
-    #                 "end": 3,
-    #                 "type": "hyperlink",
-    #                 "data": {
-    #                     "type": "Link.document",
-    #                     "value": {
-    #                         "document": {
-    #                             "id": "UbiYbN_mqXkBOgE2",
-    #                             "type": "article",
-    #                             "tags": [
-    #                                 "blog"
-    #                             ],
-    #                             "slug": "-"
-    #                         },
-    #                         "isBroken": False
-    #                     }
-    #                 }
-    #             },
-    #             {
-    #                 "start": 0,
-    #                 "end": 3,
-    #                 "type": "strong"
-    #             }
-    #         ]
-    #     }
-    #     p = prismic.structured_text.StructuredText([test_paragraph])
-    #     p_html = p.as_html(lambda x: "/x")
-    #     print "p_html: ", p_html
-    #     self.assertTrue(p_html == """<a><strong>bye</strong></a>""")
-    #     log= logging.getLogger( "SomeTest.testSomething" )
+    def test_document_link(self):
+        test_paragraph = {
+            "type": "paragraph",
+            "text": "bye",
+            "spans": [
+                {
+                    "start": 0,
+                    "end": 3,
+                    "type": "hyperlink",
+                    "data": {
+                        "type": "Link.document",
+                        "value": {
+                            "document": {
+                                "id": "UbiYbN_mqXkBOgE2",
+                                "type": "article",
+                                "tags": [
+                                    "blog"
+                                ],
+                                "slug": "-"
+                            },
+                            "isBroken": False
+                        }
+                    }
+                },
+                {
+                    "start": 0,
+                    "end": 3,
+                    "type": "strong"
+                }
+            ]
+        }
+        p = prismic.structured_text.StructuredText([test_paragraph])
 
+        def link_resolver(document_link):
+            return "/document/%s/%s" % (document_link.id, document_link.slug)
+
+        p_html = p.as_html(link_resolver)
+        print "p_html: ", p_html
+        self.assertTrue(p_html == """<p><a href="/document/UbiYbN_mqXkBOgE2/-"><strong>bye</strong></a></p>""")
 
 
 if __name__ == '__main__':
-    #unittest.main()
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentsTestCase)
+    unittest.main()
+    #suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentsTestCase)
+    #suite = unittest.TestLoader().loadTestsFromTestCase(TestSearchFormTestCase)
     unittest.TextTestRunner(verbosity=2).run(suite)
