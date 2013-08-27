@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from collections import namedtuple
-from .structured_text import StructuredText
+import structured_text
+import logging
+
+log = logging.getLogger(__name__)
 
 class FragmentElement(object):
     pass
@@ -16,9 +19,15 @@ class Fragment(object):
         """Create a corresponding fragment object from json."""
 
         if not cls._types:
-            types = [Fragment.Image, Fragment.Color, Fragment.Number, Fragment.Text, StructuredText]
-            cls._types = { f_type.__name__: f_type for f_type in types }
-            cls._types["Link.document"] = Fragment.DocumentLink
+            cls._types = {
+                "Image":          Fragment.Image,
+                "Color":          Fragment.Color,
+                "Text":           Fragment.Text,
+                "Select":         Fragment.Text,
+                "Number":         Fragment.Number,
+                "StructuredText": structured_text.StructuredText,
+                "Link.document":  Fragment.DocumentLink
+            }
 
         fragment_type = data.get("type")
         f_type = cls._types.get(fragment_type)
@@ -26,7 +35,7 @@ class Fragment(object):
         if f_type:
             return f_type(data.get("value"))
 
-        print "fragment_type not found: ", fragment_type
+        log.warning("fragment_type not found: %s" % fragment_type)
 
 
     # Links
@@ -46,7 +55,7 @@ class Fragment(object):
             self.is_broken = value.get("isBroken")
 
         def as_html(self, documentlink_resolver):
-            return """<a href="%{link}s">%{slug}s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
+            return """<a href="%(link)s">%(slug)s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
 
         def get_url(self, documentlink_resolver):
             return documentlink_resolver(self)
@@ -94,6 +103,10 @@ class Fragment(object):
             else:
                 return self.views.get(key)
 
+        @property
+        def as_html(self):
+            return self.main.as_html
+
 
     class Embed(FragmentElement):
         def __init__(self, value):
@@ -106,6 +119,7 @@ class Fragment(object):
             self.height = oembed.get("height")
             self.html = oembed.get("html")
 
+        @property
         def as_html(self):
             return """<div data-oembed="%(url)s" data-oembed-type="%(type)s" data-oembed-provider="%(provider)s">%(html)s</div>""" % self.__dict__
 
@@ -130,10 +144,10 @@ class Fragment(object):
 
         @property
         def as_html(self):
-            return """<span class="color">%g</span>""" % self.value
+            return """<span class="color">%s</span>""" % self.value
 
     class Text(BasicFragment):
 
         @property
         def as_html(self):
-            return """<span class="text">%g</span>""" % self.value
+            return """<span class="text">%s</span>""" % self.value

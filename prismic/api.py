@@ -33,7 +33,7 @@ def get(url, access_token):
             else:
                 raise InvalidTokenError()
         else:
-            raise HTTPError(http_error.code, http_error.reason)
+            raise HTTPError(http_error.code, str(http_error))
 
     except urllib2.URLError as url_error:
         raise UnexpectedError("Unexpected error: %s" % url_error.reason)
@@ -58,6 +58,9 @@ class Api(object):
 
     def form(self, name):
         return SearchForm(self, self.forms.get(name))
+
+    def sef_link_resolver(self, link_resolver):
+        self.link_resolver = link_resolver
 
 
 class Ref(object):
@@ -103,7 +106,7 @@ class SearchForm(object):
         self.submit_preconditions()
         request = GenericWSRequest(self.action)
         request.set_get_params(self.fields_data)
-        return [Document(doc) for doc in request.get_json()]
+        return [ Document(doc) for doc in request.get_json() ]
 
 
 class Document(object):
@@ -122,8 +125,9 @@ class Document(object):
             f_key = "%s.%s" % (self.type, fragment_name)
 
             if isinstance(fragment_value, list):
-                self.fragments[f_key] = [Fragment.from_json(fragment_value_element)
-                                         for fragment_value_element in fragment_value]
+                for index, fragment_value_element in enumerate(fragment_value):
+                    self.fragments["%s[%s]" % (f_key, index)] = Fragment.from_json(fragment_value_element)
+
             elif isinstance(fragment_value, dict):
                 self.fragments[f_key] = Fragment.from_json(fragment_value)
 
@@ -153,10 +157,21 @@ class Document(object):
 
     def get_html(self, field, link_resolver):
         fragment = self.fragments.get(field)
+        return self.fragment_to_html(fragment, link_resolver)
+
+    def fragment_to_html(self, fragment, link_resolver):
         if (isinstance(fragment, structured_text.StructuredText) or
-            isinstance(fragment, structured_text.DocumentLink)):
+            isinstance(fragment, Fragment.DocumentLink)):
             return fragment.as_html(link_resolver)
         elif fragment:
-            return fragment.as_html()
+            return fragment.as_html
         return None
 
+    def as_html(self, link_resolver):
+        html = []
+        for key, fragment in self.fragments.items():
+            html.append("""<section data-field="%s">""" % key)
+            html.append(self.fragment_to_html(fragment, link_resolver))
+            html.append("""</section>""")
+
+        return ''.join(html)

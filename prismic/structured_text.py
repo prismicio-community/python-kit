@@ -3,10 +3,10 @@
 
 import logging
 from collections import defaultdict
+import fragments
 
 log = logging.getLogger(__name__)
 
-print "Logger name: %s" % __name__
 
 class StructuredText(object):
 
@@ -27,7 +27,6 @@ class StructuredText(object):
         for value in values:
             text_type = value.get("type")
             type_class = types.get(text_type)
-            print "create type_class: ", type_class
             if type_class:
                 blocks.append( type_class(value) )
             else:
@@ -71,8 +70,9 @@ class StructuredText(object):
                 for block in self.blocks:
                     html.append(self.block_as_html(block, link_resolver))
 
-        print "html: ", html
-        return ''.join(html)
+        html_str = ''.join(html)
+        log.debug("as_html result: %s" % html_str)
+        return html_str
 
 
     def block_as_html(self, block, link_resolver):
@@ -91,9 +91,9 @@ class StructuredText(object):
     def span_write_tag(self, span, link_resolver, opening):
         if isinstance(span, Span.Em):
             return "<em>" if opening else "</em>"
-        if isinstance(span, Span.Strong):
+        elif isinstance(span, Span.Strong):
             return "<strong>" if opening else "</strong>"
-        if isinstance(span, Span.Hyperlink):
+        elif isinstance(span, Span.Hyperlink):
             return """<a href="%s">""" % span.get_url(link_resolver) if opening else "</a>"
 
     def span_as_html(self, text, spans, link_resolver):
@@ -105,13 +105,19 @@ class StructuredText(object):
         for span in reversed(spans):
             tags_map[span.end].append(self.span_write_tag(span, link_resolver, False))
 
-        print "tags_map: ", tags_map
         for index, letter in enumerate(text):
             tags = tags_map.get(index)
             if tags:
-                print "Found tag on index %s" % index
                 html.append(''.join(tags))
             html.append(letter)
+
+        # Check for the tags after the end of the string
+        tags = tags_map.get(index+1)
+        if tags:
+            html.append(''.join(tags))
+
+
+
 
         return ''.join(html)
 
@@ -146,21 +152,19 @@ class Span(object):
     class Hyperlink(SpanElement):
         def __init__(self, value):
             super(Span.Hyperlink, self).__init__(value)
-            hyperlink_type = value.get("type")
+            data = value.get("data")
+            hyperlink_type = data.get("type")
             if hyperlink_type == "Link.web":
-                self.link = Fragment.WebLink(value.get("data").get("value"))
+                self.link = fragments.Fragment.WebLink(data.get("value"))
             elif hyperlink_type == "Link.document":
-                self.link = Fragment.DocumentLink(value.get("data").get("value"))
+                self.link = fragments.Fragment.DocumentLink(data.get("value"))
             else:
                 log.warning("StructuredText::Span::Hyperlink type not found: %s" % hyperlink_type)
 
-            log.warning("StructuredText::Span::Hyperlink type not found: %s" % hyperlink_type)
-            print "Hyperlink self.link: " + self.link
-
         def get_url(self, link_resolver):
-            if isinstance(self.link, Fragment.DocumentLink):
+            if isinstance(self.link, fragments.Fragment.DocumentLink):
                 return self.link.get_url(link_resolver)
-            elif isinstance(self.link, Fragment.WebLink):
+            elif isinstance(self.link, fragments.Fragment.WebLink):
                 return self.link.get_url()
 
 
@@ -179,7 +183,6 @@ class Block(object):
     class Heading(Text):
 
         def __init__(self, value):
-            print "Heading created"
             super(Block.Heading, self).__init__(value)
             self.level = value.get("type")[-1]
 
@@ -199,7 +202,7 @@ class Block(object):
     class Embed(object):
 
         def __init__(self, embed):
-            self.obj = obj
+            self.obj = embed
 
 
     class Image(object):
