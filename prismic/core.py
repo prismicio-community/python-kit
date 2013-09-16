@@ -2,6 +2,9 @@
 import urllib
 import urllib2
 import json
+import logging
+
+log = logging.getLogger(__name__)
 
 class GenericWSRequest(object):
     def __init__(self, url):
@@ -30,7 +33,7 @@ class GenericWSRequest(object):
             return self.url + "?" + self.get_params
 
     def get(self):
-        print("Get the url " + self.get_url())
+        log.info("Get the url " + self.get_url())
         req = urllib2.Request(self.get_url(), headers=self.headers)
         response = urllib2.urlopen(req)
 

@@ -14,6 +14,9 @@ from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, UnexpectedError, RefMissing)
 from .fragments import Fragment
 import structured_text
+import logging
+
+log = logging.getLogger(__name__)
 
 
 def get(url, access_token):
@@ -42,19 +45,26 @@ def get(url, access_token):
 class Api(object):
 
     def __init__(self, data, access_token):
-        self.refs = data.get("refs")
+        self.refs = [ Ref(ref) for ref in data.get("refs") ]
         self.bookmarks = data.get("bookmarks")
         self.types = data.get("types")
         self.tags = data.get("tags")
         self.forms = data.get("forms")
         self.oauth_initiate = data.get("oauth_initiate")
         self.oauth_token = data.get("oauth_token")
-
         self.access_token = access_token
 
-    def ref(self, label):
-        ref = [ref for ref in self.refs if ref.get("label") == label]
-        return Ref(ref[0]) if ref else None
+        self.master = ([ ref for ref in self.refs if ref.isMasterRef ][:1] or [None])[0]
+        if not self.master:
+            log.error("No master reference found")
+
+    def get_ref(self, label):
+        ref = [ ref for ref in self.refs if ref.label == label ]
+        return ref[0] if ref else None
+
+    """Return current master ref"""
+    def get_master(self):
+        return self.master
 
     def form(self, name):
         return SearchForm(self, self.forms.get(name))
@@ -68,7 +78,8 @@ class Ref(object):
     def __init__(self, data):
         self.ref = data.get("ref")
         self.label = data.get("label")
-        self.isMasterRef = data.get("scheduledAt")
+        self.isMasterRef = data.get("isMasterRef")
+        self.scheduledAt = data.get("scheduledAt")
 
 
 class SearchForm(object):
@@ -82,16 +93,16 @@ class SearchForm(object):
         self.fields = form.get("fields")
         self.fields_data = {}
 
-    def ref(self, label=None, ref_id=None):
+    def ref(self, label=None, id=None):
         if label:
-            ref = self.api.ref(label)
+            ref = self.api.get_ref(label)
             if ref:
                 self.fields_data.update({'ref': ref.ref})
                 return True
             else:
                 return False
-        elif ref_id:
-            self.fields_data.update({'ref': ref_id})
+        elif id:
+            self.fields_data.update({'ref': id})
             return True
         return False
 
