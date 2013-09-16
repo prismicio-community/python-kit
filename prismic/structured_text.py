@@ -44,7 +44,7 @@ class StructuredText(object):
         groups = []
         for block in self.blocks:
             if len(groups) > 0:
-                lastOne = groups[-1:]
+                lastOne = groups[-1:][0]
 
                 if lastOne.tag == "ul" and isinstance(block, Block.ListItem) and not block.is_ordered:
                     lastOne.blocks.append(block)
@@ -53,9 +53,9 @@ class StructuredText(object):
                 elif isinstance(block, Block.ListItem) and not block.is_ordered:
                     groups.append(Group("ul", [block]))
                 elif isinstance(block, Block.ListItem) and block.is_ordered:
-                    groups.append(Group("ol", [block]))
+                    groups.append(StructuredText.Group("ol", [block]))
                 else:
-                    groups.append(Group(None, [block]))
+                    groups.append(StructuredText.Group(None, [block]))
             else:
                 groups.append(StructuredText.Group(None, [block]))
 
