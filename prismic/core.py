@@ -6,6 +6,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class GenericWSRequest(object):
     def __init__(self, url):
         self.url = url
@@ -27,7 +28,7 @@ class GenericWSRequest(object):
         self.set_headers(headers)
 
     def get_url(self):
-        if self.get_params == None:
+        if self.get_params is None:
             return self.url
         else:
             return self.url + "?" + self.get_params

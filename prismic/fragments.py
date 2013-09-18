@@ -58,6 +58,8 @@ class Fragment(object):
             return """<a href="%(link)s">%(slug)s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
 
         def get_url(self, documentlink_resolver):
+            if not hasattr(documentlink_resolver, '__call__'):
+                raise Exception("documentlink_resolver should be a callable object, but it's: %s" % type(documentlink_resolver))
             return documentlink_resolver(self)
 
     class WebLink(Link):
@@ -95,7 +97,7 @@ class Fragment(object):
             main, views = value.get("main"), value.get("views")
 
             self.main = Fragment.Image.View.make(main)
-            self.views = { view_key: Fragment.Image.View.make(view_value) for (view_key,view_value) in views.iteritems() }
+            self.views = { view_key: Fragment.Image.View.make(view_value) for (view_key, view_value) in views.iteritems() }
 
         def get_view(self, key):
             if key == "main":

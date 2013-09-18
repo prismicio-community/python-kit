@@ -45,7 +45,7 @@ def get(url, access_token):
 class Api(object):
 
     def __init__(self, data, access_token):
-        self.refs = [ Ref(ref) for ref in data.get("refs") ]
+        self.refs = [Ref(ref) for ref in data.get("refs")]
         self.bookmarks = data.get("bookmarks")
         self.types = data.get("types")
         self.tags = data.get("tags")
@@ -54,20 +54,21 @@ class Api(object):
         self.oauth_token = data.get("oauth_token")
         self.access_token = access_token
 
-        self.master = ([ ref for ref in self.refs if ref.isMasterRef ][:1] or [None])[0]
+        self.master = ([ref for ref in self.refs if ref.isMasterRef][:1] or [None])[0]
         if not self.master:
             log.error("No master reference found")
 
     def get_ref(self, label):
-        ref = [ ref for ref in self.refs if ref.label == label ]
+        ref = [ref for ref in self.refs if ref.label == label]
         return ref[0] if ref else None
 
     """Return current master ref"""
+
     def get_master(self):
         return self.master
 
     def form(self, name):
-        return SearchForm(self, self.forms.get(name))
+        return SearchForm(self.forms.get(name))
 
     def sef_link_resolver(self, link_resolver):
         self.link_resolver = link_resolver
@@ -84,40 +85,35 @@ class Ref(object):
 
 class SearchForm(object):
 
-    def __init__(self, api, form):
-        self.api = api
+    """Form to search for documents.
 
+    Most of the methods return self object to allow chaining.
+    """
+
+    def __init__(self, form):
         self.action = form.get("action")
         self.method = form.get("method")
         self.enctype = form.get("enctype")
         self.fields = form.get("fields")
         self.fields_data = {}
 
-    def ref(self, label=None, id=None):
-        if label:
-            ref = self.api.get_ref(label)
-            if ref:
-                self.fields_data.update({'ref': ref.ref})
-                return True
-            else:
-                return False
-        elif id:
-            self.fields_data.update({'ref': id})
-            return True
-        return False
+    def ref(self, id):
+        self.fields_data.update({'ref': id})
+        return self
 
     def query(self, query):
         self.fields_data.update({'q': query})
+        return self
 
-    def submit_preconditions(self):
-        if (self.fields_data.get('ref') == None):
+    def submit_assert_preconditions(self):
+        if (self.fields_data.get('ref') is None):
             raise RefMissing()
 
     def submit(self):
-        self.submit_preconditions()
+        self.submit_assert_preconditions()
         request = GenericWSRequest(self.action)
         request.set_get_params(self.fields_data)
-        return [ Document(doc) for doc in request.get_json() ]
+        return [Document(doc) for doc in request.get_json()]
 
 
 class Document(object):
@@ -130,14 +126,15 @@ class Document(object):
         self.slugs = data.get("slugs")
         self.fragments = {}
 
-        fragments = data.get("data").get(self.type) if data.has_key("data") else {}
+        fragments = data.get("data").get(self.type) if "data" in data else {}
 
         for (fragment_name, fragment_value) in fragments.iteritems():
             f_key = "%s.%s" % (self.type, fragment_name)
 
             if isinstance(fragment_value, list):
                 for index, fragment_value_element in enumerate(fragment_value):
-                    self.fragments["%s[%s]" % (f_key, index)] = Fragment.from_json(fragment_value_element)
+                    self.fragments["%s[%s]" % (f_key, index)] = Fragment.from_json(
+                        fragment_value_element)
 
             elif isinstance(fragment_value, dict):
                 self.fragments[f_key] = Fragment.from_json(fragment_value)
@@ -161,7 +158,13 @@ class Document(object):
         return self.get_fragment_type(field, Fragment.Color)
 
     def get_text(self, field):
-        return self.get_fragment_type(field, Fragment.Text)
+        fragment = self.fragments.get(field)
+        if isinstance(fragment, structured_text.StructuredText):
+            texts = [block.text for block in fragment.blocks if isinstance(
+                block, structured_text.Text)]
+            return "\n".join(texts) if texts else None
+        else:
+            return fragment.value
 
     def get_structured_text(self, field):
         return self.get_fragment_type(field, structured_text.StructuredText)
@@ -186,3 +189,6 @@ class Document(object):
             html.append("""</section>""")
 
         return ''.join(html)
+
+    def __repr__(self):
+        return "Document %s" % self.fragments

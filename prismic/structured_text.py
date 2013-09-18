@@ -18,8 +18,8 @@ class StructuredText(object):
             "heading4": Block.Heading,
             "paragraph": Block.Paragraph,
             "list-item": Block.ListItem,
-            "image": lambda val: Block.Image(Fragment.Image.View(val)),
-            "embed": lambda val: Block.Embed(Fragment.Image.View(val)),
+            "image": lambda val: Block.Image(fragments.Fragment.Image.View.make(val)),
+            "embed": lambda val: Block.Embed(fragments.Fragment.Embed(val)),
         }
 
         blocks = []
@@ -28,7 +28,7 @@ class StructuredText(object):
             text_type = value.get("type")
             type_class = types.get(text_type)
             if type_class:
-                blocks.append( type_class(value) )
+                blocks.append(type_class(value))
             else:
                 log.warning("StructuredText, type not found: %s" % text_type)
 
@@ -51,7 +51,7 @@ class StructuredText(object):
                 elif lastOne.tag == "ol" and isinstance(block, Block.ListItem) and block.is_ordered:
                     lastOne.blocks.append(block)
                 elif isinstance(block, Block.ListItem) and not block.is_ordered:
-                    groups.append(Group("ul", [block]))
+                    groups.append(StructuredText.Group("ul", [block]))
                 elif isinstance(block, Block.ListItem) and block.is_ordered:
                     groups.append(StructuredText.Group("ol", [block]))
                 else:
@@ -61,11 +61,11 @@ class StructuredText(object):
 
         html = []
         for group in groups:
-            if group.tag != None:
-                html.append("<%(tag)s>"  % group.__dict__)
+            if group.tag is not None:
+                html.append("<%(tag)s>" % group.__dict__)
                 for block in self.blocks:
                     html.append(self.block_as_html(block, link_resolver))
-                html.append("</%(tag)s>"  % group.__dict__)
+                html.append("</%(tag)s>" % group.__dict__)
             else:
                 for block in self.blocks:
                     html.append(self.block_as_html(block, link_resolver))
@@ -84,9 +84,9 @@ class StructuredText(object):
         elif isinstance(block, Block.ListItem):
             return "<li>%s</li>" % self.span_as_html(block.text, block.spans, link_resolver)
         elif isinstance(block, Block.Image):
-            return "<p>%(html)s</p>" % block.as_html()
+            return "<p>%s</p>" % block.get_view().as_html
         elif isinstance(block, Block.Embed):
-            return block.as_html()
+            return block.get_embed().as_html
 
     def span_write_tag(self, span, link_resolver, opening):
         if isinstance(span, Span.Em):
@@ -112,7 +112,7 @@ class StructuredText(object):
             html.append(letter)
 
         # Check for the tags after the end of the string
-        tags = tags_map.get(index+1)
+        tags = tags_map.get(index + 1)
         if tags:
             html.append(''.join(tags))
 
@@ -204,8 +204,17 @@ class Block(object):
         def __init__(self, embed):
             self.obj = embed
 
+        def get_embed(self):
+            return self.obj
+
 
     class Image(object):
+        """Block image
 
+        :param view: The Fragment.Image.View object
+        """
         def __init__(self, view):
             self.view = view
+
+        def get_view(self):
+            return self.view

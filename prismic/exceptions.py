@@ -8,6 +8,7 @@ This module contains the set of Prismic exceptions.
 
 """
 
+
 class Error(Exception):
     """Base class for exceptions in this module."""
 
@@ -47,6 +48,7 @@ class UnexpectedError(Error):
 
     def __str__(self):
         return self.message
+
 
 class RefMissing(Error):
     """You need to provide the ref parameter."""
