@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-api_sample_data = """
+fixture_api = """
 {
     "refs": [{
         "ref": "UgjWQN_mqa8HvPJY",
@@ -43,7 +43,7 @@ api_sample_data = """
     "oauth_initiate": "http://lesbonneschoses.wroom.io/auth",
     "oauth_token": "http://lesbonneschoses.wroom.io/auth/token"
 }"""
-search_sample_data = """[
+fixture_search = """[
     {
         "id": "UdUkXt_mqZBObPeS",
         "type": "product",
@@ -552,6 +552,77 @@ search_sample_data = """[
                 "allergens": {
                     "type": "Text",
                     "value": "Contains lime, milk and eggs."
+                }
+            }
+        }
+    }
+]"""
+
+fixture_structured_lists = """[
+    {
+        "id": "UinbYMuvzesP4mix",
+        "type": "article",
+        "href": "http://lesbonneschoses-uinbymuvzesp4mie.prismic.io/api/documents/search?ref=UjnQi8uvzXIAAYEM&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UinbYMuvzesP4mix%22%29+%5D%5D",
+        "tags": [],
+        "slugs": [
+            "about-us"
+        ],
+        "data": {
+            "article": {
+                "content": {
+                    "type": "StructuredText",
+                    "value": [
+                        {
+                            "type": "heading2",
+                            "text": "A tale of pastry and passion",
+                            "spans": []
+                        },
+                       {
+                            "type": "heading2",
+                            "text": "Here we'll test a list",
+                            "spans": []
+                        },
+                        {
+                            "type": "paragraph",
+                            "text": "Unordered list:",
+                            "spans": []
+                        },
+                        {
+                            "type": "list-item",
+                            "text": "Element1",
+                            "spans": []
+                        },
+                        {
+                            "type": "list-item",
+                            "text": "Element2",
+                            "spans": []
+                        },
+                        {
+                            "type": "list-item",
+                            "text": "Element3",
+                            "spans": []
+                        },
+                        {
+                            "type": "paragraph",
+                            "text": "Ordered list:",
+                            "spans": []
+                        },
+                        {
+                            "type": "o-list-item",
+                            "text": "Element1",
+                            "spans": []
+                        },
+                        {
+                            "type": "o-list-item",
+                            "text": "Element2",
+                            "spans": []
+                        },
+                        {
+                            "type": "o-list-item",
+                            "text": "Element3",
+                            "spans": []
+                        }
+                    ]
                 }
             }
         }

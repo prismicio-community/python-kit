@@ -18,6 +18,7 @@ class StructuredText(object):
             "heading4": Block.Heading,
             "paragraph": Block.Paragraph,
             "list-item": Block.ListItem,
+            "o-list-item": lambda val: Block.ListItem(val, True),
             "image": lambda val: Block.Image(fragments.Fragment.Image.View.make(val)),
             "embed": lambda val: Block.Embed(fragments.Fragment.Embed(val)),
         }
@@ -63,11 +64,11 @@ class StructuredText(object):
         for group in groups:
             if group.tag is not None:
                 html.append("<%(tag)s>" % group.__dict__)
-                for block in self.blocks:
+                for block in group.blocks:
                     html.append(self.block_as_html(block, link_resolver))
                 html.append("</%(tag)s>" % group.__dict__)
             else:
-                for block in self.blocks:
+                for block in group.blocks:
                     html.append(self.block_as_html(block, link_resolver))
 
         html_str = ''.join(html)
@@ -115,9 +116,6 @@ class StructuredText(object):
         tags = tags_map.get(index + 1)
         if tags:
             html.append(''.join(tags))
-
-
-
 
         return ''.join(html)
 
@@ -195,9 +193,9 @@ class Block(object):
 
     class ListItem(Text):
 
-        def __init__(self, value):
+        def __init__(self, value, is_ordered=False):
             super(Block.ListItem, self).__init__(value)
-            self.is_ordered = False
+            self.is_ordered = is_ordered
 
     class Embed(object):
 

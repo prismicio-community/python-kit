@@ -10,42 +10,43 @@ import logging
 import json
 from prismic.exceptions import (InvalidTokenError,
                                 AuthorizationNeededError, UnexpectedError)
-from test_prismic_fixtures import api_sample_data, search_sample_data
+from test_prismic_fixtures import fixture_api, fixture_search, fixture_structured_lists
 
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger(__name__)
+# logging.basicConfig(level=logging.DEBUG)
+# log = logging.getLogger(__name__)
 
 
 class PrismicTestCase(unittest.TestCase):
     def setUp(self):
         """Init the api url and the token identifier."""
-        self.api_url = "http://lesbonneschoses.prismic.io/api"
-        self.token = "MC5VZ2phOGRfbXFaOEl2UEpj.dO-_ve-_ve-_ve-_vSFRBzXvv71V77-977-9BO-_vVbvv71k77-9Cu-_ve-_vQTvv71177-9eQpcUE3vv70"
-        self.api_fixture_data = json.loads(api_sample_data)
-        self.search_fixture_data = json.loads(search_sample_data)
+        self.api_url = ""
+        self.token = ""
+        self.fixture_api = json.loads(fixture_api)
+        self.fixture_search = json.loads(fixture_search)
+        self.fixture_structured_lists = json.loads(fixture_structured_lists)
 
-        self.api = prismic.Api(self.api_fixture_data, self.token)
+        self.api = prismic.Api(self.fixture_api, self.token)
 
     def tearDown(self):
         """Teardown."""
 
 
-class ApiIntegrationTestCase(PrismicTestCase):
-    """Doing real HTTP requests to test API data fetching"""
+# class ApiIntegrationTestCase(PrismicTestCase):
+#     """Doing real HTTP requests to test API data fetching"""
 
-    def test_get_api(self):
-        api = prismic.get(self.api_url, self.token)
-        self.assertTrue(len(api.forms) > 0)
+#     def test_get_api(self):
+#         api = prismic.get(self.api_url, self.token)
+#         self.assertTrue(len(api.forms) > 0)
 
-    def test_api_get_errors(self):
-        with self.assertRaises(InvalidTokenError):
-            prismic.get(self.api_url, "wrong")
+#     def test_api_get_errors(self):
+#         with self.assertRaises(InvalidTokenError):
+#             prismic.get(self.api_url, "wrong")
 
-        with self.assertRaises(AuthorizationNeededError):
-            prismic.get(self.api_url, "")
+#         with self.assertRaises(AuthorizationNeededError):
+#             prismic.get(self.api_url, "")
 
-        with self.assertRaises(UnexpectedError):
-            prismic.get("htt://wrong_on_purpose", "")
+#         with self.assertRaises(UnexpectedError):
+#             prismic.get("htt://wrong_on_purpose", "")
 
 
 class ApiTestCase(PrismicTestCase):
@@ -70,19 +71,19 @@ class TestSearchFormTestCase(PrismicTestCase):
         self.assertTrue(len(docs) == 20)
 
     def test_document(self):
-        docs = [prismic.Document(doc) for doc in self.search_fixture_data]
+        docs = [prismic.Document(doc) for doc in self.fixture_search]
         self.assertTrue(len(docs) == 3)
         doc = docs[0]
         self.assertTrue(doc.slug == "vanilla-macaron")
 
     def test_empty_slug(self):
-        doc_json = self.search_fixture_data[0]
+        doc_json = self.fixture_search[0]
         doc_json["slugs"] = None
         doc = prismic.Document(doc_json)
         self.assertTrue(doc.slug == "-")
 
     def test_as_html(self):
-        doc_json = self.search_fixture_data[0]
+        doc_json = self.fixture_search[0]
         doc = prismic.Document(doc_json)
         expected_html = """<section data-field="product.allergens"><span class="text">Contains almonds, eggs, milk</span></section><section data-field="product.image"><img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png" width="500" height="500"></section><section data-field="product.short_lede"><h2>Crispiness and softness, rolled into one</h2></section><section data-field="product.testimonial_author[0]"><h3>Chef Guillaume Bort</h3></section><section data-field="product.related[0]"><a href="document/UdUjvt_mqVNObPeO">dark-chocolate-macaron</a></section><section data-field="product.name"><h1>Vanilla Macaron</h1></section><section data-field="product.related[1]"><a href="document/UdUjsN_mqT1ObPeM">salted-caramel-macaron</a></section><section data-field="product.testimonial_quote[0]"><p>The taste of pure vanilla is very hard to tame, and therefore, most cooks resort to substitutes. <strong>It takes a high-skill chef to know how to get the best of tastes, and <strong><em></strong>Les Bonnes Choses<strong></em></strong>'s vanilla macaron does just that</strong>. The result is more than a success, it simply is a gastronomic piece of art.</p></section><section data-field="product.flavour[0]"><span class="text">Vanilla</span></section><section data-field="product.price"><span class="number">3.55</span></section><section data-field="product.color"><span class="color">#ffeacd</span></section><section data-field="product.description"><p>Experience the ultimate vanilla experience. Our vanilla Macarons are made with our very own (in-house) <strong>pure extract of Madagascar vanilla</strong>, and subtly dusted with <strong>our own vanilla sugar</strong> (which we make from real vanilla beans).</p></section>"""
         doc_html = doc.as_html(lambda link_doc: "document/%s" % link_doc.id)
@@ -92,7 +93,7 @@ class TestFragmentsTestCase(PrismicTestCase):
 
     def setUp(self):
         super(TestFragmentsTestCase, self).setUp()
-        doc_json = self.search_fixture_data[0]
+        doc_json = self.fixture_search[0]
         self.doc = prismic.Document(doc_json)
 
     def test_image(self):
@@ -148,6 +149,13 @@ class TestFragmentsTestCase(PrismicTestCase):
         p_html = p.as_html(lambda x: "/x")
         self.assertTrue(p_html == "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
 
+
+    def test_lists(self):
+        doc_json = self.fixture_structured_lists[0]
+        doc = prismic.Document(doc_json)
+        doc_html = doc.get_structured_text("article.content").as_html(lambda x: "/x")
+        expected = """<h2>A tale of pastry and passion</h2><h2>Here we'll test a list</h2><p>Unordered list:</p><ul><li>Element1</li><li>Element2</li><li>Element3</li></ul><p>Ordered list:</p><ol><li>Element1</li><li>Element2</li><li>Element3</li></ol>"""
+        self.assertEqual(doc_html, expected)
 
     def test_document_link(self):
         test_paragraph = {
