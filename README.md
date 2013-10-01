@@ -20,7 +20,7 @@ Open docs/_build/html/index.html
 >>> # Set the ref and the query to get all documents of type "product"
 >>> form.ref(api.get_master()).query("""[[:d = any(document.type, ["product"])]]""")
 
->>> products = form.submit()
+>>> documents = form.submit()
 >>> documents[0].get_text("product.name")
 u'Speculoos Macaron'
 ```
