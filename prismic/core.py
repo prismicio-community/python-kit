@@ -8,6 +8,8 @@ log = logging.getLogger(__name__)
 
 
 class GenericWSRequest(object):
+    """Make HTTP requests to get the JSON."""
+
     def __init__(self, url):
         self.url = url
         self.get_params = None
@@ -44,5 +46,5 @@ class GenericWSRequest(object):
     def get_json(self):
         self.accept_json()
         self.get()
-        # print self.response_contents
+        log.debug("Api json: " + self.response_contents)
         return json.loads(self.response_contents)

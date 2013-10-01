@@ -20,6 +20,12 @@ log = logging.getLogger(__name__)
 
 
 def get(url, access_token):
+    """Fetches the prismic api JSON.
+    Returns :class:`Api <Api>` object.
+
+    :param url: URL to the api of the repository.
+    :param access_token: The access token.
+    """
     try:
         values = {
             "access_token": access_token
@@ -59,19 +65,25 @@ class Api(object):
             log.error("No master reference found")
 
     def get_ref(self, label):
+        """Get the :class:`Ref <Ref>` with a specific label.
+        Returns :class:`Ref <Ref>` object.
+
+        :param label: Name of the label.
+        """
         ref = [ref for ref in self.refs if ref.label == label]
         return ref[0] if ref else None
 
-    """Return current master ref"""
-
     def get_master(self):
+        """Returns current master :class:`Ref <Ref>` object."""
         return self.master
 
     def form(self, name):
-        return SearchForm(self.forms.get(name))
+        """Constructs the form with data from Api.
+        Returns :class:`SearchForm <SearchForm>` object.
 
-    def sef_link_resolver(self, link_resolver):
-        self.link_resolver = link_resolver
+        :param name: Name of the form.
+        """
+        return SearchForm(self.forms.get(name))
 
 
 class Ref(object):
@@ -98,10 +110,15 @@ class SearchForm(object):
         self.fields_data = {}
 
     def ref(self, id):
+        """:param id: An :class:`Ref <Ref>` object or an string."""
+
+        if isinstance(id, Ref):
+            id = id.ref
+
         self.fields_data.update({'ref': id})
         return self
 
-    def query(self, query):
+    def query(self, query=""):
         self.fields_data.update({'q': query})
         return self
 
@@ -170,6 +187,11 @@ class Document(object):
         return self.get_fragment_type(field, structured_text.StructuredText)
 
     def get_html(self, field, link_resolver):
+        """Get the html of a field.
+
+        :param field: String with a name of the field to get.
+        :param link_resolver: A resolver function for document links. It will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as argument. Resolver function should return a string, the local url to the document.
+        """
         fragment = self.fragments.get(field)
         return self.fragment_to_html(fragment, link_resolver)
 

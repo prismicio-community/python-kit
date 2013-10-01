@@ -55,12 +55,28 @@ class Fragment(object):
             self.is_broken = value.get("isBroken")
 
         def as_html(self, documentlink_resolver):
+            """Get the DocumentLink as html.
+
+            :param documentlink_resolver: A resolver function will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as argument. Resolver function should return a string, the local url to the document.
+            """
             return """<a href="%(link)s">%(slug)s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
 
         def get_url(self, documentlink_resolver):
             if not hasattr(documentlink_resolver, '__call__'):
                 raise Exception("documentlink_resolver should be a callable object, but it's: %s" % type(documentlink_resolver))
             return documentlink_resolver(self)
+
+        def get_document_id(self):
+            return self.id
+
+        def get_document_type(self):
+            return self.type
+
+        def get_document_tags(self):
+            return self.type
+
+        def get_document_slug(self):
+            return self.type
 
     class WebLink(Link):
         def __init__(self, value):
