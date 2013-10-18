@@ -2,7 +2,7 @@
 
 ### Installing
 
-pip install git+https://github.com/prismicio/python-kit.git
+pip install prismic
 
 
 ### API documentation
