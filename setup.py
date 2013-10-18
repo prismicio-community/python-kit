@@ -7,11 +7,15 @@ from setuptools import setup, find_packages
 import setuptools
 
 setup(
-    name='Prismic',
+    name='Prismic.io',
     version='0.1',
     description='Prismic.io kit',
+    author='Nicolae Namolovan',
+    author_email='nna@zenexity.com',
+    url='http://prismic.io',
+    license='Apache 2',
     packages=find_packages(),
-    test_suite="tests",
+    test_suite='tests',
     classifiers=[
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
