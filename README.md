@@ -7,7 +7,7 @@ pip install git+https://github.com/prismicio/python-kit.git
 
 ### API documentation
 
-http://prismicio.github.io/python-kit/
+http://prismic.readthedocs.org/en/latest/
 
 ### Example of use
 

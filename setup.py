@@ -9,7 +9,7 @@ import setuptools
 setup(
     name='Prismic.io',
     version='0.1',
-    description='Prismic.io kit',
+    description='Prismic.io development kit',
     author='Nicolae Namolovan',
     author_email='nna@zenexity.com',
     url='http://prismic.io',
