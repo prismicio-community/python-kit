@@ -83,6 +83,9 @@ class Api(object):
 
         :param name: Name of the form.
         """
+        form = self.forms.get(name)
+        if form is None:
+            raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)) )
         return SearchForm(self.forms.get(name))
 
 
