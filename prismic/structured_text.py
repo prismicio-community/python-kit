@@ -4,6 +4,7 @@
 import logging
 from collections import defaultdict
 import fragments
+import cgi
 
 log = logging.getLogger(__name__)
 
@@ -110,7 +111,7 @@ class StructuredText(object):
             tags = tags_map.get(index)
             if tags:
                 html.append(''.join(tags))
-            html.append(letter)
+            html.append(cgi.escape(letter))
 
         # Check for the tags after the end of the string
         tags = tags_map.get(index + 1)

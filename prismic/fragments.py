@@ -4,6 +4,7 @@
 from collections import namedtuple
 import structured_text
 import logging
+import cgi
 
 log = logging.getLogger(__name__)
 
@@ -168,4 +169,4 @@ class Fragment(object):
 
         @property
         def as_html(self):
-            return """<span class="text">%s</span>""" % self.value
+            return """<span class="text">%s</span>""" % cgi.escape(self.value)

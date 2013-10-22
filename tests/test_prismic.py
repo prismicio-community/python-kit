@@ -119,40 +119,34 @@ class TestFragmentsTestCase(PrismicTestCase):
         doc = self.doc
         self.assertTrue(doc.get_text("product.allergens").__str__() == "Contains almonds, eggs, milk")
 
+        text = prismic.Fragment.Text("a&b 42 > 41")
+        self.assertEqual(text.as_html, '<span class="text">a&amp;b 42 &gt; 41</span>', "HTML escape")
+
+
     def test_structured_text_heading(self):
         doc = self.doc
         html = doc.get_html("product.short_lede", lambda x: "/x")
         self.assertTrue(html == "<h2>Crispiness and softness, rolled into one</h2>")
 
     def test_structured_text_paragraph(self):
-        p = prismic.structured_text.StructuredText([span_sample_data])
-        p_html = p.as_html(lambda x: "/x")
-        self.assertTrue(p_html == "To <strong><em>be</em></strong> or not <strong>be</strong> ?")
-
-    def test_structured_text_paragraph(self):
         span_sample_data = {"type": "paragraph",
         "text": "To be or not to be ?",
         "spans": [
-            {
-                "start": 3,
-                "end": 5,
-                "type": "strong"
-            },
-            {
-                "start": 16,
-                "end": 18,
-                "type": "strong"
-            },
-            {
-                "start": 3,
-                "end": 5,
-                "type": "em"
-            }
+            {"start": 3,"end": 5,"type": "strong"},
+            { "start": 16, "end": 18, "type": "strong"},
+            {"start": 3,"end": 5,"type": "em"}
         ]}
         p = prismic.structured_text.StructuredText([span_sample_data])
         p_html = p.as_html(lambda x: "/x")
         self.assertTrue(p_html == "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
 
+        p = prismic.structured_text.StructuredText([{"type": "paragraph", "text": "a&b 42 > 41", "spans": []}])
+        p_html = p.as_html(lambda x: "/x")
+        self.assertEqual(p_html, "<p>a&amp;b 42 &gt; 41</p>", "Paragraph HTML escape")
+
+        p = prismic.structured_text.StructuredText([{"type": "heading2", "text": "a&b 42 > 41", "spans": []}])
+        p_html = p.as_html(lambda x: "/x")
+        self.assertEqual(p_html, "<h2>a&amp;b 42 &gt; 41</h2>", "Header HTML escape")
 
     def test_lists(self):
         doc_json = self.fixture_structured_lists[0]
@@ -166,30 +160,16 @@ class TestFragmentsTestCase(PrismicTestCase):
             "type": "paragraph",
             "text": "bye",
             "spans": [
-                {
-                    "start": 0,
-                    "end": 3,
-                    "type": "hyperlink",
+                {"start": 0,"end": 3,"type": "hyperlink",
                     "data": {
                         "type": "Link.document",
                         "value": {
-                            "document": {
-                                "id": "UbiYbN_mqXkBOgE2",
-                                "type": "article",
-                                "tags": [
-                                    "blog"
-                                ],
-                                "slug": "-"
-                            },
+                            "document": {"id": "UbiYbN_mqXkBOgE2","type": "article","tags": ["blog"],"slug": "-"},
                             "isBroken": False
                         }
                     }
                 },
-                {
-                    "start": 0,
-                    "end": 3,
-                    "type": "strong"
-                }
+                {"start": 0,"end": 3,"type": "strong"}
             ]
         }
         p = prismic.structured_text.StructuredText([test_paragraph])

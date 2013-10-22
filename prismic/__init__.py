@@ -9,6 +9,7 @@ __license__ = 'Apache 2'
 
 from .api import get, Api, SearchForm, Document
 import structured_text
+from fragments import Fragment
 
 # Set a default logger to prevent "No handler found" warnings
 import logging
