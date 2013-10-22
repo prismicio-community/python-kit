@@ -7,8 +7,8 @@ from setuptools import setup, find_packages
 import setuptools
 
 setup(
-    name='Prismic.io',
-    version='0.1',
+    name='prismic',
+    version='0.1.1',
     description='Prismic.io development kit',
     author='Nicolae Namolovan',
     author_email='nna@zenexity.com',
