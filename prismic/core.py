@@ -18,7 +18,17 @@ class GenericWSRequest(object):
         self.response_contents = None
 
     def set_get_params(self, params):
-        self.get_params = urllib.urlencode(params)
+        encoded_params = urllib.urlencode(params)
+        if self.get_params is None:
+            self.get_params = encoded_params
+        else:
+            self.get_params = self.get_params + "&" + encoded_params
+
+    def set_access_token(self, access_token):
+        values = {
+            "access_token": access_token
+        }
+        self.set_get_params(values)
 
     def set_headers(self, headers):
         self.headers = headers
@@ -37,6 +47,7 @@ class GenericWSRequest(object):
 
     def get(self):
         log.info("Get the url " + self.get_url())
+        log.debug("Headers " + str(self.headers))
         req = urllib2.Request(self.get_url(), headers=self.headers)
         response = urllib2.urlopen(req)
 

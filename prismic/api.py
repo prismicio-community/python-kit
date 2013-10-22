@@ -27,12 +27,8 @@ def get(url, access_token):
     :param access_token: The access token.
     """
     try:
-        values = {
-            "access_token": access_token
-        }
-
         request = GenericWSRequest(url)
-        request.set_get_params(values)
+        request.set_access_token(access_token)
         return Api(request.get_json(), access_token)
 
     except urllib2.HTTPError as http_error:
@@ -86,7 +82,7 @@ class Api(object):
         form = self.forms.get(name)
         if form is None:
             raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)) )
-        return SearchForm(self.forms.get(name))
+        return SearchForm(self.forms.get(name), self.access_token)
 
 
 class Ref(object):
@@ -105,12 +101,13 @@ class SearchForm(object):
     Most of the methods return self object to allow chaining.
     """
 
-    def __init__(self, form):
+    def __init__(self, form, access_token):
         self.action = form.get("action")
         self.method = form.get("method")
         self.enctype = form.get("enctype")
         self.fields = form.get("fields")
-        self.fields_data = {}
+        self.fields_data = { field: value["default"] for field,value in self.fields.iteritems() if "default" in value }
+        self.access_token = access_token
 
     def ref(self, id):
         """:param id: An :class:`Ref <Ref>` object or an string."""
@@ -133,6 +130,8 @@ class SearchForm(object):
         self.submit_assert_preconditions()
         request = GenericWSRequest(self.action)
         request.set_get_params(self.fields_data)
+        request.set_access_token(self.access_token)
+
         return [Document(doc) for doc in request.get_json()]
 
 
