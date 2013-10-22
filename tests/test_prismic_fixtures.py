@@ -38,6 +38,22 @@ fixture_api = """
                     "type": "String"
                 }
             }
+        },
+        "blog":{
+           "name":"The Blog",
+           "method":"GET",
+           "rel":"collection",
+           "enctype":"application/x-www-form-urlencoded",
+           "action":"http://lesbonneschoses.prismic.io/api/documents/search",
+           "fields":{
+              "ref":{
+                 "type":"String"
+              },
+              "q":{
+                 "default":"[[any(document.type, [\\"blog-post\\"])]]",
+                 "type":"String"
+              }
+           }
         }
     },
     "oauth_initiate": "http://lesbonneschoses.wroom.io/auth",
