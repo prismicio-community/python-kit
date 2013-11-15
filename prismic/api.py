@@ -52,6 +52,12 @@ class Api(object):
         self.types = data.get("types")
         self.tags = data.get("tags")
         self.forms = data.get("forms")
+        for name in self.forms:
+            form = self.forms[name]
+            fields = form.get("fields")
+            for field in fields:
+                if field == "q":
+                    fields[field].update({"multiple": True})
         self.oauth_initiate = data.get("oauth_initiate")
         self.oauth_token = data.get("oauth_token")
         self.access_token = access_token
@@ -105,31 +111,43 @@ class SearchForm(object):
         self.action = form.get("action")
         self.method = form.get("method")
         self.enctype = form.get("enctype")
-        self.fields = form.get("fields")
-        self.fields_data = { field: value["default"] for field,value in self.fields.iteritems() if "default" in value }
+        self.fields = form.get("fields") or {}
+        self.data = {}
+        # default values
+        for field, value in self.fields.iteritems():
+            if value.get("default"):
+                self.set(field, value["default"])
         self.access_token = access_token
 
-    def ref(self, id):
-        """:param id: An :class:`Ref <Ref>` object or an string."""
+    def ref(self, ref):
+        """:param ref: An :class:`Ref <Ref>` object or an string."""
 
-        if isinstance(id, Ref):
-            id = id.ref
+        if isinstance(ref, Ref):
+            ref = ref.ref
 
-        self.fields_data.update({'ref': id})
-        return self
+        return self.set('ref', ref)
 
-    def query(self, query=""):
-        self.fields_data.update({'q': query})
+    def query(self, query):
+        return self.set('q', query)
+
+    def set(self, field, value):
+        form_field = self.fields.get(field)
+        if form_field and form_field.get("multiple"):
+            if not self.data.get(field):
+                self.data.update({field: []})
+            self.data[field].append(value)
+        else:
+            self.data.update({field: value})
         return self
 
     def submit_assert_preconditions(self):
-        if (self.fields_data.get('ref') is None):
+        if (self.data.get('ref') is None):
             raise RefMissing()
 
     def submit(self):
         self.submit_assert_preconditions()
         request = GenericWSRequest(self.action)
-        request.set_get_params(self.fields_data)
+        request.set_get_params(self.data)
         request.set_access_token(self.access_token)
 
         return [Document(doc) for doc in request.get_json()]

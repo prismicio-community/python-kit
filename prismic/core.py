@@ -18,7 +18,7 @@ class GenericWSRequest(object):
         self.response_contents = None
 
     def set_get_params(self, params):
-        encoded_params = urllib.urlencode(params)
+        encoded_params = urllib.urlencode(params, doseq=True)
         if self.get_params is None:
             self.get_params = encoded_params
         else:

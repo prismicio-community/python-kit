@@ -90,8 +90,24 @@ class TestSearchFormTestCase(PrismicTestCase):
 
     def test_default_params(self):
         blog = self.api.form("blog")
-        self.assertEqual(len(blog.fields_data), 1)
-        self.assertEqual(blog.fields_data["q"], "[[any(document.type, [\"blog-post\"])]]")
+        self.assertEqual(len(blog.data), 1)
+        self.assertEqual(blog.data["q"], ["[[any(document.type, [\"blog-post\"])]]"])
+
+    def test_query_append_value(self):
+        blog = self.api.form("blog")
+        blog.query("[[bar]]")
+        self.assertEqual(len(blog.data), 1)
+        self.assertEqual(blog.data["q"], ["[[any(document.type, [\"blog-post\"])]]", "[[bar]]"])
+
+    def test_ref_replace_value(self):
+        blog = self.api.form("blog")
+        blog.ref("foo")
+        self.assertEqual(len(blog.data), 2)
+        self.assertEqual(blog.data["ref"], "foo")
+        blog.ref("bar")
+        self.assertEqual(len(blog.data), 2)
+        self.assertEqual(blog.data["ref"], "bar")
+
 
 class TestFragmentsTestCase(PrismicTestCase):
 
