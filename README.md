@@ -1,16 +1,31 @@
 ## Python development kit for prismic.io
 
-### Installing
+### Getting started
 
+#### Install the kit for your project
+
+Simply run:
+
+```
 pip install prismic
+```
+
+#### Get started with prismic.io
+
+You can find out [how to get started with prismic.io](https://developers.prismic.io/documentation/UjBaQsuvzdIHvE4D/getting-started) on our [prismic.io developer's portal](https://developers.prismic.io/).
+
+#### Get started using the kit
+
+Also on our [prismic.io developer's portal](https://developers.prismic.io/), on top of our full documentation, you will:
+ * get a thorough introduction of [how to use prismic.io kits](https://developers.prismic.io/documentation/UjBe8bGIJ3EKtgBZ/api-documentation#kits-and-helpers), including this one.
+ * see [what else is available for Python](https://developers.prismic.io/technologies/UjBh78uvzeMJvE4o/python): starter projects, examples, ...
 
 
-### API documentation
+#### Kit's detailed documentation
 
-http://prismic.readthedocs.org/en/latest/
+You can find the documentation of the Python kit right here: http://prismic.readthedocs.org/en/latest/
 
-### Example of use
-
+Here is a basic example of use:
 ```python
 >>> import prismic
 >>> api = prismic.get("http://your-lesbonneschoses.prismic.io/api", "access_token")
@@ -24,9 +39,31 @@ http://prismic.readthedocs.org/en/latest/
 u'Speculoos Macaron'
 ```
 
-### Sample applications
+### Changelog
 
-[python-django-starter](https://github.com/prismicio/python-django-starter) that shows the basic usage and [python-django-lesbonneschoses](https://github.com/prismicio/python-django-lesbonneschoses), a more advanced example.
+Need to see what changed, or to upgrade your kit? We keep our changelog on [this repository's "Releases" tab](https://github.com/prismicio/python-kit/releases).
+
+### Contribute to the kit
+
+Contribution is open to all developer levels, read our "[Contribute to the official kits](https://developers.prismic.io/documentation/UszOeAEAANUlwFpp/contribute-to-the-official-kits)" documentation to learn more.
+
+#### Install the kit locally
+
+This kit gets installed like any Python library.
+
+*(Feel free to detail the proper steps for beginners by [submitting a pull request](https://developers.prismic.io/documentation/UszOeAEAANUlwFpp/contribute-to-the-official-kits).)*
+
+#### Test
+
+Please write tests for any bugfix or new feature.
+
+If you find existing code that is not optimally tested and wish to make it better, we really appreciate it; but you should document it on its own branch and its own pull request.
+
+#### Documentation
+
+Please document any bugfix or new feature.
+
+If you find existing code that is not optimally documented and wish to make it better, we really appreciate it; but you should document it on its own branch and its own pull request.
 
 ### Licence
 
