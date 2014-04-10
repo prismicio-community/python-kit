@@ -150,7 +150,7 @@ class SearchForm(object):
         request.set_get_params(self.data)
         request.set_access_token(self.access_token)
 
-        return [Document(doc) for doc in request.get_json()]
+        return [Document(doc) for doc in request.get_json()['results']]
 
 
 class Document(object):
