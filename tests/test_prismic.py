@@ -176,7 +176,7 @@ class TestFragmentsTestCase(PrismicTestCase):
             "type": "paragraph",
             "text": "bye",
             "spans": [
-                {"start": 0,"end": 3,"type": "hyperlink",
+                {"start": 0, "end": 3, "type": "hyperlink",
                     "data": {
                         "type": "Link.document",
                         "value": {

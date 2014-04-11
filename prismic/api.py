@@ -8,8 +8,10 @@ This module implements the Prismic API.
 
 """
 
+import urllib
 import urllib2
-from core import GenericWSRequest
+import json
+
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, UnexpectedError, RefMissing)
 from .fragments import Fragment
@@ -19,18 +21,25 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def get(url, access_token):
+def get(url, access_token=None):
     """Fetches the prismic api JSON.
     Returns :class:`Api <Api>` object.
 
     :param url: URL to the api of the repository.
     :param access_token: The access token.
     """
-    try:
-        request = GenericWSRequest(url)
-        request.set_access_token(access_token)
-        return Api(request.get_json(), access_token)
+    return Api(_get_json(url, access_token=access_token), access_token)
 
+
+def _get_json(url, params=dict(), access_token=None):
+    try:
+        full_params = params.copy()
+        if access_token is not None:
+            full_params["access_token"] = access_token
+        full_url = url if len(full_params) == 0 else (url + "?" + urllib.urlencode(full_params, doseq=1))
+        req = urllib2.Request(full_url, headers={"Accept": "application/json"})
+        response = urllib2.urlopen(req)
+        return json.loads(response.read())
     except urllib2.HTTPError as http_error:
         if http_error.code == 401:
             if len(access_token) == 0:
@@ -38,8 +47,8 @@ def get(url, access_token):
             else:
                 raise InvalidTokenError()
         else:
+            print full_url
             raise HTTPError(http_error.code, str(http_error))
-
     except urllib2.URLError as url_error:
         raise UnexpectedError("Unexpected error: %s" % url_error.reason)
 
@@ -146,11 +155,7 @@ class SearchForm(object):
 
     def submit(self):
         self.submit_assert_preconditions()
-        request = GenericWSRequest(self.action)
-        request.set_get_params(self.data)
-        request.set_access_token(self.access_token)
-
-        return Response(request.get_json())
+        return Response(_get_json(self.action, self.data, self.access_token))
 
 
 class Response(object):
