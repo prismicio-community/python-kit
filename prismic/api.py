@@ -62,7 +62,7 @@ class Api(object):
         self.oauth_token = data.get("oauth_token")
         self.access_token = access_token
 
-        self.master = ([ref for ref in self.refs if ref.isMasterRef][:1] or [None])[0]
+        self.master = ([ref for ref in self.refs if ref.is_master_ref][:1] or [None])[0]
         if not self.master:
             log.error("No master reference found")
 
@@ -87,7 +87,7 @@ class Api(object):
         """
         form = self.forms.get(name)
         if form is None:
-            raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)) )
+            raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)))
         return SearchForm(self.forms.get(name), self.access_token)
 
 
@@ -96,8 +96,8 @@ class Ref(object):
     def __init__(self, data):
         self.ref = data.get("ref")
         self.label = data.get("label")
-        self.isMasterRef = data.get("isMasterRef")
-        self.scheduledAt = data.get("scheduledAt")
+        self.is_master_ref = data.get("isMasterRef")
+        self.scheduled_at = data.get("scheduledAt")
 
 
 class SearchForm(object):
@@ -141,7 +141,7 @@ class SearchForm(object):
         return self
 
     def submit_assert_preconditions(self):
-        if (self.data.get('ref') is None):
+        if self.data.get('ref') is None:
             raise RefMissing()
 
     def submit(self):
@@ -150,17 +150,38 @@ class SearchForm(object):
         request.set_get_params(self.data)
         request.set_access_token(self.access_token)
 
-        return [Document(doc) for doc in request.get_json()]
+        return Response(request.get_json())
+
+
+class Response(object):
+    """
+    Prismic's response to a query.
+
+    Attributes:
+        documents (:class:`prismic.api.Document <prismic.api.Document>`): the resulting documents
+        page (int): the page in this result, starting by 1
+        results_per_page (int): max result in a page
+        total_results_size: total number of results for this query
+        total_pages (int): total number of pages for this query
+        next_page (str): ref of the next page (may be None)
+        prev_page (str): ref of the previous page (may be None)
+    """
+
+    def __init__(self, data):
+        self._data = data
+        self.documents = map(lambda d: Document(d), data.get("results"))
+
+    def __getattr__(self, name):
+        return self._data.get(name)
+
+    def __repr__(self):
+        return "Response %s" % self._data
 
 
 class Document(object):
 
     def __init__(self, data):
-        self.id = data.get("id")
-        self.type = data.get("type")
-        self.href = data.get("href")
-        self.tags = data.get("tags")
-        self.slugs = data.get("slugs")
+        self._data = data
         self.fragments = {}
 
         fragments = data.get("data").get(self.type) if "data" in data else {}
@@ -175,6 +196,9 @@ class Document(object):
 
             elif isinstance(fragment_value, dict):
                 self.fragments[f_key] = Fragment.from_json(fragment_value)
+
+    def __getattr__(self, name):
+        return self._data.get(name)
 
     @property
     def slug(self):
@@ -210,14 +234,16 @@ class Document(object):
         """Get the html of a field.
 
         :param field: String with a name of the field to get.
-        :param link_resolver: A resolver function for document links. It will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as argument. Resolver function should return a string, the local url to the document.
+        :param link_resolver: A resolver function for document links.
+        Will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>`
+        object as argument. Resolver function should return a string, the local url to the document.
         """
         fragment = self.fragments.get(field)
         return self.fragment_to_html(fragment, link_resolver)
 
-    def fragment_to_html(self, fragment, link_resolver):
-        if (isinstance(fragment, structured_text.StructuredText) or
-            isinstance(fragment, Fragment.DocumentLink)):
+    @staticmethod
+    def fragment_to_html(fragment, link_resolver):
+        if isinstance(fragment, structured_text.StructuredText) or isinstance(fragment, Fragment.DocumentLink):
             return fragment.as_html(link_resolver)
         elif fragment:
             return fragment.as_html

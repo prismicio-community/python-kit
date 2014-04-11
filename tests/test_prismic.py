@@ -54,7 +54,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
     def test_search_form(self):
         blog = self.api.form("blog")
         blog.ref(self.api.get_master())
-        docs = blog.submit()
+        docs = blog.submit().documents
         self.assertEqual(len(docs), 6)
         self.assertEqual(docs[0].type, "blog-post")
 
@@ -185,7 +185,7 @@ class TestFragmentsTestCase(PrismicTestCase):
                         }
                     }
                 },
-                {"start": 0,"end": 3,"type": "strong"}
+                {"start": 0, "end": 3, "type": "strong"}
             ]
         }
         p = prismic.structured_text.StructuredText([test_paragraph])
@@ -199,6 +199,6 @@ class TestFragmentsTestCase(PrismicTestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentsTestCase)
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentsTestCase)
     #suite = unittest.TestLoader().loadTestsFromTestCase(TestSearchFormTestCase)
     unittest.TextTestRunner(verbosity=2).run(suite)

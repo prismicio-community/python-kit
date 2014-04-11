@@ -36,7 +36,6 @@ class StructuredText(object):
 
         self.blocks = blocks
 
-
     class Group(object):
         def __init__(self, tag, blocks):
             self.tag = tag
@@ -75,7 +74,6 @@ class StructuredText(object):
         html_str = ''.join(html)
         log.debug("as_html result: %s" % html_str)
         return html_str
-
 
     def block_as_html(self, block, link_resolver):
         if isinstance(block, Block.Heading):
@@ -121,8 +119,6 @@ class StructuredText(object):
         return ''.join(html)
 
 
-
-
 class Span(object):
 
     @classmethod
@@ -143,10 +139,8 @@ class Span(object):
     class Em(SpanElement):
         pass
 
-
     class Strong(SpanElement):
         pass
-
 
     class Hyperlink(SpanElement):
         def __init__(self, value):
@@ -205,7 +199,6 @@ class Block(object):
 
         def get_embed(self):
             return self.obj
-
 
     class Image(object):
         """Block image

@@ -8,8 +8,10 @@ import cgi
 
 log = logging.getLogger(__name__)
 
+
 class FragmentElement(object):
     pass
+
 
 class Fragment(object):
 
@@ -38,12 +40,10 @@ class Fragment(object):
 
         log.warning("fragment_type not found: %s" % fragment_type)
 
-
     # Links
 
     class Link(FragmentElement):
         pass
-
 
     class DocumentLink(Link):
         def __init__(self, value):
@@ -74,10 +74,10 @@ class Fragment(object):
             return self.type
 
         def get_document_tags(self):
-            return self.type
+            return self.tags
 
         def get_document_slug(self):
-            return self.type
+            return self.slug
 
     class WebLink(Link):
         def __init__(self, value):
@@ -89,7 +89,6 @@ class Fragment(object):
 
         def get_url(self):
             return self.url
-
 
     class Image(FragmentElement):
         _View = namedtuple('View', ['url', 'width', 'height'])
@@ -109,7 +108,6 @@ class Fragment(object):
             def ratio(self):
                 return self.width / self.height
 
-
         def __init__(self, value):
             main, views = value.get("main"), value.get("views")
 
@@ -126,7 +124,6 @@ class Fragment(object):
         def as_html(self):
             return self.main.as_html
 
-
     class Embed(FragmentElement):
         def __init__(self, value):
             oembed = value.get("oembed")
@@ -140,7 +137,9 @@ class Fragment(object):
 
         @property
         def as_html(self):
-            return """<div data-oembed="%(url)s" data-oembed-type="%(type)s" data-oembed-provider="%(provider)s">%(html)s</div>""" % self.__dict__
+            return ("""<div data-oembed="%(url)s" data-oembed-type="%(type)s" data-oembed-provider="%(provider)s">"""
+                    "%(html)s"
+                    "</div>") % self.__dict__
 
     # Basic fragments
 
@@ -151,13 +150,11 @@ class Fragment(object):
         def __str__(self):
             return self.value.__str__()
 
-
     class Number(BasicFragment):
 
         @property
         def as_html(self):
             return """<span class="number">%g</span>""" % self.value
-
 
     class Color(BasicFragment):
 
