@@ -39,6 +39,20 @@ Here is a basic example of use:
 u'Speculoos Macaron'
 ```
 
+#### Using Memcached (or any other cache)
+
+By default, the kit will not cache the requests. It is highly recommended to do so, for example using Python Memcached.
+
+You can pass a Memcached client to the `prismic.get` call:
+
+```python
+>>> import memcache
+>>> api = prismic.get("http://your-lesbonneschoses.prismic.io/api", "access_token", memcache.Client(['127.0.0.1:11211']))
+```
+
+By duck typing you can pass any object that implement the `set` and `get` methods (see the `NoCache` object for the methods
+to implement).
+
 ### Changelog
 
 Need to see what changed, or to upgrade your kit? We keep our changelog on [this repository's "Releases" tab](https://github.com/prismicio/python-kit/releases).

@@ -11,6 +11,7 @@ import json
 from prismic.exceptions import (InvalidTokenError,
                                 AuthorizationNeededError, UnexpectedError)
 from test_prismic_fixtures import fixture_api, fixture_search, fixture_structured_lists
+from prismic.cache import NoCache
 
 # logging.basicConfig(level=logging.DEBUG)
 # log = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_search = json.loads(fixture_search)
         self.fixture_structured_lists = json.loads(fixture_structured_lists)
 
-        self.api = prismic.Api(self.fixture_api, self.token)
+        self.api = prismic.Api(self.fixture_api, self.token, NoCache())
 
     def tearDown(self):
         """Teardown."""

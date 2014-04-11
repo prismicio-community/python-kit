@@ -11,35 +11,44 @@ This module implements the Prismic API.
 import urllib
 import urllib2
 import json
+import re
 
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, UnexpectedError, RefMissing)
 from .fragments import Fragment
 import structured_text
 import logging
+from .cache import NoCache
 
 log = logging.getLogger(__name__)
 
 
-def get(url, access_token=None):
+def get(url, access_token=None, cache=NoCache()):
     """Fetches the prismic api JSON.
     Returns :class:`Api <Api>` object.
 
     :param url: URL to the api of the repository.
     :param access_token: The access token.
     """
-    return Api(_get_json(url, access_token=access_token), access_token)
+    return Api(_get_json(url, access_token=access_token, cache=cache), access_token, cache)
 
 
-def _get_json(url, params=dict(), access_token=None):
+def _get_json(url, params=dict(), access_token=None, cache=NoCache()):
+    full_params = params.copy()
+    if access_token is not None:
+        full_params["access_token"] = access_token
+    full_url = url if len(full_params) == 0 else (url + "?" + urllib.urlencode(full_params, doseq=1))
+    cached = cache.get(full_url)
+    if cached is not None:
+        return cached
     try:
-        full_params = params.copy()
-        if access_token is not None:
-            full_params["access_token"] = access_token
-        full_url = url if len(full_params) == 0 else (url + "?" + urllib.urlencode(full_params, doseq=1))
         req = urllib2.Request(full_url, headers={"Accept": "application/json"})
         response = urllib2.urlopen(req)
-        return json.loads(response.read())
+        jsonResult = json.loads(response.read())
+        expire = _max_age(response)
+        if expire is not None:
+            cache.set(full_url, jsonResult, expire)
+        return jsonResult
     except urllib2.HTTPError as http_error:
         if http_error.code == 401:
             if len(access_token) == 0:
@@ -53,17 +62,29 @@ def _get_json(url, params=dict(), access_token=None):
         raise UnexpectedError("Unexpected error: %s" % url_error.reason)
 
 
-class Api(object):
+def _max_age(response):
+    expire_header = response.info().get("Cache-Control")
+    if expire_header is not None:
+        m = re.match("max-age=(\d+)", expire_header)
+        if m:
+            return int(m.group(1))
+    return None
 
-    def __init__(self, data, access_token):
+
+class Api(object):
+    """
+    A Prismic API, pointing to a specific repository. Use prismic.api.get() to fetch one.
+    """
+
+    def __init__(self, data, access_token, cache):
+        self.cache = cache
         self.refs = [Ref(ref) for ref in data.get("refs")]
         self.bookmarks = data.get("bookmarks")
         self.types = data.get("types")
         self.tags = data.get("tags")
         self.forms = data.get("forms")
         for name in self.forms:
-            form = self.forms[name]
-            fields = form.get("fields")
+            fields = self.forms[name].get("fields")
             for field in fields:
                 if field == "q":
                     fields[field].update({"multiple": True})
@@ -97,7 +118,7 @@ class Api(object):
         form = self.forms.get(name)
         if form is None:
             raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)))
-        return SearchForm(self.forms.get(name), self.access_token)
+        return SearchForm(self.forms.get(name), self.access_token, self.cache)
 
 
 class Ref(object):
@@ -116,7 +137,7 @@ class SearchForm(object):
     Most of the methods return self object to allow chaining.
     """
 
-    def __init__(self, form, access_token):
+    def __init__(self, form, access_token, cache):
         self.action = form.get("action")
         self.method = form.get("method")
         self.enctype = form.get("enctype")
@@ -127,6 +148,7 @@ class SearchForm(object):
             if value.get("default"):
                 self.set(field, value["default"])
         self.access_token = access_token
+        self.cache = cache
 
     def ref(self, ref):
         """:param ref: An :class:`Ref <Ref>` object or an string."""
@@ -155,7 +177,7 @@ class SearchForm(object):
 
     def submit(self):
         self.submit_assert_preconditions()
-        return Response(_get_json(self.action, self.data, self.access_token))
+        return Response(_get_json(self.action, self.data, self.access_token, self.cache))
 
 
 class Response(object):
