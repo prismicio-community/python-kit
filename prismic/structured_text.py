@@ -45,12 +45,12 @@ class StructuredText(object):
         groups = []
         for block in self.blocks:
             if len(groups) > 0:
-                lastOne = groups[-1:][0]
+                last_one = groups[-1:][0]
 
-                if lastOne.tag == "ul" and isinstance(block, Block.ListItem) and not block.is_ordered:
-                    lastOne.blocks.append(block)
-                elif lastOne.tag == "ol" and isinstance(block, Block.ListItem) and block.is_ordered:
-                    lastOne.blocks.append(block)
+                if last_one.tag == "ul" and isinstance(block, Block.ListItem) and not block.is_ordered:
+                    last_one.blocks.append(block)
+                elif last_one.tag == "ol" and isinstance(block, Block.ListItem) and block.is_ordered:
+                    last_one.blocks.append(block)
                 elif isinstance(block, Block.ListItem) and not block.is_ordered:
                     groups.append(StructuredText.Group("ul", [block]))
                 elif isinstance(block, Block.ListItem) and block.is_ordered:
@@ -65,30 +65,32 @@ class StructuredText(object):
             if group.tag is not None:
                 html.append("<%(tag)s>" % group.__dict__)
                 for block in group.blocks:
-                    html.append(self.block_as_html(block, link_resolver))
+                    html.append(StructuredText.block_as_html(block, link_resolver))
                 html.append("</%(tag)s>" % group.__dict__)
             else:
                 for block in group.blocks:
-                    html.append(self.block_as_html(block, link_resolver))
+                    html.append(StructuredText.block_as_html(block, link_resolver))
 
         html_str = ''.join(html)
         log.debug("as_html result: %s" % html_str)
         return html_str
 
-    def block_as_html(self, block, link_resolver):
+    @staticmethod
+    def block_as_html(block, link_resolver):
         if isinstance(block, Block.Heading):
             return "<h%(level)s>%(html)s</h%(level)s>" % \
-                    {"level": block.level, "html": self.span_as_html(block.text, block.spans, link_resolver)} 
+                   {"level": block.level, "html": StructuredText.span_as_html(block.text, block.spans, link_resolver)}
         elif isinstance(block, Block.Paragraph):
-            return "<p>%s</p>" % self.span_as_html(block.text, block.spans, link_resolver)
+            return "<p>%s</p>" % StructuredText.span_as_html(block.text, block.spans, link_resolver)
         elif isinstance(block, Block.ListItem):
-            return "<li>%s</li>" % self.span_as_html(block.text, block.spans, link_resolver)
+            return "<li>%s</li>" % StructuredText.span_as_html(block.text, block.spans, link_resolver)
         elif isinstance(block, Block.Image):
             return "<p>%s</p>" % block.get_view().as_html
         elif isinstance(block, Block.Embed):
             return block.get_embed().as_html
 
-    def span_write_tag(self, span, link_resolver, opening):
+    @staticmethod
+    def span_write_tag(span, link_resolver, opening):
         if isinstance(span, Span.Em):
             return "<em>" if opening else "</em>"
         elif isinstance(span, Span.Strong):
@@ -96,14 +98,15 @@ class StructuredText(object):
         elif isinstance(span, Span.Hyperlink):
             return """<a href="%s">""" % span.get_url(link_resolver) if opening else "</a>"
 
-    def span_as_html(self, text, spans, link_resolver):
+    @staticmethod
+    def span_as_html(text, spans, link_resolver):
         html = []
         tags_map = defaultdict(list)
         for span in spans:
-            tags_map[span.start].append(self.span_write_tag(span, link_resolver, True))
+            tags_map[span.start].append(StructuredText.span_write_tag(span, link_resolver, True))
 
         for span in reversed(spans):
-            tags_map[span.end].append(self.span_write_tag(span, link_resolver, False))
+            tags_map[span.end].append(StructuredText.span_write_tag(span, link_resolver, False))
 
         for index, letter in enumerate(text):
             tags = tags_map.get(index)
@@ -123,12 +126,11 @@ class Span(object):
 
     @classmethod
     def from_json(cls, data):
-        if data.get("type") == "strong":
-            return Span.Strong(data)
-        elif data.get("type") == "em":
-            return Span.Em(data)
-        elif data.get("type") == "hyperlink":
-            return Span.Hyperlink(data)
+        return {
+            "strong": Span.Strong,
+            "em": Span.Em,
+            "hyperlink": Span.Hyperlink,
+        }.get(data.get("type"), lambda x: None)(data)
 
     class SpanElement(object):
 
@@ -147,11 +149,11 @@ class Span(object):
             super(Span.Hyperlink, self).__init__(value)
             data = value.get("data")
             hyperlink_type = data.get("type")
-            if hyperlink_type == "Link.web":
-                self.link = fragments.Fragment.WebLink(data.get("value"))
-            elif hyperlink_type == "Link.document":
-                self.link = fragments.Fragment.DocumentLink(data.get("value"))
-            else:
+            self.link = {
+                "Link.web": fragments.Fragment.WebLink,
+                "Link.document": fragments.Fragment.DocumentLink
+            }.get(hyperlink_type, lambda x: None)(data.get("value"))
+            if self.link is None:
                 log.warning("StructuredText::Span::Hyperlink type not found: %s" % hyperlink_type)
 
         def get_url(self, link_resolver):
@@ -179,12 +181,10 @@ class Block(object):
             super(Block.Heading, self).__init__(value)
             self.level = value.get("type")[-1]
 
-
     class Paragraph(Text):
 
         def __init__(self, value):
             super(Block.Paragraph, self).__init__(value)
-
 
     class ListItem(Text):
 
