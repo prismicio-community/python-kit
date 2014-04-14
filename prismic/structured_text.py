@@ -36,6 +36,9 @@ class StructuredText(object):
 
         self.blocks = blocks
 
+    def get_first_paragraph(self):
+        return next(p for p in self.blocks if isinstance(p, Block.Paragraph))
+
     class Group(object):
         def __init__(self, tag, blocks):
             self.tag = tag

@@ -231,6 +231,10 @@ class Document(object):
     def slug(self):
         return self.slugs[0] if self.slugs else "-"
 
+    def get_all(self, field):
+        indexed_key = "^%s(\[\d+\])?$" % field
+        return list(v for k, v in self.fragments.items() if re.match(indexed_key, k))
+
     def get_fragment_type(self, field, f_type):
         fragment = self.fragments.get(field)
         return fragment if isinstance(fragment, f_type) else None
@@ -251,6 +255,8 @@ class Document(object):
             texts = [block.text for block in fragment.blocks if isinstance(
                 block, structured_text.Text)]
             return "\n".join(texts) if texts else None
+        elif fragment is None:
+            return None
         else:
             return fragment.value
 
