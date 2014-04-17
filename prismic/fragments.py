@@ -28,6 +28,7 @@ class Fragment(object):
                 "Text":           Fragment.Text,
                 "Select":         Fragment.Text,
                 "Number":         Fragment.Number,
+                "Date":           Fragment.Date,
                 "StructuredText": structured_text.StructuredText,
                 "Link.document":  Fragment.DocumentLink
             }
@@ -169,3 +170,9 @@ class Fragment(object):
         @property
         def as_html(self):
             return """<span class="text">%s</span>""" % cgi.escape(self.value)
+
+    class Date(BasicFragment):
+
+        @property
+        def as_html(self):
+            return """<time>%s</time>""" % self.value

@@ -231,6 +231,9 @@ class Document(object):
     def slug(self):
         return self.slugs[0] if self.slugs else "-"
 
+    def get_field(self, field):
+        return self.fragments.get(field)
+
     def get_all(self, field):
         indexed_key = "^%s(\[\d+\])?$" % field
         return list(v for k, v in self.fragments.items() if re.match(indexed_key, k))
@@ -240,8 +243,13 @@ class Document(object):
         return fragment if isinstance(fragment, f_type) else None
 
     def get_image(self, field, view="main"):
-        image = self.get_fragment_type(field, Fragment.Image)
-        return image.get_view(view) if image else None
+        fragment = self.get_field(field)
+        if isinstance(fragment, Fragment.Image):
+            return fragment.get_view(view) if fragment else None
+        if view == "main" and isinstance(fragment, structured_text.StructuredText):
+            image = fragment.get_image()
+            return image.view if image else None
+        return None
 
     def get_number(self, field):
         return self.get_fragment_type(field, Fragment.Number)
@@ -259,6 +267,9 @@ class Document(object):
             return None
         else:
             return fragment.value
+
+    def get_date(self, field):
+        return self.get_fragment_type(field, Fragment.Date)
 
     def get_structured_text(self, field):
         return self.get_fragment_type(field, structured_text.StructuredText)

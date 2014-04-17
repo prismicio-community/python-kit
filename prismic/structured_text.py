@@ -36,8 +36,14 @@ class StructuredText(object):
 
         self.blocks = blocks
 
+    def get_title(self):
+        return next(p for p in self.blocks if isinstance(p, Block.Heading))
+
     def get_first_paragraph(self):
         return next(p for p in self.blocks if isinstance(p, Block.Paragraph))
+
+    def get_image(self):
+        return next(p for p in self.blocks if isinstance(p, Block.Image))
 
     class Group(object):
         def __init__(self, tag, blocks):
@@ -132,7 +138,7 @@ class Span(object):
         return {
             "strong": Span.Strong,
             "em": Span.Em,
-            "hyperlink": Span.Hyperlink,
+            "hyperlink": Span.Hyperlink
         }.get(data.get("type"), lambda x: None)(data)
 
     class SpanElement(object):
