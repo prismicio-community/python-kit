@@ -3,15 +3,16 @@
 
 """Tests for Prismic library"""
 
-import prismic
-
-import unittest
-import logging
-import json
-from prismic.exceptions import (InvalidTokenError,
-                                AuthorizationNeededError, UnexpectedError)
-from test_prismic_fixtures import fixture_api, fixture_search, fixture_structured_lists
 from prismic.cache import NoCache
+from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
+    UnexpectedError
+from test_prismic_fixtures import fixture_api, fixture_search, \
+    fixture_structured_lists, fixture_empty_paragraph
+import json
+import logging
+import prismic
+import unittest
+
 
 # logging.basicConfig(level=logging.DEBUG)
 # log = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_api = json.loads(fixture_api)
         self.fixture_search = json.loads(fixture_search)
         self.fixture_structured_lists = json.loads(fixture_structured_lists)
+        self.fixture_empty_paragraph = json.loads(fixture_empty_paragraph)
 
         self.api = prismic.Api(self.fixture_api, self.token, NoCache())
 
@@ -171,6 +173,18 @@ class TestFragmentsTestCase(PrismicTestCase):
         doc_html = doc.get_structured_text("article.content").as_html(lambda x: "/x")
         expected = """<h2>A tale of pastry and passion</h2><h2>Here we'll test a list</h2><p>Unordered list:</p><ul><li>Element1</li><li>Element2</li><li>Element3</li></ul><p>Ordered list:</p><ol><li>Element1</li><li>Element2</li><li>Element3</li></ol>"""
         self.assertEqual(doc_html, expected)
+        
+    def test_empty_paragraph(self):
+        doc_json = self.fixture_empty_paragraph
+        doc = prismic.Document(doc_json)
+        
+        def link_resolver(document_link):
+            return "/document/%s/%s" % (document_link.id, document_link.slug)
+        
+        doc_html = doc.get_field('announcement.content').as_html(link_resolver)
+        expected = """<p>X</p><p></p><p>Y</p>"""
+        self.assertEqual(doc_html, expected)
+        
 
     def test_document_link(self):
         test_paragraph = {

@@ -117,6 +117,7 @@ class StructuredText(object):
         for span in reversed(spans):
             tags_map[span.end].append(StructuredText.span_write_tag(span, link_resolver, False))
 
+        index = 0
         for index, letter in enumerate(text):
             tags = tags_map.get(index)
             if tags:

@@ -644,3 +644,41 @@ fixture_structured_lists = """[
         }
     }
 ]"""
+
+fixture_empty_paragraph = """{
+   "tags":[],
+   "data":{
+      "announcement":{
+         "content":{
+               "type":"StructuredText",
+               "value":[
+                  {
+                     "text": "X",
+                     "type":"paragraph",
+                     "spans":[
+
+                     ]
+                  },
+                  {
+                     "text":"",
+                     "type":"paragraph",
+                     "spans":[
+
+                     ]
+                  },
+                  {
+                     "text": "Y",
+                     "type": "paragraph",
+                     "spans": [
+
+                     ]
+                  }
+               ]
+            }
+         }
+      },
+      "id": "123",
+      "href": "https://teamup.prismic.io/api/documents/search?ref=aa",
+      "type":"announcement",
+      "slugs":[]
+}"""
