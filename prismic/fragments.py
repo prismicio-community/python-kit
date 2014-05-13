@@ -30,7 +30,8 @@ class Fragment(object):
                 "Number":         Fragment.Number,
                 "Date":           Fragment.Date,
                 "StructuredText": structured_text.StructuredText,
-                "Link.document":  Fragment.DocumentLink
+                "Link.document":  Fragment.DocumentLink,
+                "Embed":          Fragment.Embed
             }
 
         fragment_type = data.get("type")
