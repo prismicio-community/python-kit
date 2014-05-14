@@ -61,6 +61,13 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(len(docs), 6)
         self.assertEqual(docs[0].type, "blog-post")
 
+    def test_search_form_orderings(self):
+        blog = self.api.form("blog")
+        blog.ref(self.api.get_master())
+        blog.orderings("""[my.blog-post.date]""")
+        docs = blog.submit().documents
+        self.assertEqual(docs[0].slug, u'les-bonnes-chosess-internship-a-testimony')
+        self.assertEqual(docs[1].slug, u'get-the-right-approach-to-ganache')
 
 class ApiTestCase(PrismicTestCase):
     def test_get_ref(self):
