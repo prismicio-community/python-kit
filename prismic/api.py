@@ -181,12 +181,22 @@ class SearchForm(object):
         return Response(_get_json(self.action, self.data, self.access_token, self.cache))
 
     def page(self, page_number):
+        """Set query page number
+
+        :param page_number: int representing the page number
+        """
         return self.set("page", page_number)
 
     def pageSize(self, nb_results):
+        """Set query page size
+
+        :param nb_results: int representing the number of results per page
+        """
         return self.set("pageSize", nb_results)
 
     def count(self):
+        """Count the total number of results
+        """
         form = deepcopy(self).pageSize(1)
         return form.pageSize(1).submit().total_results_size
 
