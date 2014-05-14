@@ -172,6 +172,10 @@ class SearchForm(object):
         return self
 
     def orderings(self, orderings):
+        """Sets the query orderings
+
+        :param String with the orderings predicate
+        """
         return self.set("orderings", orderings)
 
     def submit_assert_preconditions(self):
