@@ -7,6 +7,7 @@ prismic.api
 This module implements the Prismic API.
 
 """
+from copy import deepcopy
 
 import urllib
 import urllib2
@@ -179,6 +180,15 @@ class SearchForm(object):
         self.submit_assert_preconditions()
         return Response(_get_json(self.action, self.data, self.access_token, self.cache))
 
+    def page(self, page_number):
+        return self.set("page", page_number)
+
+    def pageSize(self, nb_results):
+        return self.set("pageSize", nb_results)
+
+    def count(self):
+        form = deepcopy(self).pageSize(1)
+        return form.pageSize(1).submit().total_results_size
 
 class Response(object):
     """
@@ -192,11 +202,19 @@ class Response(object):
         total_pages (int): total number of pages for this query
         next_page (str): ref of the next page (may be None)
         prev_page (str): ref of the previous page (may be None)
+        results_size (int) : number of results actually returned for the current page
     """
 
     def __init__(self, data):
         self._data = data
         self.documents = map(lambda d: Document(d), data.get("results"))
+        self.page = data.get("page")
+        self.next_page = data.get("next_page")
+        self.prev_page = data.get("prev_page")
+        self.results_per_page = data.get("results_per_page")
+        self.total_pages = data.get("total_pages")
+        self.total_results_size = data.get("total_results_size")
+        self.results_size = data.get("results_size")
 
     def __getattr__(self, name):
         return self._data.get(name)
