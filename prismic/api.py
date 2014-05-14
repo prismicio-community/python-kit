@@ -171,6 +171,9 @@ class SearchForm(object):
             self.data.update({field: value})
         return self
 
+    def orderings(self, orderings):
+        return self.set("orderings", orderings)
+
     def submit_assert_preconditions(self):
         if self.data.get('ref') is None:
             raise RefMissing()
