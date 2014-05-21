@@ -204,8 +204,7 @@ class SearchForm(object):
     def count(self):
         """Count the total number of results
         """
-        form = deepcopy(self).pageSize(1)
-        return form.pageSize(1).submit().total_results_size
+        return deepcopy(self).pageSize(1).submit().total_results_size
 
 class Response(object):
     """
