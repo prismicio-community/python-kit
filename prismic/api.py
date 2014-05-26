@@ -19,12 +19,12 @@ from .exceptions import (InvalidTokenError, AuthorizationNeededError,
 from .fragments import Fragment
 import structured_text
 import logging
-from .cache import NoCache
+from .cache import ShelveCache
 
 log = logging.getLogger(__name__)
 
 
-def get(url, access_token=None, cache=NoCache()):
+def get(url, access_token=None, cache=ShelveCache()):
     """Fetches the prismic api JSON.
     Returns :class:`Api <Api>` object.
 
@@ -34,7 +34,7 @@ def get(url, access_token=None, cache=NoCache()):
     return Api(_get_json(url, access_token=access_token, cache=cache), access_token, cache)
 
 
-def _get_json(url, params=dict(), access_token=None, cache=NoCache()):
+def _get_json(url, params=dict(), access_token=None, cache=ShelveCache()):
     full_params = params.copy()
     if access_token is not None:
         full_params["access_token"] = access_token
