@@ -7,7 +7,7 @@ prismic.api
 This module implements the Prismic API.
 
 """
-from copy import deepcopy
+from copy import copy, deepcopy
 
 import urllib
 import urllib2
@@ -204,7 +204,17 @@ class SearchForm(object):
     def count(self):
         """Count the total number of results
         """
-        return deepcopy(self).pageSize(1).submit().total_results_size
+        return copy(self).pageSize(1).submit().total_results_size
+
+    def __copy__(self):
+        cp = type(self)({}, self.access_token, self.cache)
+        cp.action = deepcopy(self.action)
+        cp.method = deepcopy(self.method)
+        cp.enctype = deepcopy(self.enctype)
+        cp.fields = deepcopy(self.fields)
+        cp.data = deepcopy(self.data)
+        return cp
+
 
 class Response(object):
     """

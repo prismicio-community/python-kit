@@ -45,12 +45,6 @@ class ShelveCache(object):
         else:
             return d["val"]
 
-    def __copy__(self):
-        return self
-
-    def __deepcopy__(self, memo):
-        return self
-
     @staticmethod
     def unix_time():
         epoch = datetime.utcfromtimestamp(0)
