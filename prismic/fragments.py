@@ -104,7 +104,7 @@ class Fragment(object):
 
         @property
         def as_html(self):
-            return "<a href='{0}'>{1}</a>".format(self.url, self.name)
+            return """<a href="%(url)s">%(name)s</a>""" % self.__dict__
 
         def get_file(self):
             return self.file
@@ -119,11 +119,11 @@ class Fragment(object):
         def __init__(self, value):
             self.image = value.get("image")
             self.url = self.image.get("url")
-            self.alt = self.image.get("alt")
+            self.alt = self.image.get("alt", "")
 
         @property
         def as_html(self):
-            return "<a href='{0}'><img src='{0}' alt='{1}'/></a>".format(self.url, self.alt)
+            return """<a href="%(url)s"><img src="%(url)s" alt="%(alt)s"/></a>""" % self.__dict__
 
         def get_image(self):
             return self.image
