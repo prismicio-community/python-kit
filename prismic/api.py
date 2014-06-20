@@ -125,6 +125,7 @@ class Api(object):
 class Ref(object):
 
     def __init__(self, data):
+        self.id = data.get("id")
         self.ref = data.get("ref")
         self.label = data.get("label")
         self.is_master_ref = data.get("isMasterRef")

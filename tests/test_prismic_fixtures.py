@@ -4,10 +4,12 @@
 fixture_api = """
 {
     "refs": [{
+        "id": "master",
         "ref": "UgjWQN_mqa8HvPJY",
         "label": "Master",
         "isMasterRef": true
     }, {
+        "id": "UkL0hcuvzYUANCrr",
         "ref": "UgjWRd_mqbYHvPJa",
         "label": "San Francisco Grand opening"
     }],

@@ -110,6 +110,7 @@ class ApiTestCase(PrismicTestCase):
 
     def test_master(self):
         self.assertTrue(self.api.get_master().ref == "UgjWQN_mqa8HvPJY")
+        self.assertTrue(self.api.get_master().id == "master")
 
 
 class TestSearchFormTestCase(PrismicTestCase):
