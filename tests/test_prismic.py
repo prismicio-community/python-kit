@@ -85,7 +85,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(len(response.documents), 4)
         self.assertEqual(response.results_size, len(response.documents))
         self.assertIsNone(response.prev_page)
-        self.assertEqual(response.next_page, u'http://lesbonneschoses.prismic.io/api/documents/search?ref=UkL0hcuvzYUANCrm&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=2&pageSize=4')
+        self.assertEqual(response.next_page, u'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=2&pageSize=4')
 
     def test_search_form_last_page(self):
         blog = self.api.form("blog").pageSize(4).page(2)
@@ -95,7 +95,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(len(response.documents), 2)
         self.assertEqual(response.results_size, len(response.documents))
         self.assertIsNone(response.next_page)
-        self.assertEqual(response.prev_page, u'http://lesbonneschoses.prismic.io/api/documents/search?ref=UkL0hcuvzYUANCrm&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=1&pageSize=4')
+        self.assertEqual(response.prev_page, u'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=1&pageSize=4')
 
     def test_search_form_count(self):
         blog = self.api.form("blog")
