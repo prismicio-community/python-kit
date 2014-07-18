@@ -14,7 +14,6 @@ class FragmentElement(object):
 
 
 class Fragment(object):
-
     _types = None
 
     @classmethod
@@ -23,15 +22,18 @@ class Fragment(object):
 
         if not cls._types:
             cls._types = {
-                "Image":          Fragment.Image,
-                "Color":          Fragment.Color,
-                "Text":           Fragment.Text,
-                "Select":         Fragment.Text,
-                "Number":         Fragment.Number,
-                "Date":           Fragment.Date,
+                "Image": Fragment.Image,
+                "Color": Fragment.Color,
+                "Text": Fragment.Text,
+                "Select": Fragment.Text,
+                "Number": Fragment.Number,
+                "Date": Fragment.Date,
                 "StructuredText": structured_text.StructuredText,
-                "Link.document":  Fragment.DocumentLink,
-                "Embed":          Fragment.Embed
+                "Link.document": Fragment.DocumentLink,
+                "Link.web": Fragment.WebLink,
+                "Link.image": Fragment.ImageLink,
+                "Link.file": Fragment.FileLink,
+                "Embed": Fragment.Embed
             }
 
         fragment_type = data.get("type")
@@ -62,11 +64,13 @@ class Fragment(object):
 
             :param documentlink_resolver: A resolver function will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as argument. Resolver function should return a string, the local url to the document.
             """
-            return """<a href="%(link)s">%(slug)s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
+            return """<a href="%(link)s">%(slug)s</a>""" % {"link": self.get_url(documentlink_resolver),
+                                                            "slug": self.slug}
 
         def get_url(self, documentlink_resolver=None):
             if not hasattr(documentlink_resolver, '__call__'):
-                raise Exception("documentlink_resolver should be a callable object, but it's: %s" % type(documentlink_resolver))
+                raise Exception(
+                    "documentlink_resolver should be a callable object, but it's: %s" % type(documentlink_resolver))
             return documentlink_resolver(self)
 
         def get_document_id(self):
@@ -88,6 +92,41 @@ class Fragment(object):
         @property
         def as_html(self):
             return """<a href="%(url)s">%(url)s</a>""" % self.__dict__
+
+        def get_url(self):
+            return self.url
+
+    class FileLink(Link):
+        def __init__(self, value):
+            self.file = value.get("file")
+            self.url = self.file.get("url")
+            self.name = self.file.get("name")
+
+        @property
+        def as_html(self):
+            return """<a href="%(url)s">%(name)s</a>""" % self.__dict__
+
+        def get_file(self):
+            return self.file
+
+        def get_url(self):
+            return self.url
+
+        def get_filename(self):
+            return self.name
+
+    class ImageLink(Link):
+        def __init__(self, value):
+            self.image = value.get("image")
+            self.url = self.image.get("url")
+            self.alt = self.image.get("alt", "")
+
+        @property
+        def as_html(self):
+            return """<a href="%(url)s"><img src="%(url)s" alt="%(alt)s"/></a>""" % self.__dict__
+
+        def get_image(self):
+            return self.image
 
         def get_url(self):
             return self.url
