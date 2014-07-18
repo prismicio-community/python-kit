@@ -30,12 +30,16 @@ class ShelveCache(object):
         self.db = shelve.open(os.path.join(script_dir, "cache"))
 
     def set(self, key, val, time=0):
+        if type(key) != str:
+            key = key.encode('utf8')
         self.db[key] = {
             "val": val,
             "expire": ShelveCache.unix_time() + time
         }
 
     def get(self, key):
+        if type(key) != str:
+            key = key.encode('utf8')
         if not key in self.db:
             return None
         d = self.db[key]
