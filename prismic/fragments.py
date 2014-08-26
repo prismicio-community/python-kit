@@ -31,7 +31,8 @@ class Fragment(object):
                 "Date":           Fragment.Date,
                 "StructuredText": structured_text.StructuredText,
                 "Link.document":  Fragment.DocumentLink,
-                "Embed":          Fragment.Embed
+                "Embed":          Fragment.Embed,
+                "GeoPoint":       Fragment.GeoPoint
             }
 
         fragment_type = data.get("type")
@@ -145,6 +146,17 @@ class Fragment(object):
                     "%(html)s"
                     "</div>") % self.__dict__
 
+    class GeoPoint(FragmentElement):
+        def __init__(self, value):
+            self.latitude = value.get("latitude")
+            self.longitude = value.get("longitude")
+
+        @property
+        def as_html(self):
+            return ("""<div class="geopoint"><span class="latitude">"""
+                    """%(latitude)f</span><span class="longitude">%(longitude)f</span>"""
+                    """</div>""") % self.__dict__
+
     # Basic fragments
 
     class BasicFragment(FragmentElement):
@@ -177,3 +189,4 @@ class Fragment(object):
         @property
         def as_html(self):
             return """<time>%s</time>""" % self.value
+

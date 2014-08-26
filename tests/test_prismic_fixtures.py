@@ -684,3 +684,146 @@ fixture_empty_paragraph = """{
       "type":"announcement",
       "slugs":[]
 }"""
+
+fixture_store_geopoint = """{
+    "id": "UlfoxUnM0wkXYXbq",
+    "type": "store",
+    "href": "https:\/\/lesbonneschoses-uxlacoaacgazciu.prismic.io\/api\/documents\/search?ref=U_yGzjAAAC8AsL1a&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UlfoxUnM0wkXYXbq%22%29+%5D%5D",
+    "tags": [
+
+    ],
+    "slugs": [
+        "san-francisco-pier-39",
+        "san-francisco"
+    ],
+    "linked_documents": [
+
+    ],
+    "data": {
+        "store": {
+            "name": {
+                "type": "StructuredText",
+                "value": [
+                    {
+                        "type": "heading1",
+                        "text": "San Francisco Pier 39",
+                        "spans": [
+
+                        ]
+                    }
+                ]
+            },
+            "address": {
+                "type": "Text",
+                "value": "625 Market Street"
+            },
+            "city": {
+                "type": "Text",
+                "value": "San Francisco, CA"
+            },
+            "zipcode": {
+                "type": "Text",
+                "value": "94105"
+            },
+            "country": {
+                "type": "Select",
+                "value": "United States"
+            },
+            "coordinates": {
+                "type": "GeoPoint",
+                "value": {
+                    "latitude": 37.777431229812,
+                    "longitude": -122.41541862488
+                }
+            },
+            "description": {
+                "type": "StructuredText",
+                "value": [
+                    {
+                        "type": "paragraph",
+                        "text": "A haven of delicacies in the midst of the City by the Bay.",
+                        "spans": [
+
+                        ]
+                    }
+                ]
+            },
+            "image": {
+                "type": "Image",
+                "value": {
+                    "main": {
+                        "url": "https:\/\/prismic-io.s3.amazonaws.com\/lesbonneschoses-uxlacoaacgazciu\/eb85bc78fdf0f18a0fd3b7a3fc829768e66ea4f0.jpg",
+                        "alt": "",
+                        "copyright": "",
+                        "dimensions": {
+                            "width": 1500,
+                            "height": 500
+                        }
+                    },
+                    "views": {
+                        "medium": {
+                            "url": "https:\/\/prismic-io.s3.amazonaws.com\/lesbonneschoses-uxlacoaacgazciu\/7b8d054ea5428009ee6f2cdace249dc89c68199d.jpg",
+                            "alt": "",
+                            "copyright": "",
+                            "dimensions": {
+                                "width": 800,
+                                "height": 250
+                            }
+                        },
+                        "icon": {
+                            "url": "https:\/\/prismic-io.s3.amazonaws.com\/lesbonneschoses-uxlacoaacgazciu\/0ca27446c40d08cb0d732d4b9726e2001fa7d552.jpg",
+                            "alt": "",
+                            "copyright": "",
+                            "dimensions": {
+                                "width": 250,
+                                "height": 250
+                            }
+                        }
+                    }
+                }
+            },
+            "monday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ],
+            "tuesday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ],
+            "wednesday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ],
+            "thursday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ],
+            "friday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ],
+            "saturday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ],
+            "sunday": [
+                {
+                    "type": "Text",
+                    "value": "9am - 10pm"
+                }
+            ]
+        }
+    }
+}"""
