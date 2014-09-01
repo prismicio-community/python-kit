@@ -10,7 +10,10 @@ This module implements the Prismic API.
 from copy import copy, deepcopy
 
 import urllib
-import urllib2
+try:
+    import urllib.request as urllib2  # Python 3.x
+except:
+    import urllib2  # Python 2.7
 import json
 import re
 
