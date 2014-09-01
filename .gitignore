@@ -1,4 +1,6 @@
 *.pyc
 .idea/
 *.iml
+dist/
+prismic.egg-info/
 cache.db

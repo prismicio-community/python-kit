@@ -11,7 +11,7 @@ setup(
     version='0.2.3',
     description='Prismic.io development kit',
     author='The Prismic.io Team',
-    author_email='rudy@prismic.io',
+    author_email='contact@prismic.io',
     url='http://prismic.io',
     license='Apache 2',
     packages=find_packages(),

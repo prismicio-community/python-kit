@@ -5,7 +5,7 @@
 
 from prismic.cache import NoCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
-    UnexpectedError
+   UnexpectedError
 from test_prismic_fixtures import fixture_api, fixture_search, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint
 import json
@@ -236,7 +236,7 @@ class TestFragmentsTestCase(PrismicTestCase):
 
         def link_resolver(document_link):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
-        
+
         doc_html = doc.get_field('announcement.content').as_html(link_resolver)
         expected = """<p>X</p><p></p><p>Y</p>"""
         self.assertEqual(doc_html, expected)
@@ -269,7 +269,6 @@ class TestFragmentsTestCase(PrismicTestCase):
     def test_geo_point(self):
         doc_json = self.fixture_store_geopoint
         store = prismic.Document(doc_json)
-        print store.fragments
         geopoint = store.get_field("store.coordinates")
         self.assertEqual(geopoint.as_html,
                          ("""<div class="geopoint"><span class="latitude">37.777431</span>"""
@@ -278,6 +277,4 @@ class TestFragmentsTestCase(PrismicTestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestFragmentsTestCase)
-    #suite = unittest.TestLoader().loadTestsFromTestCase(TestSearchFormTestCase)
-    unittest.TextTestRunner(verbosity=2).run(suite)
+
