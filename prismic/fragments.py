@@ -31,6 +31,7 @@ class Fragment(object):
                 "Date":           Fragment.Date,
                 "StructuredText": structured_text.StructuredText,
                 "Link.document":  Fragment.DocumentLink,
+                "Link.file":      Fragment.MediaLink,
                 "Embed":          Fragment.Embed,
                 "GeoPoint":       Fragment.GeoPoint
             }
@@ -92,6 +93,23 @@ class Fragment(object):
 
         def get_url(self):
             return self.url
+
+    class MediaLink(Link):
+        def __init__(self, value):
+            self.file = value.get("file")
+            self.url = self.file.get("url")
+            self.kind = self.file.get("kind")
+            self.size = self.file.get("size")
+            self.name = self.file.get("name")
+
+        def as_html(self):
+            return "<a href='%(url)s'>%(name)s</a>" % self.__dict__
+
+        def get_file(self):
+            return self.file
+
+        def get_filename(self):
+            return self.name
 
     class Image(FragmentElement):
         _View = namedtuple('View', ['url', 'width', 'height'])
