@@ -124,7 +124,11 @@ class Fragment(object):
 
             @property
             def as_html(self):
-                return """<img src="%(url)s" width="%(width)s" height="%(height)s">""" % self._asdict()
+                return """<img src="%(url)s" width="%(width)s" height="%(height)s">""" % {
+                    'url': self.url,
+                    'width': self.width,
+                    'height': self.height
+                }
 
             @property
             def ratio(self):
@@ -135,7 +139,7 @@ class Fragment(object):
 
             self.main = Fragment.Image.View.make(main)
             self.views = {
-                view_key: Fragment.Image.View.make(view_value) for (view_key, view_value) in views.iteritems()
+                view_key: Fragment.Image.View.make(view_value) for (view_key, view_value) in views.items()
             }
 
         def get_view(self, key):

@@ -3,16 +3,17 @@
 
 """Tests for Prismic library"""
 
+from __future__ import (absolute_import, division, print_function, unicode_literals)
+
 from prismic.cache import NoCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
    UnexpectedError
-from test_prismic_fixtures import fixture_api, fixture_search, \
+from .test_prismic_fixtures import fixture_api, fixture_search, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint
 import json
 import logging
 import prismic
 import unittest
-
 
 # logging.basicConfig(level=logging.DEBUG)
 # log = logging.getLogger(__name__)

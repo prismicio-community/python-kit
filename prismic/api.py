@@ -11,10 +11,13 @@ from __future__ import absolute_import
 
 from copy import copy, deepcopy
 
-import urllib
+try:
+    import urllib.parse as parse # Python 3.x
+except ImportError:
+    import urllib as parse  # Python 2.7
 try:
     import urllib.request as urllib2  # Python 3.x
-except:
+except ImportError:
     import urllib2  # Python 2.7
 import json
 import re
@@ -42,18 +45,21 @@ def _get_json(url, params=dict(), access_token=None, cache=ShelveCache()):
     full_params = params.copy()
     if access_token is not None:
         full_params["access_token"] = access_token
-    full_url = url if len(full_params) == 0 else (url + "?" + urllib.urlencode(full_params, doseq=1))
+    full_url = url if len(full_params) == 0 else (url + "?" + parse.urlencode(full_params, doseq=1))
     cached = cache.get(full_url)
     if cached is not None:
         return cached
     try:
         req = urllib2.Request(full_url, headers={"Accept": "application/json"})
         response = urllib2.urlopen(req)
-        jsonResult = json.loads(response.read())
+        try:  # 3.x
+            json_result = json.loads(response.readall().decode('utf-8'))
+        except AttributeError:  # 2.7
+            json_result = json.loads(response.read())
         expire = _max_age(response)
         if expire is not None:
-            cache.set(full_url, jsonResult, expire)
-        return jsonResult
+            cache.set(full_url, json_result, expire)
+        return json_result
     except urllib2.HTTPError as http_error:
         if http_error.code == 401:
             if len(access_token) == 0:
@@ -150,7 +156,7 @@ class SearchForm(object):
         self.fields = form.get("fields") or {}
         self.data = {}
         # default values
-        for field, value in self.fields.iteritems():
+        for field, value in self.fields.items():
             if value.get("default"):
                 self.set(field, value["default"])
         self.access_token = access_token
@@ -238,7 +244,7 @@ class Response(object):
 
     def __init__(self, data):
         self._data = data
-        self.documents = map(lambda d: Document(d), data.get("results"))
+        self.documents = [Document(d) for d in data.get("results")]
         self.page = data.get("page")
         self.next_page = data.get("next_page")
         self.prev_page = data.get("prev_page")
@@ -262,7 +268,7 @@ class Document(object):
 
         fragments = data.get("data").get(self.type) if "data" in data else {}
 
-        for (fragment_name, fragment_value) in fragments.iteritems():
+        for (fragment_name, fragment_value) in fragments.items():
             f_key = "%s.%s" % (self.type, fragment_name)
 
             if isinstance(fragment_value, list):
