@@ -1,5 +1,7 @@
 ## Python development kit for prismic.io
 
+[![Build Status](https://api.travis-ci.org/prismicio/python-kit.png)](https://travis-ci.org/prismicio/python-kit)
+
 ### Getting started
 
 #### Install the kit for your project
