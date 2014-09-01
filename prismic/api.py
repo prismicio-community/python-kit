@@ -7,6 +7,8 @@ prismic.api
 This module implements the Prismic API.
 
 """
+from __future__ import absolute_import
+
 from copy import copy, deepcopy
 
 import urllib
@@ -19,10 +21,9 @@ import re
 
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, UnexpectedError, RefMissing)
-from .fragments import Fragment
-import structured_text
-import logging
+from .fragments import Fragment, StructuredText
 from .cache import ShelveCache
+import logging
 
 log = logging.getLogger(__name__)
 
@@ -294,7 +295,7 @@ class Document(object):
         fragment = self.get_field(field)
         if isinstance(fragment, Fragment.Image):
             return fragment.get_view(view) if fragment else None
-        if view == "main" and isinstance(fragment, structured_text.StructuredText):
+        if view == "main" and isinstance(fragment, StructuredText):
             image = fragment.get_image()
             return image.view if image else None
         return None
@@ -307,9 +308,9 @@ class Document(object):
 
     def get_text(self, field):
         fragment = self.fragments.get(field)
-        if isinstance(fragment, structured_text.StructuredText):
+        if isinstance(fragment, StructuredText):
             texts = [block.text for block in fragment.blocks if isinstance(
-                block, structured_text.Text)]
+                block, fragment.Text)]
             return "\n".join(texts) if texts else None
         elif fragment is None:
             return None
@@ -320,7 +321,7 @@ class Document(object):
         return self.get_fragment_type(field, Fragment.Date)
 
     def get_structured_text(self, field):
-        return self.get_fragment_type(field, structured_text.StructuredText)
+        return self.get_fragment_type(field, StructuredText)
 
     def get_html(self, field, link_resolver):
         """Get the html of a field.
@@ -335,7 +336,7 @@ class Document(object):
 
     @staticmethod
     def fragment_to_html(fragment, link_resolver):
-        if isinstance(fragment, structured_text.StructuredText) or isinstance(fragment, Fragment.DocumentLink):
+        if isinstance(fragment, StructuredText) or isinstance(fragment, Fragment.DocumentLink):
             return fragment.as_html(link_resolver)
         elif fragment:
             return fragment.as_html
