@@ -7,18 +7,19 @@ prismic.api
 This module implements the Prismic API.
 
 """
-from __future__ import absolute_import
+
 
 from copy import copy, deepcopy
+from collections import OrderedDict
 
-try:
-    import urllib.parse as parse # Python 3.x
-except ImportError:
-    import urllib as parse  # Python 2.7
-try:
-    import urllib.request as urllib2  # Python 3.x
-except ImportError:
-    import urllib2  # Python 2.7
+try:  # 2.7
+    import urllib.request as urlrequest
+    import urllib.parse as urlparse
+    import urllib.error as urlerror
+except ImportError:  # 3.x
+    import urllib2 as urlrequest
+    import urllib as urlparse
+    import urllib2 as urlerror
 import json
 import re
 
@@ -45,22 +46,22 @@ def _get_json(url, params=dict(), access_token=None, cache=ShelveCache()):
     full_params = params.copy()
     if access_token is not None:
         full_params["access_token"] = access_token
-    full_url = url if len(full_params) == 0 else (url + "?" + parse.urlencode(full_params, doseq=1))
+    full_url = url if len(full_params) == 0 else (url + "?" + urlparse.urlencode(full_params, doseq=1))
     cached = cache.get(full_url)
     if cached is not None:
         return cached
     try:
-        req = urllib2.Request(full_url, headers={"Accept": "application/json"})
-        response = urllib2.urlopen(req)
-        try:  # 3.x
-            json_result = json.loads(response.readall().decode('utf-8'))
-        except AttributeError:  # 2.7
-            json_result = json.loads(response.read())
+        req = urlrequest.Request(full_url, headers={"Accept": "application/json"})
+        response = urlrequest.urlopen(req)
+        text_result = response.read()
+        if not isinstance(text_result, str):
+            text_result = text_result.decode('utf-8')
+        json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
         expire = _max_age(response)
         if expire is not None:
             cache.set(full_url, json_result, expire)
         return json_result
-    except urllib2.HTTPError as http_error:
+    except urlerror.HTTPError as http_error:
         if http_error.code == 401:
             if len(access_token) == 0:
                 raise AuthorizationNeededError()
@@ -69,7 +70,7 @@ def _get_json(url, params=dict(), access_token=None, cache=ShelveCache()):
         else:
             print(full_url)
             raise HTTPError(http_error.code, str(http_error))
-    except urllib2.URLError as url_error:
+    except urlerror.URLError as url_error:
         raise UnexpectedError("Unexpected error: %s" % url_error.reason)
 
 
@@ -156,7 +157,7 @@ class SearchForm(object):
         self.fields = form.get("fields") or {}
         self.data = {}
         # default values
-        for field, value in self.fields.items():
+        for field, value in list(self.fields.items()):
             if value.get("default"):
                 self.set(field, value["default"])
         self.access_token = access_token
@@ -268,7 +269,7 @@ class Document(object):
 
         fragments = data.get("data").get(self.type) if "data" in data else {}
 
-        for (fragment_name, fragment_value) in fragments.items():
+        for (fragment_name, fragment_value) in list(fragments.items()):
             f_key = "%s.%s" % (self.type, fragment_name)
 
             if isinstance(fragment_value, list):
@@ -291,7 +292,7 @@ class Document(object):
 
     def get_all(self, field):
         indexed_key = "^%s(\[\d+\])?$" % field
-        return list(v for k, v in self.fragments.items() if re.match(indexed_key, k))
+        return list(v for k, v in list(self.fragments.items()) if re.match(indexed_key, k))
 
     def get_fragment_type(self, field, f_type):
         fragment = self.fragments.get(field)
@@ -350,7 +351,7 @@ class Document(object):
 
     def as_html(self, link_resolver):
         html = []
-        for key, fragment in self.fragments.items():
+        for key, fragment in list(self.fragments.items()):
             html.append("""<section data-field="%s">""" % key)
             html.append(self.fragment_to_html(fragment, link_resolver))
             html.append("""</section>""")

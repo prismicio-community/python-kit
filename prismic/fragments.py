@@ -139,7 +139,7 @@ class Fragment(object):
 
             self.main = Fragment.Image.View.make(main)
             self.views = {
-                view_key: Fragment.Image.View.make(view_value) for (view_key, view_value) in views.items()
+                view_key: Fragment.Image.View.make(view_value) for (view_key, view_value) in list(views.items())
             }
 
         def get_view(self, key):
