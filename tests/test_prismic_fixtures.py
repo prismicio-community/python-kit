@@ -827,3 +827,44 @@ fixture_store_geopoint = """{
         }
     }
 }"""
+fixture_groups = """{
+    "id": "UrOaNwEAAM2OpbPy",
+    "type": "contributor",
+    "href": "http://micro.prismic.io/api/documents/search?ref=U9uFvTQAADAAfFaO&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UrOaNwEAAM2OpbPy%22%29+%5D%5D",
+    "tags": [],
+    "slugs": ["peter-wong"],
+    "linked_documents": [],
+    "data": {
+        "contributor": {
+            "links": {
+                "type": "Group",
+                "value": [
+                    {
+                        "link": {
+                            "type": "Link.web",
+                            "value": {
+                                "url": "https://twitter.com/peetwong"
+                            }
+                        },
+                        "label": {
+                            "type": "Text",
+                            "value": "Twitter account"
+                        }
+                    },
+                    {
+                        "link": {
+                            "type": "Link.web",
+                            "value": {
+                                "url": "https://worldchanger.prismic.io/api/documents/search?ref=UqEXggEAAOWRr1v_&q=%5B%5B%3Ad%20%3D%20at(document.id%2C%20%22UpUukAEAAIRb1wu7%22)%5D%5D"
+                            }
+                        },
+                        "label": {
+                            "type": "Text",
+                            "value": "URI on WorldChanger's prismic.io repository"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}"""

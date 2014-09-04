@@ -327,6 +327,12 @@ class Document(object):
     def get_date(self, field):
         return self.get_fragment_type(field, Fragment.Date)
 
+    def get_geopoint(self, field):
+        return self.get_fragment_type(field, Fragment.GeoPoint)
+
+    def get_group(self, field):
+        return self.get_fragment_type(field, Fragment.Group)
+
     def get_structured_text(self, field):
         return self.get_fragment_type(field, StructuredText)
 

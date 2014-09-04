@@ -33,8 +33,10 @@ class Fragment(object):
                 "StructuredText": StructuredText,
                 "Link.document":  Fragment.DocumentLink,
                 "Link.file":      Fragment.MediaLink,
+                "Link.web":       Fragment.WebLink,
                 "Embed":          Fragment.Embed,
-                "GeoPoint":       Fragment.GeoPoint
+                "GeoPoint":       Fragment.GeoPoint,
+                "Group":          Fragment.Group
             }
 
         fragment_type = data.get("type")
@@ -212,6 +214,24 @@ class Fragment(object):
         @property
         def as_html(self):
             return """<time>%s</time>""" % self.value
+
+    class Group(BasicFragment):
+        def __init__(self, value):
+            self.value = []
+            for elt in value:
+                group = {}
+                for name, frag in elt.items():
+                    group[name] = Fragment.from_json(frag)
+                self.value.append(group)
+
+        @property
+        def as_html(self):
+            result = ""
+            for element in self.value:
+                for k, v in element.items():
+                    result += ("<section data-field=\"%(key)s\">%(html)s</section" %
+                               {"key": k, "html": v.as_html})
+            return result
 
 
 class StructuredText(object):

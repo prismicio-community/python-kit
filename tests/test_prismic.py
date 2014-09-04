@@ -8,7 +8,7 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 from prismic.cache import NoCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
    UnexpectedError
-from .test_prismic_fixtures import fixture_api, fixture_search, \
+from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint
 import json
 import logging
@@ -30,6 +30,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_structured_lists = json.loads(fixture_structured_lists)
         self.fixture_empty_paragraph = json.loads(fixture_empty_paragraph)
         self.fixture_store_geopoint = json.loads(fixture_store_geopoint)
+        self.fixture_groups = json.loads(fixture_groups)
 
         self.api = prismic.Api(self.fixture_api, self.token, NoCache())
 
@@ -270,13 +271,16 @@ class TestFragmentsTestCase(PrismicTestCase):
         self.assertEqual(p_html, """<p><a href="/document/UbiYbN_mqXkBOgE2/-"><strong>bye</strong></a></p>""")
 
     def test_geo_point(self):
-        doc_json = self.fixture_store_geopoint
-        store = prismic.Document(doc_json)
+        store = prismic.Document(self.fixture_store_geopoint)
         geopoint = store.get_field("store.coordinates")
         self.assertEqual(geopoint.as_html,
                          ("""<div class="geopoint"><span class="latitude">37.777431</span>"""
                           """<span class="longitude">-122.415419</span></div>"""))
 
+    def test_group(self):
+        contributor = prismic.Document(self.fixture_groups)
+        links = contributor.get_group("contributor.links")
+        self.assertEquals(len(links.value), 2)
 
 if __name__ == '__main__':
     unittest.main()
