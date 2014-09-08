@@ -8,7 +8,8 @@ This module implements the Prismic API.
 
 """
 
-
+import platform
+import pkg_resources
 from copy import copy, deepcopy
 from collections import OrderedDict
 
@@ -51,7 +52,10 @@ def _get_json(url, params=dict(), access_token=None, cache=ShelveCache()):
     if cached is not None:
         return cached
     try:
-        req = urlrequest.Request(full_url, headers={"Accept": "application/json"})
+        req = urlrequest.Request(full_url, headers={
+            "Accept": "application/json",
+            "User-Agent": "Prismic-python-kit/%s Python/%s" % (pkg_resources.require("prismic")[0].version, platform.python_version())
+        })
         response = urlrequest.urlopen(req)
         text_result = response.read()
         if not isinstance(text_result, str):
