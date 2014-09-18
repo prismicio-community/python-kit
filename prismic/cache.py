@@ -26,10 +26,15 @@ class ShelveCache(object):
     A cache implementation based on Shelve: https://docs.python.org/2/library/shelve.html.
     """
     def __init__(self):
-        script_dir = os.path.dirname(os.path.realpath(__file__))
-        self.db = shelve.open(os.path.join(script_dir, "cache"))
+        self.db = None
+
+    def _init_db(self):
+        if self.db is None:
+            script_dir = os.path.dirname(os.path.realpath(__file__))
+            self.db = shelve.open(os.path.join(script_dir, "cache"))
 
     def set(self, key, val, time=0):
+        self._init_db()
         if type(key) != str:
             key = key.encode('utf8')
         self.db[key] = {
@@ -38,6 +43,7 @@ class ShelveCache(object):
         }
 
     def get(self, key):
+        self._init_db()
         if type(key) != str:
             key = key.encode('utf8')
         if not key in self.db:

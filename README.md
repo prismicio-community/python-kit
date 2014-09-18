@@ -43,7 +43,7 @@ u'Speculoos Macaron'
 
 #### Using Memcached (or any other cache)
 
-By default, the kit will not cache the requests. It is highly recommended to do so, for example using Python Memcached.
+By default, the kit will use Shelve to cache the requests (a file-based cache from the standard library). It is recommended to use a cache server instead, for example Memcached.
 
 You can pass a Memcached client to the `prismic.get` call:
 
