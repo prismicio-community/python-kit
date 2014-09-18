@@ -8,7 +8,7 @@ import setuptools
 
 setup(
     name='prismic',
-    version='0.3.0',
+    version='0.3.1',
     description='Prismic.io development kit',
     author='The Prismic.io Team',
     author_email='contact@prismic.io',
