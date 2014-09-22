@@ -7,9 +7,9 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 
 from prismic.cache import NoCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
-   UnexpectedError
+    UnexpectedError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
-    fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint
+    fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, fixture_image_links
 import json
 import logging
 import prismic
@@ -20,7 +20,6 @@ import unittest
 
 
 class PrismicTestCase(unittest.TestCase):
-
     def setUp(self):
         """Init the api url and the token identifier."""
         self.api_url = "http://lesbonneschoses.prismic.io/api"
@@ -31,11 +30,16 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_empty_paragraph = json.loads(fixture_empty_paragraph)
         self.fixture_store_geopoint = json.loads(fixture_store_geopoint)
         self.fixture_groups = json.loads(fixture_groups)
+        self.fixture_image_links = json.loads(fixture_image_links)
 
         self.api = prismic.Api(self.fixture_api, self.token, NoCache())
 
     def tearDown(self):
         """Teardown."""
+
+    @staticmethod
+    def link_resolver(document_link):
+        return "/document/%s/%s" % (document_link.id, document_link.slug)
 
 
 class ApiIntegrationTestCase(PrismicTestCase):
@@ -89,7 +93,8 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(len(response.documents), 4)
         self.assertEqual(response.results_size, len(response.documents))
         self.assertIsNone(response.prev_page)
-        self.assertEqual(response.next_page, 'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=2&pageSize=4')
+        self.assertEqual(response.next_page,
+                         'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=2&pageSize=4')
 
     def test_search_form_last_page(self):
         blog = self.api.form("blog").pageSize(4).page(2)
@@ -99,7 +104,8 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(len(response.documents), 2)
         self.assertEqual(response.results_size, len(response.documents))
         self.assertIsNone(response.next_page)
-        self.assertEqual(response.prev_page, 'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=1&pageSize=4')
+        self.assertEqual(response.prev_page,
+                         'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=1&pageSize=4')
 
     def test_search_form_count(self):
         blog = self.api.form("blog")
@@ -118,7 +124,6 @@ class ApiTestCase(PrismicTestCase):
 
 
 class TestSearchFormTestCase(PrismicTestCase):
-
     def test_document(self):
         docs = [prismic.Document(doc) for doc in self.fixture_search]
         self.assertTrue(len(docs) == 3)
@@ -173,7 +178,6 @@ class TestSearchFormTestCase(PrismicTestCase):
 
 
 class TestFragmentsTestCase(PrismicTestCase):
-
     def setUp(self):
         super(TestFragmentsTestCase, self).setUp()
         doc_json = self.fixture_search[0]
@@ -181,40 +185,43 @@ class TestFragmentsTestCase(PrismicTestCase):
 
     def test_image(self):
         doc = self.doc
-        self.assertTrue(doc.get_image("product.image", "main").width == 500)
-        self.assertTrue(doc.get_image("product.image", "icon").width == 250)
-        expected_html = """<img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" width="250" height="250">"""
-        self.assertTrue(expected_html == doc.get_image("product.image", "icon").as_html)
+        self.assertEqual(doc.get_image("product.image", "main").width, 500)
+        self.assertEqual(doc.get_image("product.image", "icon").width, 250)
+        expected_html = \
+            ("""<img """
+             """src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" """
+             """width="250" height="250">""")
+        print("as_html is %s" % doc.get_image("product.image", "icon").as_html(PrismicTestCase.link_resolver))
+        self.assertEqual(expected_html, doc.get_image("product.image", "icon").as_html(PrismicTestCase.link_resolver))
 
     def test_number(self):
         doc = self.doc
-        self.assertTrue(doc.get_number("product.price").__str__() == "3.55")
+        self.assertEqual(doc.get_number("product.price").__str__(), "3.55")
 
     def test_color(self):
         doc = self.doc
-        self.assertTrue(doc.get_color("product.color").__str__() == "#ffeacd")
+        self.assertEqual(doc.get_color("product.color").__str__(), "#ffeacd")
 
     def test_text(self):
         doc = self.doc
-        self.assertTrue(doc.get_text("product.allergens").__str__() == "Contains almonds, eggs, milk")
+        self.assertEqual(doc.get_text("product.allergens").__str__(), "Contains almonds, eggs, milk")
 
         text = prismic.Fragment.Text("a&b 42 > 41")
         self.assertEqual(text.as_html, '<span class="text">a&amp;b 42 &gt; 41</span>', "HTML escape")
 
-
     def test_structured_text_heading(self):
         doc = self.doc
         html = doc.get_html("product.short_lede", lambda x: "/x")
-        self.assertTrue(html == "<h2>Crispiness and softness, rolled into one</h2>")
+        self.assertEqual("<h2>Crispiness and softness, rolled into one</h2>", html)
 
     def test_structured_text_paragraph(self):
         span_sample_data = {"type": "paragraph",
-        "text": "To be or not to be ?",
-        "spans": [
-            {"start": 3,"end": 5,"type": "strong"},
-            { "start": 16, "end": 18, "type": "strong"},
-            {"start": 3,"end": 5,"type": "em"}
-        ]}
+                            "text": "To be or not to be ?",
+                            "spans": [
+                                {"start": 3, "end": 5, "type": "strong"},
+                                {"start": 16, "end": 18, "type": "strong"},
+                                {"start": 3, "end": 5, "type": "em"}
+                            ]}
         p = prismic.fragments.StructuredText([span_sample_data])
         p_html = p.as_html(lambda x: "/x")
         self.assertTrue(p_html == "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
@@ -231,17 +238,18 @@ class TestFragmentsTestCase(PrismicTestCase):
         doc_json = self.fixture_structured_lists[0]
         doc = prismic.Document(doc_json)
         doc_html = doc.get_structured_text("article.content").as_html(lambda x: "/x")
-        expected = """<h2>A tale of pastry and passion</h2><h2>Here we'll test a list</h2><p>Unordered list:</p><ul><li>Element1</li><li>Element2</li><li>Element3</li></ul><p>Ordered list:</p><ol><li>Element1</li><li>Element2</li><li>Element3</li></ol>"""
+        expected = ("""<h2>A tale of pastry and passion</h2>"""
+                    """<h2>Here we'll test a list</h2>"""
+                    """<p>Unordered list:</p>"""
+                    """<ul><li>Element1</li><li>Element2</li><li>Element3</li></ul>"""
+                    """<p>Ordered list:</p><ol><li>Element1</li><li>Element2</li><li>Element3</li></ol>""")
         self.assertEqual(doc_html, expected)
 
     def test_empty_paragraph(self):
         doc_json = self.fixture_empty_paragraph
         doc = prismic.Document(doc_json)
 
-        def link_resolver(document_link):
-            return "/document/%s/%s" % (document_link.id, document_link.slug)
-
-        doc_html = doc.get_field('announcement.content').as_html(link_resolver)
+        doc_html = doc.get_field('announcement.content').as_html(PrismicTestCase.link_resolver)
         expected = """<p>X</p><p></p><p>Y</p>"""
         self.assertEqual(doc_html, expected)
 
@@ -251,13 +259,13 @@ class TestFragmentsTestCase(PrismicTestCase):
             "text": "bye",
             "spans": [
                 {"start": 0, "end": 3, "type": "hyperlink",
-                    "data": {
-                        "type": "Link.document",
-                        "value": {
-                            "document": {"id": "UbiYbN_mqXkBOgE2", "type": "article", "tags": ["blog"], "slug": "-"},
-                            "isBroken": False
-                        }
-                    }
+                 "data": {
+                     "type": "Link.document",
+                     "value": {
+                         "document": {"id": "UbiYbN_mqXkBOgE2", "type": "article", "tags": ["blog"], "slug": "-"},
+                         "isBroken": False
+                     }
+                 }
                 },
                 {"start": 0, "end": 3, "type": "strong"}
             ]
@@ -281,6 +289,25 @@ class TestFragmentsTestCase(PrismicTestCase):
         contributor = prismic.Document(self.fixture_groups)
         links = contributor.get_group("contributor.links")
         self.assertEquals(len(links.value), 2)
+
+    def test_image_links(self):
+        self.maxDiff = 10000
+        text = prismic.fragments.StructuredText(self.fixture_image_links.get('value'))
+
+        self.assertEqual(
+            text.as_html(PrismicTestCase.link_resolver),
+            ('<p>Here is some introductory text.</p>'
+             '<p>The following image is linked.</p>'
+             '<p class=\"block-img\"><a href=\"http://google.com/\">'
+             '<img src=\"http://fpoimg.com/129x260\" width=\"260\" height=\"129\"></a></p>'
+             '<p><strong>More important stuff</strong></p><p>The next is linked to a valid document:</p>'
+             '<p class=\"block-img\"><a href=\"/document/UxCQFFFFFFFaaYAH/something-fantastic\">'
+             '<img src=\"http://fpoimg.com/400x400\" width=\"400\" height=\"400\"></a></p>'
+             '<p>The next is linked to a broken document:</p><p class=\"block-img\"><a href=\"#broken\">'
+             '<img src=\"http://fpoimg.com/250x250\" width=\"250\" height=\"250\"></a></p>'
+             '<p>One more image, this one is not linked:</p><p class=\"block-img\">'
+             '<img src=\"http://fpoimg.com/199x300\" width=\"300\" height=\"199\"></p>'))
+
 
 if __name__ == '__main__':
     unittest.main()

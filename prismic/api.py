@@ -210,12 +210,17 @@ class SearchForm(object):
         """
         return self.set("page", page_number)
 
-    def pageSize(self, nb_results):
+    def page_size(self, nb_results):
         """Set query page size
 
         :param nb_results: int representing the number of results per page
         """
         return self.set("pageSize", nb_results)
+
+    def pageSize(self, nb_results):
+        """Deprecated: use page_size instead
+        """
+        return self.page_size(nb_results)
 
     def count(self):
         """Count the total number of results
@@ -353,7 +358,10 @@ class Document(object):
 
     @staticmethod
     def fragment_to_html(fragment, link_resolver):
-        if isinstance(fragment, StructuredText) or isinstance(fragment, Fragment.DocumentLink):
+        if isinstance(fragment, StructuredText)\
+                or isinstance(fragment, Fragment.DocumentLink)\
+                or isinstance(fragment, Fragment.Image)\
+                or isinstance(fragment, Fragment.Image.View):
             return fragment.as_html(link_resolver)
         elif fragment:
             return fragment.as_html
@@ -365,7 +373,6 @@ class Document(object):
             html.append("""<section data-field="%s">""" % key)
             html.append(self.fragment_to_html(fragment, link_resolver))
             html.append("""</section>""")
-
         return ''.join(html)
 
     def __repr__(self):

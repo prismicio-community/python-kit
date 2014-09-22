@@ -50,7 +50,17 @@ class Fragment(object):
     # Links
 
     class Link(FragmentElement):
-        pass
+
+        @staticmethod
+        def parse(data):
+            if data is None:
+                return None
+            hyperlink_type = data.get("type")
+            link = {
+                "Link.web": Fragment.WebLink,
+                "Link.document": Fragment.DocumentLink
+            }.get(hyperlink_type, lambda x: None)(data.get("value"))
+            return link
 
     class DocumentLink(Link):
         def __init__(self, value):
@@ -115,34 +125,50 @@ class Fragment(object):
             return self.name
 
     class Image(FragmentElement):
-        _View = namedtuple('View', ['url', 'width', 'height'])
+        _View = namedtuple('View', ['url', 'width', 'height', 'linkTo'])
 
-        class View(FragmentElement, _View):
+        class View(FragmentElement):
             """View class"""
 
-            @classmethod
-            def make(cls, data):
-                return cls(data["url"], data["dimensions"]["width"], data["dimensions"]["height"])
+            def __init__(self, data):
+                self.url = data["url"]
+                self.width = data["dimensions"]["width"]
+                self.height = data["dimensions"]["height"]
+                self.link_to = Fragment.Link.parse(data.get("linkTo"))
 
-            @property
-            def as_html(self):
-                return """<img src="%(url)s" width="%(width)s" height="%(height)s">""" % {
+            def as_html(self, link_resolver):
+                img_tag = """<img src="%(url)s" width="%(width)s" height="%(height)s">""" % {
                     'url': self.url,
                     'width': self.width,
                     'height': self.height
                 }
+                if self.link_to is None:
+                    return img_tag
+                else:
+                    if isinstance(self.link_to, Fragment.DocumentLink):
+                        if self.link_to.is_broken:
+                            url = "#broken"
+                        else:
+                            url = self.link_to.get_url(link_resolver)
+                    else:
+                        url = self.link_to.get_url()
+                    return """<a href="%(url)s">%(content)s</a>""" % {
+                        'url': url,
+                        'content': img_tag
+                    }
 
             @property
             def ratio(self):
                 return self.width / self.height
 
         def __init__(self, value):
-            main, views = value.get("main"), value.get("views")
+            main, views, link = value.get("main"), value.get("views"), value.get("linkTo")
 
-            self.main = Fragment.Image.View.make(main)
+            self.main = Fragment.Image.View(main)
             self.views = {
-                view_key: Fragment.Image.View.make(view_value) for (view_key, view_value) in list(views.items())
+                view_key: Fragment.Image.View(view_value) for (view_key, view_value) in list(views.items())
             }
+            self.link_to = Fragment.Link.parse(link)
 
         def get_view(self, key):
             if key == "main":
@@ -150,9 +176,22 @@ class Fragment(object):
             else:
                 return self.views.get(key)
 
-        @property
-        def as_html(self):
-            return self.main.as_html
+        def as_html(self, link_resolver):
+            view_html = self.main.as_html(link_resolver)
+            if self.link_to is None:
+                return view_html
+            else:
+                if isinstance(self.link_to, Fragment.DocumentLink):
+                    if self.link_to.is_broken:
+                        url = "#broken"
+                    else:
+                        url = self.link_to.get_url(link_resolver)
+                else:
+                    url = self.link_to.get_url()
+                return """<a href="%(url)s">%(content)s</a>""" % {
+                    'url': url,
+                    'content': view_html
+                }
 
     class Embed(FragmentElement):
         def __init__(self, value):
@@ -245,7 +284,7 @@ class StructuredText(object):
             "paragraph": Block.Paragraph,
             "list-item": Block.ListItem,
             "o-list-item": lambda val: Block.ListItem(val, True),
-            "image": lambda val: Block.Image(Fragment.Image.View.make(val)),
+            "image": lambda val: Block.Image(Fragment.Image.View(val)),
             "embed": lambda val: Block.Embed(Fragment.Embed(val)),
         }
 
@@ -319,7 +358,7 @@ class StructuredText(object):
         elif isinstance(block, Block.ListItem):
             return "<li>%s</li>" % StructuredText.span_as_html(block.text, block.spans, link_resolver)
         elif isinstance(block, Block.Image):
-            return "<p>%s</p>" % block.get_view().as_html
+            return "<p class=\"block-img\">%s</p>" % block.get_view().as_html(link_resolver)
         elif isinstance(block, Block.Embed):
             return block.get_embed().as_html
 
@@ -382,19 +421,15 @@ class Span(object):
     class Hyperlink(SpanElement):
         def __init__(self, value):
             super(Span.Hyperlink, self).__init__(value)
-            data = value.get("data")
-            hyperlink_type = data.get("type")
-            self.link = {
-                "Link.web": Fragment.WebLink,
-                "Link.document": Fragment.DocumentLink
-            }.get(hyperlink_type, lambda x: None)(data.get("value"))
+            data = value.get('data')
+            self.link = Fragment.Link.parse(data)
             if self.link is None:
-                log.warning("StructuredText::Span::Hyperlink type not found: %s" % hyperlink_type)
+                log.warning("StructuredText::Span::Hyperlink type not found: %s" % data.get('type'))
 
         def get_url(self, link_resolver):
             if isinstance(self.link, Fragment.DocumentLink):
                 return self.link.get_url(link_resolver)
-            elif isinstance(self.link, Fragment.WebLink):
+            else:
                 return self.link.get_url()
 
 
