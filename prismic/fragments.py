@@ -30,6 +30,7 @@ class Fragment(object):
                 "Select":         Fragment.Text,
                 "Number":         Fragment.Number,
                 "Date":           Fragment.Date,
+                "Timestamp":      Fragment.Timestamp,
                 "StructuredText": StructuredText,
                 "Link.document":  Fragment.DocumentLink,
                 "Link.file":      Fragment.MediaLink,
@@ -249,6 +250,12 @@ class Fragment(object):
             return """<span class="text">%s</span>""" % cgi.escape(self.value)
 
     class Date(BasicFragment):
+
+        @property
+        def as_html(self):
+            return """<time>%s</time>""" % self.value
+
+    class Timestamp(BasicFragment):
 
         @property
         def as_html(self):

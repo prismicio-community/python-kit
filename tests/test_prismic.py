@@ -69,7 +69,6 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(len(docs), 6)
         self.assertEqual(docs[0].type, "blog-post")
 
-
     def test_search_form_orderings(self):
         blog = self.api.form("blog")
         blog.ref(self.api.get_master())
@@ -78,8 +77,8 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.assertEqual(docs[0].slug, 'les-bonnes-chosess-internship-a-testimony')
         self.assertEqual(docs[1].slug, 'get-the-right-approach-to-ganache')
 
-    def test_search_form_pageSize(self):
-        blog = self.api.form("blog").pageSize(2)
+    def test_search_form_page_size(self):
+        blog = self.api.form("blog").page_size(2)
         blog.ref(self.api.get_master())
         response = blog.submit()
         self.assertEqual(len(response.documents), 2)
@@ -164,9 +163,9 @@ class TestSearchFormTestCase(PrismicTestCase):
         self.assertEqual(len(blog.data), 2)
         self.assertEqual(blog.data["ref"], "bar")
 
-    def test_set_pageSize(self):
+    def test_set_page_size(self):
         blog = self.api.form("blog")
-        blog.pageSize(3)
+        blog.page_size(3)
         self.assertEqual(len(blog.data), 2)
         self.assertEqual(blog.data["pageSize"], 3)
 
