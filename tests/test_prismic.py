@@ -112,6 +112,16 @@ class ApiIntegrationTestCase(PrismicTestCase):
         nb_docs = blog.count()
         self.assertEqual(nb_docs, 6)
 
+    def test_linked_documents(self):
+        gift_box = self.api\
+            .form("everything")\
+            .ref(self.api.get_master())\
+            .query("[[:d = at(document.id, \"UlfoxUnM0wkXYXbZ\")]]")\
+            .submit()\
+            .documents[0]
+        linked = gift_box.linked_documents
+        self.assertEqual(len(linked), 3)
+
 
 class ApiTestCase(PrismicTestCase):
     def test_get_ref(self):

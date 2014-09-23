@@ -270,14 +270,32 @@ class Response(object):
         return "Response %s" % self._data
 
 
+class LinkedDocument(object):
+
+    def __init__(self, data):
+        self._data = data
+
+    def get_id(self):
+        return self._data.get("id")
+
+    def get_slug(self):
+        return self._data.get("slug")
+
+    def get_typ(self):
+        return self._data.get("typ")
+
+    def get_tags(self):
+        return self._data.get("tags")
+
+
 class Document(object):
 
     def __init__(self, data):
         self._data = data
         self.fragments = {}
+        self.linked_documents = []
 
         fragments = data.get("data").get(self.type) if "data" in data else {}
-
         for (fragment_name, fragment_value) in list(fragments.items()):
             f_key = "%s.%s" % (self.type, fragment_name)
 
@@ -288,6 +306,10 @@ class Document(object):
 
             elif isinstance(fragment_value, dict):
                 self.fragments[f_key] = Fragment.from_json(fragment_value)
+
+        if "linked_documents" in data:
+            self.linked_documents = [LinkedDocument(d) for d in data.get("linked_documents")]
+
 
     def __getattr__(self, name):
         return self._data.get(name)
