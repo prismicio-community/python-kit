@@ -377,6 +377,11 @@ class StructuredText(object):
             return "<strong>" + content + "</strong>"
         elif isinstance(span, Span.Hyperlink):
             return """<a href="%s">""" % span.get_url(link_resolver) + content + "</a>"
+        else:
+            cls = ""
+            if span.label is not None:
+                cls = " class=\"%s\"" % span.label
+            return """<span%s>%s</span>""" % (cls, content)
 
     @staticmethod
     def span_as_html(text, spans, link_resolver):
@@ -404,8 +409,8 @@ class StructuredText(object):
                         # Add the content to the parent tag
                         stack[-1]["content"] += inner_html
             if index in tags_start:
-                tags_start.get(index).sort(lambda x, y: (y.end - y.start) - (x.end - x.start))
-                for span in tags_start.get(index):
+
+                for span in reversed(sorted(tags_start.get(index), key=lambda s: s.length())):
                     # Open a tag
                     stack.append({
                         "span": span,
@@ -441,13 +446,20 @@ class Span(object):
             "strong": Span.Strong,
             "em": Span.Em,
             "hyperlink": Span.Hyperlink
-        }.get(data.get("type"), lambda x: None)(data)
+        }.get(data.get("type"), Span.SpanElement)(data)
 
     class SpanElement(object):
 
         def __init__(self, value):
             self.start = value.get("start")
             self.end = value.get("end")
+            if value.get("data") is not None:
+                self.label = value.get("data").get("label")
+            else:
+                self.label = None
+
+        def length(self):
+            return self.end - self.start
 
     class Em(SpanElement):
         pass

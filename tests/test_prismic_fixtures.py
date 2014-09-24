@@ -995,9 +995,12 @@ fixture_spans_labels = """{
         "type": "paragraph"
     }, {
          "spans": [{
-            "type": "em",
+            "type": "label",
             "start": 14,
-            "end": 17
+            "end": 17,
+            "data": {
+                "label": "tip"
+            }
         }],
         "text": "Span till the end",
         "type": "paragraph"

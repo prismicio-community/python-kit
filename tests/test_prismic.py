@@ -234,7 +234,7 @@ class TestFragmentsTestCase(PrismicTestCase):
                             ]}
         p = prismic.fragments.StructuredText([span_sample_data])
         p_html = p.as_html(lambda x: "/x")
-        self.assertEqual(p_html, "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
+        self.assertEqual(p_html, "<p>To <em><strong>be</strong></em> or not to <strong>be</strong> ?</p>")
 
         p = prismic.fragments.StructuredText([{"type": "paragraph", "text": "a&b 42 > 41", "spans": []}])
         p_html = p.as_html(lambda x: "/x")
@@ -250,7 +250,7 @@ class TestFragmentsTestCase(PrismicTestCase):
         p_html = p.as_html(lambda x: "/x")
         self.assertEqual(p_html, ("""<p>Two <strong><em>spans</em> with</strong> the same start</p>"""
                                   """<p>Two <em><strong>spans</strong> with</em> the same start</p>"""
-                                  """<p>Span till the <em>end</em></p>"""))
+                                  """<p>Span till the <span class="tip">end</span></p>"""))
 
     def test_lists(self):
         doc_json = self.fixture_structured_lists[0]
@@ -299,7 +299,7 @@ class TestFragmentsTestCase(PrismicTestCase):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
 
         p_html = p.as_html(link_resolver)
-        self.assertEqual(p_html, """<p><a href="/document/UbiYbN_mqXkBOgE2/-"><strong>bye</strong></a></p>""")
+        self.assertEqual(p_html, """<p><strong><a href="/document/UbiYbN_mqXkBOgE2/-">bye</a></strong></p>""")
 
     def test_geo_point(self):
         store = prismic.Document(self.fixture_store_geopoint)
