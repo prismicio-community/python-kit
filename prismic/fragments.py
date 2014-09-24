@@ -370,35 +370,65 @@ class StructuredText(object):
             return block.get_embed().as_html
 
     @staticmethod
-    def span_write_tag(span, link_resolver, opening):
+    def span_write_tag(span, content, link_resolver):
         if isinstance(span, Span.Em):
-            return "<em>" if opening else "</em>"
+            return "<em>" + content + "</em>"
         elif isinstance(span, Span.Strong):
-            return "<strong>" if opening else "</strong>"
+            return "<strong>" + content + "</strong>"
         elif isinstance(span, Span.Hyperlink):
-            return """<a href="%s">""" % span.get_url(link_resolver) if opening else "</a>"
+            return """<a href="%s">""" % span.get_url(link_resolver) + content + "</a>"
 
     @staticmethod
     def span_as_html(text, spans, link_resolver):
         html = []
-        tags_map = defaultdict(list)
+        tags_start = defaultdict(list)
+        tags_end = defaultdict(list)
         for span in spans:
-            tags_map[span.start].append(StructuredText.span_write_tag(span, link_resolver, True))
+            tags_start[span.start].append(span)
 
         for span in reversed(spans):
-            tags_map[span.end].append(StructuredText.span_write_tag(span, link_resolver, False))
+            tags_end[span.end].append(span)
 
         index = 0
+        stack = []
         for index, letter in enumerate(text):
-            tags = tags_map.get(index)
-            if tags:
-                html.append(''.join(tags))
-            html.append(cgi.escape(letter))
+            if index in tags_end:
+                for end_tag in tags_end.get(index):
+                    # Close a tag
+                    tag = stack.pop()
+                    inner_html = StructuredText.span_write_tag(tag["span"], tag["content"], link_resolver)
+                    if len(stack) == 0:
+                        # The tag was top-level
+                        html.append(inner_html)
+                    else:
+                        # Add the content to the parent tag
+                        stack[-1]["content"] += inner_html
+            if index in tags_start:
+                tags_start.get(index).sort(lambda x, y: (y.end - y.start) - (x.end - x.start))
+                for span in tags_start.get(index):
+                    # Open a tag
+                    stack.append({
+                        "span": span,
+                        "content": ""
+                    })
+            if len(stack) == 0:
+                # Top-level text
+                html.append(cgi.escape(letter))
+            else:
+                # Inner text of a span
+                stack[-1]["content"] += cgi.escape(letter)
 
         # Check for the tags after the end of the string
-        tags = tags_map.get(index + 1)
-        if tags:
-            html.append(''.join(tags))
+        while len(stack) > 0:
+            # Close a tag
+            tag = stack.pop()
+            inner_html = StructuredText.span_write_tag(tag["span"], tag["content"], link_resolver)
+            if len(stack) == 0:
+                # The tag was top-level
+                html.append(inner_html)
+            else:
+                # Add the content to the parent tag
+                stack[-1]["content"] += inner_html
 
         return ''.join(html)
 

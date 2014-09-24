@@ -967,3 +967,39 @@ fixture_image_links = """{
     }]
 }"""
 
+fixture_spans_labels = """{
+    "type": "StructuredText",
+    "value": [{
+        "spans": [{
+            "type": "em",
+            "start": 4,
+            "end": 9
+        }, {
+            "type": "strong",
+            "start": 4,
+            "end": 14
+        }],
+        "text": "Two spans with the same start",
+        "type": "paragraph"
+    }, {
+        "spans": [{
+            "type": "em",
+            "start": 4,
+            "end": 14
+        }, {
+            "type": "strong",
+            "start": 4,
+            "end": 9
+        }],
+        "text": "Two spans with the same start",
+        "type": "paragraph"
+    }, {
+         "spans": [{
+            "type": "em",
+            "start": 14,
+            "end": 17
+        }],
+        "text": "Span till the end",
+        "type": "paragraph"
+    }]
+}"""

@@ -9,7 +9,8 @@ from prismic.cache import NoCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
     UnexpectedError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
-    fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, fixture_image_links
+    fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, \
+    fixture_image_links, fixture_spans_labels
 import json
 import logging
 import prismic
@@ -31,6 +32,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_store_geopoint = json.loads(fixture_store_geopoint)
         self.fixture_groups = json.loads(fixture_groups)
         self.fixture_image_links = json.loads(fixture_image_links)
+        self.fixture_spans_labels = json.loads(fixture_spans_labels)
 
         self.api = prismic.Api(self.fixture_api, self.token, NoCache())
 
@@ -200,7 +202,6 @@ class TestFragmentsTestCase(PrismicTestCase):
             ("""<img """
              """src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" """
              """width="250" height="250">""")
-        print("as_html is %s" % doc.get_image("product.image", "icon").as_html(PrismicTestCase.link_resolver))
         self.assertEqual(expected_html, doc.get_image("product.image", "icon").as_html(PrismicTestCase.link_resolver))
 
     def test_number(self):
@@ -233,7 +234,7 @@ class TestFragmentsTestCase(PrismicTestCase):
                             ]}
         p = prismic.fragments.StructuredText([span_sample_data])
         p_html = p.as_html(lambda x: "/x")
-        self.assertTrue(p_html == "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
+        self.assertEqual(p_html, "<p>To <strong><em>be</em></strong> or not to <strong>be</strong> ?</p>")
 
         p = prismic.fragments.StructuredText([{"type": "paragraph", "text": "a&b 42 > 41", "spans": []}])
         p_html = p.as_html(lambda x: "/x")
@@ -242,6 +243,14 @@ class TestFragmentsTestCase(PrismicTestCase):
         p = prismic.fragments.StructuredText([{"type": "heading2", "text": "a&b 42 > 41", "spans": []}])
         p_html = p.as_html(lambda x: "/x")
         self.assertEqual(p_html, "<h2>a&amp;b 42 &gt; 41</h2>", "Header HTML escape")
+
+    def test_spans(self):
+        doc_json = self.fixture_spans_labels
+        p = prismic.fragments.StructuredText(doc_json.get("value"))
+        p_html = p.as_html(lambda x: "/x")
+        self.assertEqual(p_html, ("""<p>Two <strong><em>spans</em> with</strong> the same start</p>"""
+                                  """<p>Two <em><strong>spans</strong> with</em> the same start</p>"""
+                                  """<p>Span till the <em>end</em></p>"""))
 
     def test_lists(self):
         doc_json = self.fixture_structured_lists[0]
@@ -267,14 +276,19 @@ class TestFragmentsTestCase(PrismicTestCase):
             "type": "paragraph",
             "text": "bye",
             "spans": [
-                {"start": 0, "end": 3, "type": "hyperlink",
-                 "data": {
-                     "type": "Link.document",
-                     "value": {
-                         "document": {"id": "UbiYbN_mqXkBOgE2", "type": "article", "tags": ["blog"], "slug": "-"},
-                         "isBroken": False
-                     }
-                 }
+                {
+                    "start": 0,
+                    "end": 3,
+                    "type": "hyperlink",
+                    "data": {
+                        "type": "Link.document",
+                        "value": {
+                            "document": {
+                                "id": "UbiYbN_mqXkBOgE2", "type": "article", "tags": ["blog"], "slug": "-"
+                            },
+                            "isBroken": False
+                        }
+                    }
                 },
                 {"start": 0, "end": 3, "type": "strong"}
             ]
