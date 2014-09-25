@@ -73,7 +73,7 @@ class Fragment(object):
             self.slug = document.get("slug")
             self.is_broken = value.get("isBroken")
 
-        def as_html(self, documentlink_resolver):
+        def as_html(self, documentlink_resolver, html_serializer=None):
             """Get the DocumentLink as html.
 
             :param documentlink_resolver: A resolver function will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as argument. Resolver function should return a string, the local url to the document.
@@ -322,7 +322,7 @@ class StructuredText(object):
             self.tag = tag
             self.blocks = blocks
 
-    def as_html(self, link_resolver):
+    def as_html(self, link_resolver, html_serializer=None):
         groups = []
         for block in self.blocks:
             if len(groups) > 0:
@@ -345,19 +345,24 @@ class StructuredText(object):
         for group in groups:
             if group.tag is not None:
                 html.append("<%(tag)s>" % group.__dict__)
-                for block in group.blocks:
-                    html.append(StructuredText.block_as_html(block, link_resolver))
+            for block in group.blocks:
+                content = ""
+                if isinstance(block, Text):
+                    content = StructuredText.span_as_html(block.text, block.spans, link_resolver, html_serializer)
+                html.append(StructuredText.block_as_html(block, content, link_resolver, html_serializer))
+            if group.tag is not None:
                 html.append("</%(tag)s>" % group.__dict__)
-            else:
-                for block in group.blocks:
-                    html.append(StructuredText.block_as_html(block, link_resolver))
 
         html_str = ''.join(html)
         log.debug("as_html result: %s" % html_str)
         return html_str
 
     @staticmethod
-    def block_as_html(block, link_resolver):
+    def block_as_html(block, content, link_resolver, html_serializer):
+        if html_serializer is not None:
+            custom_html = html_serializer(block, content)
+            if custom_html is not None:
+                return custom_html
         cls = ""
         if isinstance(block, Text) and block.label is not None:
             cls = " class=\"%s\"" % block.label
@@ -365,12 +370,12 @@ class StructuredText(object):
             return "<h%(level)s%(cls)s>%(html)s</h%(level)s>" % {
                 "level": block.level,
                 "cls": cls,
-                "html": StructuredText.span_as_html(block.text, block.spans, link_resolver)
+                "html": content
             }
         elif isinstance(block, Block.Paragraph):
-            return "<p%s>%s</p>" % (cls, StructuredText.span_as_html(block.text, block.spans, link_resolver))
+            return "<p%s>%s</p>" % (cls, content)
         elif isinstance(block, Block.ListItem):
-            return "<li%s>%s</li>" % (cls, StructuredText.span_as_html(block.text, block.spans, link_resolver))
+            return "<li%s>%s</li>" % (cls, content)
         elif isinstance(block, Block.Image):
             all_classes = ["block-img"]
             if block.view.label is not None:
@@ -380,7 +385,11 @@ class StructuredText(object):
             return block.get_embed().as_html
 
     @staticmethod
-    def span_write_tag(span, content, link_resolver):
+    def span_write_tag(span, content, link_resolver, html_serializer):
+        if html_serializer is not None:
+            custom_html = html_serializer(span, content)
+            if custom_html is not None:
+                return custom_html
         if isinstance(span, Span.Em):
             return "<em>" + content + "</em>"
         elif isinstance(span, Span.Strong):
@@ -394,7 +403,7 @@ class StructuredText(object):
             return """<span%s>%s</span>""" % (cls, content)
 
     @staticmethod
-    def span_as_html(text, spans, link_resolver):
+    def span_as_html(text, spans, link_resolver, html_serializer):
         html = []
         tags_start = defaultdict(list)
         tags_end = defaultdict(list)
@@ -411,7 +420,7 @@ class StructuredText(object):
                 for end_tag in tags_end.get(index):
                     # Close a tag
                     tag = stack.pop()
-                    inner_html = StructuredText.span_write_tag(tag["span"], tag["content"], link_resolver)
+                    inner_html = StructuredText.span_write_tag(tag["span"], tag["content"], link_resolver, html_serializer)
                     if len(stack) == 0:
                         # The tag was top-level
                         html.append(inner_html)
@@ -437,7 +446,7 @@ class StructuredText(object):
         while len(stack) > 0:
             # Close a tag
             tag = stack.pop()
-            inner_html = StructuredText.span_write_tag(tag["span"], tag["content"], link_resolver)
+            inner_html = StructuredText.span_write_tag(tag["span"], tag["content"], link_resolver, html_serializer)
             if len(stack) == 0:
                 # The tag was top-level
                 html.append(inner_html)

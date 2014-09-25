@@ -382,9 +382,10 @@ class Document(object):
         return self.fragment_to_html(fragment, link_resolver)
 
     @staticmethod
-    def fragment_to_html(fragment, link_resolver):
-        if isinstance(fragment, StructuredText)\
-                or isinstance(fragment, Fragment.DocumentLink)\
+    def fragment_to_html(fragment, link_resolver, html_serializer=None):
+        if isinstance(fragment, StructuredText):
+            return fragment.as_html(link_resolver, html_serializer)
+        if isinstance(fragment, Fragment.DocumentLink)\
                 or isinstance(fragment, Fragment.Image)\
                 or isinstance(fragment, Fragment.Image.View):
             return fragment.as_html(link_resolver)

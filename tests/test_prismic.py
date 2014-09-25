@@ -10,7 +10,7 @@ from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
     UnexpectedError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, \
-    fixture_image_links, fixture_spans_labels, fixture_block_labels
+    fixture_image_links, fixture_spans_labels, fixture_block_labels, fixture_custom_html
 import json
 import logging
 import prismic
@@ -34,6 +34,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_groups = json.loads(fixture_groups)
         self.fixture_image_links = json.loads(fixture_image_links)
         self.fixture_spans_labels = json.loads(fixture_spans_labels)
+        self.fixture_custom_html = json.loads(fixture_custom_html)
 
         self.api = prismic.Api(self.fixture_api, self.token, NoCache())
 
@@ -44,6 +45,14 @@ class PrismicTestCase(unittest.TestCase):
     def link_resolver(document_link):
         return "/document/%s/%s" % (document_link.id, document_link.slug)
 
+    @staticmethod
+    def html_serializer(element, content):
+        print("call serializer on %s" % element)
+        if isinstance(element, prismic.fragments.Block.Image):
+            return element.get_view().as_html(PrismicTestCase.link_resolver)
+        if isinstance(element, prismic.fragments.Span.Hyperlink):
+            return """<a class="some-link" href="%s">""" % element.get_url(PrismicTestCase.link_resolver) + content + "</a>"
+        return None
 
 class ApiIntegrationTestCase(PrismicTestCase):
     """Doing real HTTP requests to test API data fetching"""
@@ -339,6 +348,25 @@ class TestFragmentsTestCase(PrismicTestCase):
              '<img src=\"http://fpoimg.com/250x250\" width=\"250\" height=\"250\"></a></p>'
              '<p>One more image, this one is not linked:</p><p class=\"block-img\">'
              '<img src=\"http://fpoimg.com/199x300\" width=\"300\" height=\"199\"></p>'))
+
+    def test_custom_html(self):
+        self.maxDiff = 10000
+        text = prismic.fragments.StructuredText(self.fixture_custom_html.get('value'))
+
+        self.assertEqual(
+            text.as_html(PrismicTestCase.link_resolver, PrismicTestCase.html_serializer),
+            ('<p>Here is some introductory text.</p>'
+             '<p>The following image is linked.</p>'
+             '<a href=\"http://google.com/\"><img src=\"http://fpoimg.com/129x260\" width=\"260\" height=\"129\"></a>'
+             '<p><strong>More important stuff</strong></p><p>The next is linked to a valid document:</p>'
+             '<a href=\"/document/UxCQFFFFFFFaaYAH/something-fantastic\">'
+             '<img src=\"http://fpoimg.com/400x400\" width=\"400\" height=\"400\"></a>'
+             '<p>The next is linked to a broken document:</p><a href=\"#broken\">'
+             '<img src=\"http://fpoimg.com/250x250\" width=\"250\" height=\"250\"></a>'
+             '<p>One more image, this one is not linked:</p>'
+             '<img src=\"http://fpoimg.com/199x300\" width=\"300\" height=\"199\">'
+             '<p>This <a class="some-link" href="/document/UlfoxUnM0wkXYXbu/les-bonnes-chosess-internship-a-testimony">'
+             'paragraph</a> contains an hyperlink.</p>'))
 
 
 if __name__ == '__main__':

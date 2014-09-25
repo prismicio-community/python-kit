@@ -991,6 +991,123 @@ fixture_image_links = """{
     }]
 }"""
 
+fixture_custom_html = """{
+    "type": "StructuredText",
+    "value": [{
+        "spans": [],
+        "text": "Here is some introductory text.",
+        "type": "paragraph"
+    }, {
+        "spans": [],
+        "text": "The following image is linked.",
+        "type": "paragraph"
+    }, {
+        "alt": "",
+        "copyright": "",
+        "dimensions": {
+            "height": 129,
+            "width": 260
+        },
+        "linkTo": {
+            "type": "Link.web",
+            "value": {
+                "url": "http://google.com/"
+            }
+        },
+        "type": "image",
+        "url": "http://fpoimg.com/129x260"
+    }, {
+        "spans": [{
+            "end": 20,
+            "start": 0,
+            "type": "strong"
+        }],
+        "text": "More important stuff",
+        "type": "paragraph"
+    }, {
+        "spans": [],
+        "text": "The next is linked to a valid document:",
+        "type": "paragraph"
+    }, {
+        "alt": "",
+        "copyright": "",
+        "dimensions": {
+            "height": 400,
+            "width": 400
+        },
+        "linkTo": {
+            "type": "Link.document",
+            "value": {
+                "document": {
+                    "id": "UxCQFFFFFFFaaYAH",
+                    "slug": "something-fantastic",
+                    "type": "lovely-thing"
+                },
+                "isBroken": false
+            }
+        },
+        "type": "image",
+        "url": "http://fpoimg.com/400x400"
+    }, {
+        "spans": [],
+        "text": "The next is linked to a broken document:",
+        "type": "paragraph"
+    }, {
+        "alt": "",
+        "copyright": "",
+        "dimensions": {
+            "height": 250,
+            "width": 250
+        },
+        "linkTo": {
+            "type": "Link.document",
+            "value": {
+                "document": {
+                    "id": "UxERPAEAAHQcsBUH",
+                    "slug": "-",
+                    "type": "event-calendar"
+                },
+                "isBroken": true
+            }
+        },
+        "type": "image",
+        "url": "http://fpoimg.com/250x250"
+    }, {
+        "spans": [],
+        "text": "One more image, this one is not linked:",
+        "type": "paragraph"
+    }, {
+        "alt": "",
+        "copyright": "",
+        "dimensions": {
+            "height": 199,
+            "width": 300
+        },
+        "type": "image",
+        "url": "http://fpoimg.com/199x300"
+    }, {
+        "type": "paragraph",
+        "text": "This paragraph contains an hyperlink.",
+        "spans": [{
+            "start": 5,
+            "end": 14,
+            "type": "hyperlink",
+            "data": {
+                "type": "Link.document",
+                "value": {
+                    "document": {
+                        "id": "UlfoxUnM0wkXYXbu",
+                        "type": "blog-post",
+                        "tags": [],
+                        "slug": "les-bonnes-chosess-internship-a-testimony"
+                    },
+                    "isBroken": false
+                }
+            }
+        }]
+    }]
+}"""
+
 fixture_spans_labels = """{
     "type": "StructuredText",
     "value": [{
