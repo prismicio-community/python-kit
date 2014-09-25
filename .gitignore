@@ -2,5 +2,6 @@
 .idea/
 *.iml
 dist/
+docs/_build
 prismic.egg-info/
 cache.db

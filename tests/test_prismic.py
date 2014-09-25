@@ -10,7 +10,7 @@ from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
     UnexpectedError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, \
-    fixture_image_links, fixture_spans_labels
+    fixture_image_links, fixture_spans_labels, fixture_block_labels
 import json
 import logging
 import prismic
@@ -29,6 +29,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_search = json.loads(fixture_search)
         self.fixture_structured_lists = json.loads(fixture_structured_lists)
         self.fixture_empty_paragraph = json.loads(fixture_empty_paragraph)
+        self.fixture_block_labels = json.loads(fixture_block_labels)
         self.fixture_store_geopoint = json.loads(fixture_store_geopoint)
         self.fixture_groups = json.loads(fixture_groups)
         self.fixture_image_links = json.loads(fixture_image_links)
@@ -269,6 +270,14 @@ class TestFragmentsTestCase(PrismicTestCase):
 
         doc_html = doc.get_field('announcement.content').as_html(PrismicTestCase.link_resolver)
         expected = """<p>X</p><p></p><p>Y</p>"""
+        self.assertEqual(doc_html, expected)
+
+    def test_block_labels(self):
+        doc_json = self.fixture_block_labels
+        doc = prismic.Document(doc_json)
+
+        doc_html = doc.get_field('announcement.content').as_html(PrismicTestCase.link_resolver)
+        expected = """<p class="code">some code</p>"""
         self.assertEqual(doc_html, expected)
 
     def test_document_link(self):

@@ -685,6 +685,30 @@ fixture_empty_paragraph = """{
       "slugs":[]
 }"""
 
+fixture_block_labels = """{
+   "tags":[],
+   "data":{
+      "announcement":{
+         "content":{
+               "type":"StructuredText",
+               "value":[
+                  {
+                     "text": "some code",
+                     "type":"paragraph",
+                     "label": "code",
+                     "spans":[
+                     ]
+                  }
+               ]
+            }
+         }
+      },
+      "id": "123",
+      "href": "https://teamup.prismic.io/api/documents/search?ref=aa",
+      "type":"announcement",
+      "slugs":[]
+}"""
+
 fixture_store_geopoint = """{
     "id": "UlfoxUnM0wkXYXbq",
     "type": "store",

@@ -136,6 +136,7 @@ class Fragment(object):
                 self.width = data["dimensions"]["width"]
                 self.height = data["dimensions"]["height"]
                 self.link_to = Fragment.Link.parse(data.get("linkTo"))
+                self.label = data.get("label")
 
             def as_html(self, link_resolver):
                 img_tag = """<img src="%(url)s" width="%(width)s" height="%(height)s">""" % {
@@ -357,15 +358,24 @@ class StructuredText(object):
 
     @staticmethod
     def block_as_html(block, link_resolver):
+        cls = ""
+        if isinstance(block, Text) and block.label is not None:
+            cls = " class=\"%s\"" % block.label
         if isinstance(block, Block.Heading):
-            return "<h%(level)s>%(html)s</h%(level)s>" % \
-                   {"level": block.level, "html": StructuredText.span_as_html(block.text, block.spans, link_resolver)}
+            return "<h%(level)s%(cls)s>%(html)s</h%(level)s>" % {
+                "level": block.level,
+                "cls": cls,
+                "html": StructuredText.span_as_html(block.text, block.spans, link_resolver)
+            }
         elif isinstance(block, Block.Paragraph):
-            return "<p>%s</p>" % StructuredText.span_as_html(block.text, block.spans, link_resolver)
+            return "<p%s>%s</p>" % (cls, StructuredText.span_as_html(block.text, block.spans, link_resolver))
         elif isinstance(block, Block.ListItem):
-            return "<li>%s</li>" % StructuredText.span_as_html(block.text, block.spans, link_resolver)
+            return "<li%s>%s</li>" % (cls, StructuredText.span_as_html(block.text, block.spans, link_resolver))
         elif isinstance(block, Block.Image):
-            return "<p class=\"block-img\">%s</p>" % block.get_view().as_html(link_resolver)
+            all_classes = ["block-img"]
+            if block.view.label is not None:
+                all_classes.append(block.view.label)
+            return "<p class=\"%s\">%s</p>" % (" ".join(all_classes), block.get_view().as_html(link_resolver))
         elif isinstance(block, Block.Embed):
             return block.get_embed().as_html
 
@@ -487,6 +497,7 @@ class Text(object):
     def __init__(self, value):
         self.text = value.get("text")
         self.spans = [Span.from_json(span) for span in value.get("spans")]
+        self.label = value.get("label")
 
 
 class Block(object):

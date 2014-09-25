@@ -17,7 +17,7 @@ Example of use::
     >>> # Set the ref and the query to get all documents of type "product"
     >>> form.ref(api.get_master()).query("""[[:d = any(document.type, ["product"])]]""")
 
-    >>> documents = form.submit()
+    >>> documents = form.submit().documents
     >>> documents[0].get_text("product.name")
     u'Speculoos Macaron'
 
