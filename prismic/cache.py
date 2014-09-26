@@ -30,8 +30,7 @@ class ShelveCache(object):
 
     def _init_db(self):
         if self.db is None:
-            script_dir = os.path.dirname(os.path.realpath(__file__))
-            self.db = shelve.open(os.path.join(script_dir, "cache"))
+            self.db = shelve.open(os.path.join(os.getcwd(), "cache"))
 
     def set(self, key, val, time=0):
         self._init_db()
