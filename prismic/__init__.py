@@ -3,7 +3,7 @@ Prismic.io python library.
 """
 
 __title__ = 'prismic'
-__version__ = '0.1.1'
+__version__ = '1.0.1'
 __author__ = 'Prismic Team'
 __license__ = 'Apache 2'
 

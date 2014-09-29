@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import tempfile
 import shelve
 from datetime import datetime
 
@@ -24,13 +25,20 @@ class NoCache(object):
 class ShelveCache(object):
     """
     A cache implementation based on Shelve: https://docs.python.org/2/library/shelve.html.
+
+    By default, it will be created with "filename" equal to the api domain name. If you want to
+    run 2 processes using the same
     """
-    def __init__(self):
+    def __init__(self, filename):
+        self.filename = filename
         self.db = None
 
     def _init_db(self):
         if self.db is None:
-            self.db = shelve.open(os.path.join(os.getcwd(), "cache"))
+            cache_dir = os.path.join(tempfile.gettempdir(), "prismic-cache")
+            if not os.path.exists(cache_dir):
+                os.makedirs(cache_dir)
+            self.db = shelve.open(os.path.join(cache_dir, self.filename))
 
     def set(self, key, val, time=0):
         self._init_db()

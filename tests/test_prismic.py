@@ -5,7 +5,7 @@
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
-from prismic.cache import NoCache
+from prismic.cache import ShelveCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
     UnexpectedError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
@@ -36,7 +36,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_spans_labels = json.loads(fixture_spans_labels)
         self.fixture_custom_html = json.loads(fixture_custom_html)
 
-        self.api = prismic.Api(self.fixture_api, self.token, NoCache())
+        self.api = prismic.Api(self.fixture_api, self.token, ShelveCache(None))
 
     def tearDown(self):
         """Teardown."""
@@ -53,6 +53,7 @@ class PrismicTestCase(unittest.TestCase):
         if isinstance(element, prismic.fragments.Span.Hyperlink):
             return """<a class="some-link" href="%s">""" % element.get_url(PrismicTestCase.link_resolver) + content + "</a>"
         return None
+
 
 class ApiIntegrationTestCase(PrismicTestCase):
     """Doing real HTTP requests to test API data fetching"""
