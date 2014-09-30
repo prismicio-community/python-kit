@@ -28,6 +28,7 @@ from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, UnexpectedError, RefMissing)
 from .fragments import Fragment, StructuredText
 from .cache import ShelveCache
+from .utils import string_types
 import logging
 
 log = logging.getLogger(__name__)
@@ -177,8 +178,36 @@ class SearchForm(object):
 
         return self.set('ref', ref)
 
-    def query(self, query):
-        return self.set('q', query)
+    @staticmethod
+    def _serialize(field):
+        if isinstance(field, string_types) and not (field.startswith('my.') or field.startswith('document.')):
+            return '"' + field + '"'
+        elif hasattr(field, '__iter__'):
+            strings = []
+            for item in field:
+                strings.append(SearchForm._serialize(item))
+            return "[" + ", ".join(strings) + "]"
+        else:
+            return str(field)
+
+    def query(self, *argv):
+        if len(argv) == 0:
+            return self
+        if isinstance(argv[0], string_types):
+            q = argv[0]
+        else:
+            q = "["
+            for predicate in argv:
+                op = predicate[0]
+                args = []
+                for arg in predicate[1:]:
+                    args.append(SearchForm._serialize(arg))
+                q += "[:d = %(op)s(%(args)s)]" % {
+                    'op': op,
+                    'args': ", ".join(args)
+                }
+            q += "]"
+        return self.set('q', q)
 
     def set(self, field, value):
         form_field = self.fields.get(field)
@@ -311,7 +340,6 @@ class Document(object):
 
         if "linked_documents" in data:
             self.linked_documents = [LinkedDocument(d) for d in data.get("linked_documents")]
-
 
     def __getattr__(self, name):
         return self._data.get(name)

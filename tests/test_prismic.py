@@ -14,6 +14,7 @@ from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, 
 import json
 import logging
 import prismic
+from prismic import predicates
 import unittest
 
 # logging.basicConfig(level=logging.DEBUG)
@@ -47,7 +48,6 @@ class PrismicTestCase(unittest.TestCase):
 
     @staticmethod
     def html_serializer(element, content):
-        print("call serializer on %s" % element)
         if isinstance(element, prismic.fragments.Block.Image):
             return element.get_view().as_html(PrismicTestCase.link_resolver)
         if isinstance(element, prismic.fragments.Span.Hyperlink):
@@ -368,6 +368,61 @@ class TestFragmentsTestCase(PrismicTestCase):
              '<img src=\"http://fpoimg.com/199x300\" width=\"300\" height=\"199\">'
              '<p>This <a class="some-link" href="/document/UlfoxUnM0wkXYXbu/les-bonnes-chosess-internship-a-testimony">'
              'paragraph</a> contains an hyperlink.</p>'))
+
+
+class PredicatesTestCase(PrismicTestCase):
+
+    def test_at(self):
+        f = self.api\
+            .form("everything")\
+            .ref(self.api.get_master())\
+            .query(predicates.at('document.id', 'UlfoxUnM0wkXYXbZ'))
+        self.assertEqual(f.data['q'], ["[[:d = at(document.id, \"UlfoxUnM0wkXYXbZ\")]]"])
+
+    def test_any(self):
+        f = self.api \
+            .form("everything") \
+            .ref(self.api.get_master()) \
+            .query(predicates.any('document.type', ['article', 'blog-post']))
+        self.assertEqual(f.data['q'], ['[[:d = any(document.type, ["article", "blog-post"])]]'])
+
+    def test_similar(self):
+        f = self.api \
+            .form("everything") \
+            .ref(self.api.get_master()) \
+            .query(predicates.similar('idOfSomeDocument', 10))
+        self.assertEqual(f.data['q'], ['[[:d = similar("idOfSomeDocument", 10)]]'])
+
+    def test_multiple_predicates(self):
+        f = self.api \
+            .form("everything") \
+            .ref(self.api.get_master()) \
+            .query(
+                predicates.month_after('my.blog-post.publication-date', 4),
+                predicates.month_before('my.blog-post.publication-date', 'December')
+            )
+        self.assertEqual(f.data['q'], ['[[:d = date.month-after(my.blog-post.publication-date, 4)][:d = date.month-before(my.blog-post.publication-date, "December")]]'])
+
+    def test_number_lt(self):
+        f = self.api \
+            .form("everything") \
+            .ref(self.api.get_master()) \
+            .query(predicates.lt('my.blog-post.publication-date', 4))
+        self.assertEqual(f.data['q'], ['[[:d = number.lt(my.blog-post.publication-date, 4)]]'])
+
+    def test_number_in_range(self):
+        f = self.api \
+            .form("everything") \
+            .ref(self.api.get_master()) \
+            .query(predicates.in_range('my.product.price', 2, 4.5))
+        self.assertEqual(f.data['q'], ['[[:d = number.inRange(my.product.price, 2, 4.5)]]'])
+
+    def test_geopoint_near(self):
+        f = self.api \
+            .form("everything") \
+            .ref(self.api.get_master()) \
+            .query(predicates.near('my.store.coordinates', 40.689757, -74.0451453, 15))
+        self.assertEqual(f.data['q'], ['[[:d = geopoint.near(my.store.coordinates, 40.689757, -74.0451453, 15)]]'])
 
 
 if __name__ == '__main__':
