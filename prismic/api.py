@@ -43,8 +43,8 @@ def get(url, access_token=None, cache=None):
     return Api(_get_json(url, access_token=access_token, cache=cache), access_token, cache)
 
 
-def _get_json(url, params=dict(), access_token=None, cache=None):
-    full_params = params.copy()
+def _get_json(url, params=None, access_token=None, cache=None):
+    full_params = dict() if params is None else params.copy()
     if cache is None:
         cache = ShelveCache(re.sub(r'/\\', '', url.split('/')[2]))
     if access_token is not None:
