@@ -180,8 +180,11 @@ class SearchForm(object):
 
     @staticmethod
     def _serialize(field):
-        if isinstance(field, string_types) and not (field.startswith('my.') or field.startswith('document.')):
-            return '"' + field + '"'
+        if isinstance(field, string_types):
+            if field.startswith('my.') or field.startswith('document.'):
+                return field
+            else:
+                return '"' + field + '"'
         elif hasattr(field, '__iter__'):
             strings = []
             for item in field:
