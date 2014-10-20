@@ -7,6 +7,7 @@ prismic.predicates
 This module provides helpers to write predicates to query Prismic
 
 """
+import datetime
 
 
 def at(fragment, value):
@@ -38,15 +39,15 @@ def in_range(fragment, before, after):
 
 
 def date_before(fragment, before):
-    return ['date.before', fragment, before]
+    return ['date.before', fragment, __to_timestamp(before)]
 
 
 def date_after(fragment, after):
-    return ['date.after', fragment, after]
+    return ['date.after', fragment, __to_timestamp(after)]
 
 
 def date_between(fragment, before, after):
-    return ['date.between', fragment, before, after]
+    return ['date.between', fragment, __to_timestamp(before), __to_timestamp(after)]
 
 
 def day_of_month(fragment, day):
@@ -103,3 +104,9 @@ def hour_after(fragment, hour):
 
 def near(fragment, latitude, longitude, radius):
     return ['geopoint.near', fragment, latitude, longitude, radius]
+
+
+def __to_timestamp(input):
+    if isinstance(input, datetime.date) or isinstance(input, datetime.datetime):
+        return (input - datetime.datetime(1970, 1, 1)).total_seconds() * 1000
+    return input

@@ -388,6 +388,12 @@ class Document(object):
         else:
             return fragment.value
 
+    def get_link(self, field):
+        return self.get_fragment_type(field, Fragment.Link)
+
+    def get_embed(self, field):
+        return self.get_fragment_type(field, Fragment.Embed)
+
     def get_date(self, field):
         return self.get_fragment_type(field, Fragment.Date)
 

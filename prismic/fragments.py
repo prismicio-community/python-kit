@@ -6,6 +6,8 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 from collections import namedtuple, defaultdict
 import logging
 import cgi
+import re
+import datetime
 
 log = logging.getLogger(__name__)
 
@@ -105,7 +107,7 @@ class Fragment(object):
         def as_html(self):
             return """<a href="%(url)s">%(url)s</a>""" % self.__dict__
 
-        def get_url(self):
+        def get_url(self, link_resolver=None):
             return self.url
 
     class MediaLink(Link):
@@ -124,6 +126,9 @@ class Fragment(object):
 
         def get_filename(self):
             return self.name
+
+        def get_url(self, link_resolver=None):
+            return self.url
 
     class Image(FragmentElement):
         _View = namedtuple('View', ['url', 'width', 'height', 'linkTo'])
@@ -253,10 +258,18 @@ class Fragment(object):
     class Date(BasicFragment):
 
         @property
+        def as_datetime(self):
+            return datetime.datetime(*map(int, re.split('[^\d]', self.value)))
+
+        @property
         def as_html(self):
             return """<time>%s</time>""" % self.value
 
     class Timestamp(BasicFragment):
+
+        @property
+        def as_datetime(self):
+            return datetime.datetime(*map(int, re.split('[^\d]', self.value)))
 
         @property
         def as_html(self):
