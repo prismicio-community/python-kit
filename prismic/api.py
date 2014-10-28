@@ -12,6 +12,7 @@ import platform
 import pkg_resources
 from copy import copy, deepcopy
 from collections import OrderedDict
+from prismic.experiments import Experiments
 
 try:  # 2.7
     import urllib.request as urlrequest
@@ -107,6 +108,7 @@ class Api(object):
             for field in fields:
                 if field == "q":
                     fields[field].update({"multiple": True})
+        self.experiments = Experiments.parse(data.get("experiments"))
         self.oauth_initiate = data.get("oauth_initiate")
         self.oauth_token = data.get("oauth_token")
         self.access_token = access_token

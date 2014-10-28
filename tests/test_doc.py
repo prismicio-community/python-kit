@@ -261,7 +261,7 @@ class DocTestCase(unittest.TestCase):
         self.assertEqual(coordinates, "48.877108,2.333879")
 
     def test_cache(self):
-        # startgist:647bde5c458c44af0981:prismic-cache.py
+        # startgist:11a75574ad42c60ff6de:prismic-cache.py
         # Just implement your own cache object by duck-typing
         # https://github.com/prismicio/python-kit/blob/master/prismic/cache.py
         no_cache = NoCache()
