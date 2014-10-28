@@ -23,9 +23,10 @@ class Experiments(object):
 
     @staticmethod
     def parse(json):
+
         return Experiments(
-            map(lambda e: Experiment.parse(e), (json and json.get("draft")) or []),
-            map(lambda e: Experiment.parse(e), (json and json.get("running")) or [])
+            [Experiment.parse(e) for e in ((json and json.get("draft") or []))],
+            [Experiment.parse(e) for e in ((json and json.get("running") or []))]
         )
 
 
@@ -43,7 +44,7 @@ class Experiment(object):
             json.get("id"),
             json.get("googleId"),
             json.get("name"),
-            map(lambda v: Variation.parse(v), json.get("variations"))
+            [Variation.parse(v) for v in json.get("variations")]
         )
 
 
