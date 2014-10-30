@@ -324,11 +324,11 @@ class LinkedDocument(object):
         return self._data.get("tags")
 
 
-class Document(object):
+class Document(Fragment.WithFragments):
 
     def __init__(self, data):
+        Fragment.WithFragments.__init__(self, {})
         self._data = data
-        self.fragments = {}
         self.linked_documents = []
 
         fragments = data.get("data").get(self.type) if "data" in data else {}
@@ -352,95 +352,6 @@ class Document(object):
     @property
     def slug(self):
         return self.slugs[0] if self.slugs else "-"
-
-    def get_field(self, field):
-        return self.fragments.get(field)
-
-    def get_all(self, field):
-        indexed_key = "^%s(\[\d+\])?$" % field
-        return list(v for k, v in list(self.fragments.items()) if re.match(indexed_key, k))
-
-    def get_fragment_type(self, field, f_type):
-        fragment = self.fragments.get(field)
-        return fragment if isinstance(fragment, f_type) else None
-
-    def get_image(self, field, view="main"):
-        fragment = self.get_field(field)
-        if isinstance(fragment, Fragment.Image):
-            return fragment.get_view(view) if fragment else None
-        if view == "main" and isinstance(fragment, StructuredText):
-            image = fragment.get_image()
-            return image.view if image else None
-        return None
-
-    def get_number(self, field):
-        return self.get_fragment_type(field, Fragment.Number)
-
-    def get_color(self, field):
-        return self.get_fragment_type(field, Fragment.Color)
-
-    def get_text(self, field):
-        fragment = self.fragments.get(field)
-        if isinstance(fragment, StructuredText):
-            texts = [block.text for block in fragment.blocks if isinstance(
-                block, fragment.Text)]
-            return "\n".join(texts) if texts else None
-        elif fragment is None:
-            return None
-        else:
-            return fragment.value
-
-    def get_link(self, field):
-        return self.get_fragment_type(field, Fragment.Link)
-
-    def get_embed(self, field):
-        return self.get_fragment_type(field, Fragment.Embed)
-
-    def get_date(self, field):
-        return self.get_fragment_type(field, Fragment.Date)
-
-    def get_timestamp(self, field):
-        return self.get_fragment_type(field, Fragment.Timestamp)
-
-    def get_geopoint(self, field):
-        return self.get_fragment_type(field, Fragment.GeoPoint)
-
-    def get_group(self, field):
-        return self.get_fragment_type(field, Fragment.Group)
-
-    def get_structured_text(self, field):
-        return self.get_fragment_type(field, StructuredText)
-
-    def get_html(self, field, link_resolver):
-        """Get the html of a field.
-
-        :param field: String with a name of the field to get.
-        :param link_resolver: A resolver function for document links.
-        Will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>`
-        object as argument. Resolver function should return a string, the local url to the document.
-        """
-        fragment = self.fragments.get(field)
-        return self.fragment_to_html(fragment, link_resolver)
-
-    @staticmethod
-    def fragment_to_html(fragment, link_resolver, html_serializer=None):
-        if isinstance(fragment, StructuredText):
-            return fragment.as_html(link_resolver, html_serializer)
-        if isinstance(fragment, Fragment.DocumentLink)\
-                or isinstance(fragment, Fragment.Image)\
-                or isinstance(fragment, Fragment.Image.View):
-            return fragment.as_html(link_resolver)
-        elif fragment:
-            return fragment.as_html
-        return None
-
-    def as_html(self, link_resolver):
-        html = []
-        for key, fragment in list(self.fragments.items()):
-            html.append("""<section data-field="%s">""" % key)
-            html.append(self.fragment_to_html(fragment, link_resolver))
-            html.append("""</section>""")
-        return ''.join(html)
 
     def __repr__(self):
         return "Document %s" % self.fragments

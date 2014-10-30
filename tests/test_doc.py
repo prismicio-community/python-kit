@@ -170,6 +170,21 @@ class DocTestCase(unittest.TestCase):
         # endgist
         self.assertEqual(price, 2.5)
 
+    def test_images(self):
+        api = prismic.get('https://lesbonneschoses.prismic.io/api')
+        response = api.form('everything').query(predicates.at("document.id", "UlfoxUnM0wkXYXbO")) \
+            .ref(api.get_master()).submit()
+        doc = response.documents[0]
+        # startgist:360d054f79680bd48679:prismic-images.py
+        # Accessing image fields
+        image = doc.get_image('product.image')
+        # By default the 'main' view is returned
+        url = image.url
+        # endgist
+        self.assertEqual(
+            url,
+            'https://prismic-io.s3.amazonaws.com/lesbonneschoses/f606ad513fcc2a73b909817119b84d6fd0d61a6d.png')
+
     def test_date_timestamp(self):
         api = prismic.get('https://lesbonneschoses.prismic.io/api')
         response = api.form('everything').query(predicates.at("document.id", "UlfoxUnM0wkXYXbl"))\
@@ -211,11 +226,10 @@ class DocTestCase(unittest.TestCase):
         group = document.get_group("article.documents")
         docs = (group and group.value) or []
         for doc in docs:
-            # Desc and Link are Fragments, their type depending on what's declared in the Document Mask
-            desc = doc.get("desc", None)
-            link = doc.get("linktodoc", None)
+            desc = doc.get_structured_text("desc")
+            link = doc.get_link("linktodoc")
         # endgist
-        self.assertEqual(docs[0]["desc"].as_html(resolver), "<p>A detailed step by step point of view on how installing happens.</p>")
+        self.assertEqual(docs[0].get_structured_text("desc").as_html(resolver), "<p>A detailed step by step point of view on how installing happens.</p>")
 
     def test_link(self):
         data = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"source\":{\"type\":\"Link.document\",\"value\":{\"document\":{\"id\":\"UlfoxUnM0wkXYXbE\",\"type\":\"product\",\"tags\":[\"Macaron\"],\"slug\":\"dark-chocolate-macaron\"},\"isBroken\":false}}}}}"
