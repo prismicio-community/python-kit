@@ -153,10 +153,7 @@ class Ref(object):
 
 
 class SearchForm(object):
-
-    """Form to search for documents.
-
-    Most of the methods return self object to allow chaining.
+    """Form to search for documents. Most of the methods return self object to allow chaining.
     """
 
     def __init__(self, form, access_token, cache):
@@ -173,7 +170,7 @@ class SearchForm(object):
         self.cache = cache
 
     def ref(self, ref):
-        """:param ref: An :class:`Ref <Ref>` object or an string."""
+        """:param ref: A :class:`Ref <Ref>` object or an string."""
 
         if isinstance(ref, Ref):
             ref = ref.ref
@@ -196,6 +193,10 @@ class SearchForm(object):
             return str(field)
 
     def query(self, *argv):
+        """:param argv: Either a string query, or any number of Array corresponding to predicates.
+
+        See the :mod:`prismic.predicates <prismic.predicate>` module for helper functions.
+        """
         if len(argv) == 0:
             return self
         if isinstance(argv[0], string_types):
@@ -227,7 +228,8 @@ class SearchForm(object):
     def orderings(self, orderings):
         """Sets the query orderings
 
-        :param String with the orderings predicate
+        :param orderings String with the orderings predicate
+        :returns: the SearchForm instance to chain calls
         """
         return self.set("orderings", orderings)
 
@@ -236,6 +238,11 @@ class SearchForm(object):
             raise RefMissing()
 
     def submit(self):
+        """
+        Submit the query to the Prismic.io server
+
+        :return: :class:`Response <prismic.api.Response>`
+        """
         self.submit_assert_preconditions()
         return Response(_get_json(self.action, self.data, self.access_token, self.cache))
 
