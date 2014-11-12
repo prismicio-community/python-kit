@@ -15,7 +15,7 @@ class NoCache(object):
     """
     pass
 
-    def set(self, key, val, time=0):
+    def set(self, key, val, ttl=0):
         pass
 
     def get(self, key):
@@ -39,21 +39,22 @@ class ShelveCache(object):
             if not os.path.exists(cache_dir):
                 os.makedirs(cache_dir)
             self.db = shelve.open(os.path.join(cache_dir, self.filename))
+            print("Shelf dir = " + cache_dir)
 
-    def set(self, key, val, time=0):
+    def set(self, key, val, ttl=0):
         self._init_db()
         if type(key) != str:
             key = key.encode('utf8')
         self.db[key] = {
             "val": val,
-            "expire": ShelveCache.unix_time() + time
+            "expire": ShelveCache.unix_time() + ttl
         }
 
     def get(self, key):
         self._init_db()
         if type(key) != str:
             key = key.encode('utf8')
-        if not key in self.db:
+        if key not in self.db:
             return None
         d = self.db[key]
         if d["expire"] < ShelveCache.unix_time():

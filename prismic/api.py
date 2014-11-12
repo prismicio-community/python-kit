@@ -42,10 +42,10 @@ def get(url, access_token=None, cache=None):
     :param url: URL to the api of the repository.
     :param access_token: The access token.
     """
-    return Api(_get_json(url, access_token=access_token, cache=cache), access_token, cache)
+    return Api(_get_json(url, access_token=access_token, cache=cache, ttl=5), access_token, cache)
 
 
-def _get_json(url, params=None, access_token=None, cache=None):
+def _get_json(url, params=None, access_token=None, cache=None, ttl=None):
     full_params = dict() if params is None else params.copy()
     if cache is None:
         cache = ShelveCache(re.sub(r'/\\', '', url.split('/')[2]))
@@ -65,7 +65,7 @@ def _get_json(url, params=None, access_token=None, cache=None):
         if not isinstance(text_result, str):
             text_result = text_result.decode('utf-8')
         json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
-        expire = _max_age(response)
+        expire = ttl or _max_age(response)
         if expire is not None:
             cache.set(full_url, json_result, expire)
         return json_result
