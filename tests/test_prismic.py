@@ -290,6 +290,11 @@ class TestFragmentsTestCase(PrismicTestCase):
         expected = """<p class="code">some code</p>"""
         self.assertEqual(doc_html, expected)
 
+    def test_get_text(self):
+        doc_json = self.fixture_search[0]
+        doc = prismic.Document(doc_json)
+        self.assertEqual(doc.get_text('product.description'), 'Experience the ultimate vanilla experience. Our vanilla Macarons are made with our very own (in-house) pure extract of Madagascar vanilla, and subtly dusted with our own vanilla sugar (which we make from real vanilla beans).')
+
     def test_document_link(self):
         test_paragraph = {
             "type": "paragraph",

@@ -88,7 +88,7 @@ class Fragment(object):
             fragment = self.fragments.get(field)
             if isinstance(fragment, StructuredText):
                 texts = [block.text for block in fragment.blocks if isinstance(
-                    block, fragment.Text)]
+                    block, Text)]
                 return "\n".join(texts) if texts else None
             elif fragment is None:
                 return None
