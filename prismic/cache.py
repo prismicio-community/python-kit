@@ -27,7 +27,8 @@ class ShelveCache(object):
     A cache implementation based on Shelve: https://docs.python.org/2/library/shelve.html.
 
     By default, it will be created with "filename" equal to the api domain name. If you want to
-    run 2 processes using the same
+    run 2 processes using the same repository, you need to set a different file name to avoid
+    concurrency problems.
     """
     def __init__(self, filename):
         self.filename = filename

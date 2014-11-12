@@ -11,6 +11,7 @@ from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, \
     fixture_image_links, fixture_spans_labels, fixture_block_labels, fixture_custom_html
+import time
 import json
 import logging
 import prismic
@@ -37,7 +38,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_spans_labels = json.loads(fixture_spans_labels)
         self.fixture_custom_html = json.loads(fixture_custom_html)
 
-        self.api = prismic.Api(self.fixture_api, self.token, ShelveCache(None))
+        self.api = prismic.Api(self.fixture_api, self.token, ShelveCache("prismictest"))
 
     def tearDown(self):
         """Teardown."""
@@ -428,6 +429,21 @@ class PredicatesTestCase(PrismicTestCase):
             .ref(self.api.get_master()) \
             .query(predicates.near('my.store.coordinates', 40.689757, -74.0451453, 15))
         self.assertEqual(f.data['q'], ['[[:d = geopoint.near(my.store.coordinates, 40.689757, -74.0451453, 15)]]'])
+
+
+class TestCache(unittest.TestCase):
+
+    def setUp(self):
+        self.cache = ShelveCache("cachetest")
+
+    def test_set_get(self):
+        self.cache.set("foo", "bar", 3600)
+        self.assertEqual(self.cache.get("foo"), "bar")
+
+    def test_expiration(self):
+        self.cache.set("toto", "tata", 2)
+        time.sleep(3)
+        self.assertIsNone(self.cache.get("toto"))
 
 
 if __name__ == '__main__':
