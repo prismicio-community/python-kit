@@ -1,5 +1,6 @@
 ## Python development kit for prismic.io
 
+[![Latest Version](https://pypip.in/version/prismic/badge.svg)](https://pypi.python.org/pypi/prismic/)
 [![Build Status](https://api.travis-ci.org/prismicio/python-kit.png)](https://travis-ci.org/prismicio/python-kit)
 
 ### Getting started
