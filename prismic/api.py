@@ -77,7 +77,7 @@ def _get_json(url, params=None, access_token=None, cache=None, ttl=None):
                 raise InvalidTokenError()
         else:
             print(full_url)
-            raise HTTPError(http_error.code, str(http_error))
+            raise HTTPError(http_error.code, str(http_error.readlines()))
     except urlerror.URLError as url_error:
         raise UnexpectedError("Unexpected error: %s" % url_error.reason)
 
