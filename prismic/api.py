@@ -118,13 +118,13 @@ class Api(object):
         if not self.master:
             log.error("No master reference found")
 
-    # Return the URL to display a given preview
-    # @param {string} token as received from Prismic server to identify the content to preview
-    # @param {function} linkResolver the link resolver to build URL for your site
-    # @param {string} defaultUrl the URL to default to return if the preview doesn't correspond to a document
-    #                (usually the home page of your site)
-    # @param {function} callback to get the resulting URL
     def preview_session(self, token, link_resolver, default_url):
+        """Return the URL to display a given preview
+        :param token as received from Prismic server to identify the content to preview
+        :param link_resolver the link resolver to build URL for your site
+        :param default_url the URL to default to return if the preview doesn't correspond to a document
+                       (usually the home page of your site)
+        """
         main_document_id = _get_json(token).get("mainDocument")
         if main_document_id is None:
             return default_url
