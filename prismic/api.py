@@ -128,7 +128,7 @@ class Api(object):
         main_document_id = _get_json(token).get("mainDocument")
         if main_document_id is None:
             return default_url
-        response = self.form("everything").ref(token).query(predicates.at("document.id")).submit()
+        response = self.form("everything").ref(token).query(predicates.at("document.id", main_document_id)).submit()
         if len(response.results) == 0:
             return default_url
         return link_resolver(response.results[0].as_link())
