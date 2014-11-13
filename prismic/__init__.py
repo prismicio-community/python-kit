@@ -20,3 +20,6 @@ except ImportError:
             pass
 
 logging.getLogger(__name__).addHandler(NullHandler())
+
+EXPERIMENTS_COOKIE = "io.prismic.experiment"
+PREVIEW_COOKIE = "io.prismic.preview"
