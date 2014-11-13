@@ -21,6 +21,9 @@ class Experiments(object):
         if -1 < var_index < len(experiment.variations):
             return experiment.variations[var_index].ref
 
+    def current(self):
+        return self.running[0]
+
     @staticmethod
     def parse(json):
 

@@ -58,7 +58,7 @@ class ExperimentsTestCase(unittest.TestCase):
         self.experiments = Experiments.parse(json.loads(experiments_json))
 
     def test_parsing(self):
-        first = self.experiments.running[0]
+        first = self.experiments.current()
         self.assertEqual(first.id, 'VDUBBawGAKoGelsX')
         self.assertEqual(first.google_id, '_UQtin7EQAOH5M34RQq6Dg')
         self.assertEqual(first.name, 'Exp 1')
