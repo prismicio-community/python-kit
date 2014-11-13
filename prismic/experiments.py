@@ -22,7 +22,10 @@ class Experiments(object):
             return experiment.variations[var_index].ref
 
     def current(self):
-        return self.running[0]
+        try:
+            return self.running[0]
+        except IndexError:
+            return None
 
     @staticmethod
     def parse(json):
