@@ -13,6 +13,7 @@ import pkg_resources
 from copy import copy, deepcopy
 from collections import OrderedDict
 from prismic.experiments import Experiments
+from prismic import predicates
 
 try:  # 2.7
     import urllib.request as urlrequest
@@ -116,6 +117,21 @@ class Api(object):
         self.master = ([ref for ref in self.refs if ref.is_master_ref][:1] or [None])[0]
         if not self.master:
             log.error("No master reference found")
+
+    # Return the URL to display a given preview
+    # @param {string} token as received from Prismic server to identify the content to preview
+    # @param {function} linkResolver the link resolver to build URL for your site
+    # @param {string} defaultUrl the URL to default to return if the preview doesn't correspond to a document
+    #                (usually the home page of your site)
+    # @param {function} callback to get the resulting URL
+    def preview_session(self, token, link_resolver, default_url):
+        main_document_id = _get_json(token).get("mainDocument")
+        if main_document_id is None:
+            return default_url
+        response = self.form("everything").ref(token).query(predicates.at("document.id")).submit()
+        if len(response.results) == 0:
+            return default_url
+        return link_resolver(response.results[0].as_link())
 
     def get_ref(self, label):
         """Get the :class:`Ref <Ref>` with a specific label.
@@ -352,6 +368,11 @@ class Document(Fragment.WithFragments):
 
         if "linked_documents" in data:
             self.linked_documents = [LinkedDocument(d) for d in data.get("linked_documents")]
+
+    def as_link(self):
+        return DocumentLink({
+            'document': self
+        })
 
     def __getattr__(self, name):
         return self._data.get(name)
