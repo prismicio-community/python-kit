@@ -8,6 +8,7 @@ This module implements the Prismic API.
 
 """
 
+import sys
 import platform
 import pkg_resources
 from copy import copy, deepcopy
@@ -23,6 +24,7 @@ except ImportError:  # 3.x
     import urllib2 as urlrequest
     import urllib as urlparse
     import urllib2 as urlerror
+
 import json
 import re
 
@@ -371,7 +373,14 @@ class Document(Fragment.WithFragments):
 
         self.slugs = ["-"]
         if data.get("slugs") is not None:
-            self.slugs = [urlparse.unquote(slug.encode('ASCII')).decode('utf8') for slug in data.get("slugs")]
+            self.slugs = [Document.__unquote(slug) for slug in data.get("slugs")]
+
+    @staticmethod
+    def __unquote(s):
+        if sys.version_info >= (3, 0):
+            return urlparse.unquote(s)
+        else:
+            return urlparse.unquote(s.encode('utf8')).decode('utf8')
 
     def as_link(self):
         return Fragment.DocumentLink({
