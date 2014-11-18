@@ -369,7 +369,9 @@ class Document(Fragment.WithFragments):
         if "linked_documents" in data:
             self.linked_documents = [LinkedDocument(d) for d in data.get("linked_documents")]
 
-        self.slugs = [urlparse.unquote(slug.encode('ASCII')).decode('utf8') for slug in data.get("slugs")]
+        self.slugs = ["-"]
+        if data.get("slugs") is not None:
+            self.slugs = [urlparse.unquote(slug.encode('ASCII')).decode('utf8') for slug in data.get("slugs")]
 
     def as_link(self):
         return Fragment.DocumentLink({
