@@ -42,8 +42,9 @@ def get(url, access_token=None, cache=None):
     """Fetches the prismic api JSON.
     Returns :class:`Api <Api>` object.
 
-    :param url: URL to the api of the repository.
-    :param access_token: The access token.
+    :param url: URL to the api of the repository (mandatory).
+    :param access_token: The access token (optional).
+    :param cache: The cache object. Optional, will default to a file-based cache if None is passed.
     """
     return Api(_get_json(url, access_token=access_token, cache=cache, ttl=5), access_token, cache)
 
@@ -97,6 +98,12 @@ def _max_age(response):
 class Api(object):
     """
     A Prismic API, pointing to a specific repository. Use prismic.api.get() to fetch one.
+
+    :ivar dict bookmarks: all bookmarks, as a dict from name to document id
+    :ivar array<str> types: all available types
+    :ivar array<str> tags: all available tags
+    :ivar Experiments experiments: information about current experiments
+    :ivar str access_token: current access token (may be None)
     """
 
     def __init__(self, data, access_token, cache):
@@ -122,10 +129,13 @@ class Api(object):
 
     def preview_session(self, token, link_resolver, default_url):
         """Return the URL to display a given preview
+
         :param token as received from Prismic server to identify the content to preview
         :param link_resolver the link resolver to build URL for your site
         :param default_url the URL to default to return if the preview doesn't correspond to a document
                        (usually the home page of your site)
+
+        :return: the URL to redirect the user to
         """
         main_document_id = _get_json(token).get("mainDocument")
         if main_document_id is None:
@@ -161,6 +171,9 @@ class Api(object):
 
 
 class Ref(object):
+    """
+    A Prismic.io Reference (corresponds to a release)
+    """
 
     def __init__(self, data):
         self.id = data.get("id")
@@ -302,15 +315,14 @@ class Response(object):
     """
     Prismic's response to a query.
 
-    Attributes:
-        documents (:class:`prismic.api.Document <prismic.api.Document>`): the resulting documents
-        page (int): the page in this result, starting by 1
-        results_per_page (int): max result in a page
-        total_results_size: total number of results for this query
-        total_pages (int): total number of pages for this query
-        next_page (str): ref of the next page (may be None)
-        prev_page (str): ref of the previous page (may be None)
-        results_size (int) : number of results actually returned for the current page
+    :ivar array<prismic.api.Document> documents: the documents of the current page
+    :ivar int page: the page in this result, starting by 1
+    :ivar int results_per_page: max result in a page
+    :ivar int total_results_size: total number of results for this query
+    :ivar int total_pages: total number of pages for this query
+    :ivar str next_page: URL of the next page (may be None if on the last page )
+    :ivar str prev_page: URL of the previous page (may be None)
+    :ivar int results_size: number of results actually returned for the current page
     """
 
     def __init__(self, data):
@@ -332,6 +344,9 @@ class Response(object):
 
 
 class LinkedDocument(object):
+    """
+    Represents a link to a document
+    """
 
     def __init__(self, data):
         self._data = data
@@ -350,6 +365,16 @@ class LinkedDocument(object):
 
 
 class Document(Fragment.WithFragments):
+    """
+    Represents a Prismic.io Document
+
+    :ivar str id: document id
+    :ivar str type:
+    :ivar str href:
+    :ivar array<str> tags:
+    :ivar array<str> slugs:
+    :ivar array<LinkedDocuments> linked_documents:
+    """
 
     def __init__(self, data):
         Fragment.WithFragments.__init__(self, {})
@@ -383,6 +408,11 @@ class Document(Fragment.WithFragments):
             return urlparse.unquote(s.encode('utf8')).decode('utf8')
 
     def as_link(self):
+        """
+        Convert the current document to a DocumentLink
+
+        :return: :class:`DocumentLink <prismic.api.Fragment.DocumentLink>`
+        """
         return Fragment.DocumentLink({
             'document': self
         })
@@ -392,6 +422,11 @@ class Document(Fragment.WithFragments):
 
     @property
     def slug(self):
+        """
+        Return the most recent slug
+
+        :return: str slug
+        """
         return self.slugs[0] if self.slugs else "-"
 
     def __repr__(self):

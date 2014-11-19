@@ -3,12 +3,24 @@
 
 
 class Experiments(object):
+    """
+    Holds informations about current experiments
+
+    :ivar array<Experiment> running: list of currently running experiments
+    :ivar array<Experiment> draft: list of drafts
+    """
 
     def __init__(self, draft, running):
         self.draft = draft
         self.running = running
 
     def ref_from_cookie(self, cookie):
+        """
+        From a cookie set by the Prismic.io toolbar, identify the corresponding reference.
+
+        :param cookie: the cookie set by the Prismic.io toolbar and received from the request.
+        :return: the reference. May be None if it can't be found.
+        """
         if cookie is None:
             return None
         splitted = cookie.strip().split("%20")
@@ -22,6 +34,9 @@ class Experiments(object):
             return experiment.variations[var_index].ref
 
     def current(self):
+        """
+        :return: the currently running experiment, or None
+        """
         try:
             return self.running[0]
         except IndexError:
@@ -37,6 +52,14 @@ class Experiments(object):
 
 
 class Experiment(object):
+    """
+    Represents an experiment
+
+    :ivar str id:
+    :ivar str google_id:
+    :ivar str name:
+    :ivar array<Variation> variations:
+    """
 
     def __init__(self, eid, google_id, name, variations):
         self.id = eid
@@ -55,6 +78,13 @@ class Experiment(object):
 
 
 class Variation(object):
+    """
+    Represents a variation of an experiment
+
+    :ivar str id:
+    :ivar str ref:
+    :ivar str label:
+    """
 
     def __init__(self, vid, ref, label):
         self.id = vid
