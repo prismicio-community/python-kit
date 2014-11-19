@@ -40,7 +40,6 @@ class ShelveCache(object):
             if not os.path.exists(cache_dir):
                 os.makedirs(cache_dir)
             self.db = shelve.open(os.path.join(cache_dir, self.filename))
-            print("Shelf dir = " + cache_dir)
 
     def set(self, key, val, ttl=0):
         self._init_db()
