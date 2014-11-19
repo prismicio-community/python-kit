@@ -196,6 +196,9 @@ class Fragment(object):
         def get_document_slug(self):
             return self.slug
 
+        def __repr__(self):
+            return "DocumentLink %s, %s, %s, %s" % (self.id, self.type, self.tags, self.is_broken)
+
     class WebLink(Link):
         def __init__(self, value):
             self.url = value.get("url")

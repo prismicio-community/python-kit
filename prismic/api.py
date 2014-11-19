@@ -8,6 +8,8 @@ This module implements the Prismic API.
 
 """
 
+from __future__ import (absolute_import, division, print_function, unicode_literals)
+
 import sys
 import platform
 import pkg_resources
@@ -413,8 +415,10 @@ class Document(Fragment.WithFragments):
 
         :return: :class:`DocumentLink <prismic.api.Fragment.DocumentLink>`
         """
+        data = self._data.copy()
+        data['slug'] = self.slug
         return Fragment.DocumentLink({
-            'document': self._data
+            'document': data
         })
 
     def __getattr__(self, name):
