@@ -1,0 +1,1171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>prismic Package &mdash; Prismic 1.0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Prismic 1.0.2 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to Prismic’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Prismic’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Prismic 1.0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="prismic-package">
+<h1>prismic Package<a class="headerlink" href="#prismic-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">prismic</span></tt> Package<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-prismic.__init__"></span><p>Prismic.io python library.</p>
+</div>
+<div class="section" id="module-prismic.api">
+<span id="api-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">api</span></tt> Module<a class="headerlink" href="#module-prismic.api" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prismic-api">
+<h3>prismic.api<a class="headerlink" href="#prismic-api" title="Permalink to this headline">¶</a></h3>
+<p>This module implements the Prismic API.</p>
+<dl class="class">
+<dt id="prismic.api.Api">
+<em class="property">class </em><tt class="descclassname">prismic.api.</tt><tt class="descname">Api</tt><big>(</big><em>data</em>, <em>access_token</em>, <em>cache</em><big>)</big><a class="headerlink" href="#prismic.api.Api" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A Prismic API, pointing to a specific repository. Use prismic.api.get() to fetch one.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bookmarks</strong> (<em>dict</em>) &#8211; all bookmarks, as a dict from name to document id</li>
+<li><strong>types</strong> (<em>array&lt;str&gt;</em>) &#8211; all available types</li>
+<li><strong>tags</strong> (<em>array&lt;str&gt;</em>) &#8211; all available tags</li>
+<li><strong>experiments</strong> (<em>Experiments</em>) &#8211; information about current experiments</li>
+<li><strong>access_token</strong> (<em>str</em>) &#8211; current access token (may be None)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="prismic.api.Api.form">
+<tt class="descname">form</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#prismic.api.Api.form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs the form with data from Api.
+Returns <a class="reference internal" href="#prismic.api.SearchForm" title="prismic.api.SearchForm"><tt class="xref py py-class docutils literal"><span class="pre">SearchForm</span></tt></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; Name of the form.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.Api.get_master">
+<tt class="descname">get_master</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.Api.get_master" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns current master <a class="reference internal" href="#prismic.api.Ref" title="prismic.api.Ref"><tt class="xref py py-class docutils literal"><span class="pre">Ref</span></tt></a> object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.Api.get_ref">
+<tt class="descname">get_ref</tt><big>(</big><em>label</em><big>)</big><a class="headerlink" href="#prismic.api.Api.get_ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the <a class="reference internal" href="#prismic.api.Ref" title="prismic.api.Ref"><tt class="xref py py-class docutils literal"><span class="pre">Ref</span></tt></a> with a specific label.
+Returns <a class="reference internal" href="#prismic.api.Ref" title="prismic.api.Ref"><tt class="xref py py-class docutils literal"><span class="pre">Ref</span></tt></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>label</strong> &#8211; Name of the label.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.Api.preview_session">
+<tt class="descname">preview_session</tt><big>(</big><em>token</em>, <em>link_resolver</em>, <em>default_url</em><big>)</big><a class="headerlink" href="#prismic.api.Api.preview_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the URL to display a given preview</p>
+<p>:param token as received from Prismic server to identify the content to preview
+:param link_resolver the link resolver to build URL for your site
+:param default_url the URL to default to return if the preview doesn&#8217;t correspond to a document</p>
+<blockquote>
+<div>(usually the home page of your site)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the URL to redirect the user to</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.api.Document">
+<em class="property">class </em><tt class="descclassname">prismic.api.</tt><tt class="descname">Document</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.api.Document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.WithFragments</span></tt></p>
+<p>Represents a Prismic.io Document</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>id</strong> (<em>str</em>) &#8211; document id</li>
+<li><strong>type</strong> (<em>str</em>) &#8211; </li>
+<li><strong>href</strong> (<em>str</em>) &#8211; </li>
+<li><strong>tags</strong> (<em>array&lt;str&gt;</em>) &#8211; </li>
+<li><strong>slugs</strong> (<em>array&lt;str&gt;</em>) &#8211; </li>
+<li><strong>linked_documents</strong> (<em>array&lt;LinkedDocuments&gt;</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="prismic.api.Document.as_link">
+<tt class="descname">as_link</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.Document.as_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert the current document to a DocumentLink</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">DocumentLink</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="prismic.api.Document.slug">
+<tt class="descname">slug</tt><a class="headerlink" href="#prismic.api.Document.slug" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the most recent slug</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str slug</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.api.LinkedDocument">
+<em class="property">class </em><tt class="descclassname">prismic.api.</tt><tt class="descname">LinkedDocument</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.api.LinkedDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Represents a link to a document</p>
+<dl class="method">
+<dt id="prismic.api.LinkedDocument.get_id">
+<tt class="descname">get_id</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.LinkedDocument.get_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.LinkedDocument.get_slug">
+<tt class="descname">get_slug</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.LinkedDocument.get_slug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.LinkedDocument.get_tags">
+<tt class="descname">get_tags</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.LinkedDocument.get_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.LinkedDocument.get_typ">
+<tt class="descname">get_typ</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.LinkedDocument.get_typ" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.api.Ref">
+<em class="property">class </em><tt class="descclassname">prismic.api.</tt><tt class="descname">Ref</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.api.Ref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A Prismic.io Reference (corresponds to a release)</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.api.Response">
+<em class="property">class </em><tt class="descclassname">prismic.api.</tt><tt class="descname">Response</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.api.Response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Prismic&#8217;s response to a query.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Variables:</th><td class="field-body"><ul class="first last simple">
+<li><strong>documents</strong> (<em>array&lt;prismic.api.Document&gt;</em>) &#8211; the documents of the current page</li>
+<li><strong>page</strong> (<em>int</em>) &#8211; the page in this result, starting by 1</li>
+<li><strong>results_per_page</strong> (<em>int</em>) &#8211; max result in a page</li>
+<li><strong>total_results_size</strong> (<em>int</em>) &#8211; total number of results for this query</li>
+<li><strong>total_pages</strong> (<em>int</em>) &#8211; total number of pages for this query</li>
+<li><strong>next_page</strong> (<em>str</em>) &#8211; URL of the next page (may be None if on the last page )</li>
+<li><strong>prev_page</strong> (<em>str</em>) &#8211; URL of the previous page (may be None)</li>
+<li><strong>results_size</strong> (<em>int</em>) &#8211; number of results actually returned for the current page</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.api.SearchForm">
+<em class="property">class </em><tt class="descclassname">prismic.api.</tt><tt class="descname">SearchForm</tt><big>(</big><em>form</em>, <em>access_token</em>, <em>cache</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Form to search for documents. Most of the methods return self object to allow chaining.</p>
+<dl class="method">
+<dt id="prismic.api.SearchForm.count">
+<tt class="descname">count</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.count" title="Permalink to this definition">¶</a></dt>
+<dd><p>Count the total number of results</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.orderings">
+<tt class="descname">orderings</tt><big>(</big><em>orderings</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.orderings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the query orderings</p>
+<p>:param orderings String with the orderings predicate
+:returns: the SearchForm instance to chain calls</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.page">
+<tt class="descname">page</tt><big>(</big><em>page_number</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set query page number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>page_number</strong> &#8211; int representing the page number</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.pageSize">
+<tt class="descname">pageSize</tt><big>(</big><em>nb_results</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.pageSize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deprecated: use page_size instead</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.page_size">
+<tt class="descname">page_size</tt><big>(</big><em>nb_results</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.page_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set query page size</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nb_results</strong> &#8211; int representing the number of results per page</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.query">
+<tt class="descname">query</tt><big>(</big><em>*argv</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.query" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>argv</strong> &#8211; Either a string query, or any number of Array corresponding to predicates.</td>
+</tr>
+</tbody>
+</table>
+<p>See the <tt class="xref py py-mod docutils literal"><span class="pre">prismic.predicates</span></tt> module for helper functions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.ref">
+<tt class="descname">ref</tt><big>(</big><em>ref</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.ref" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ref</strong> &#8211; A <a class="reference internal" href="#prismic.api.Ref" title="prismic.api.Ref"><tt class="xref py py-class docutils literal"><span class="pre">Ref</span></tt></a> object or an string.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.set">
+<tt class="descname">set</tt><big>(</big><em>field</em>, <em>value</em><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.submit">
+<tt class="descname">submit</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.submit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submit the query to the Prismic.io server</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><a class="reference internal" href="#prismic.api.Response" title="prismic.api.Response"><tt class="xref py py-class docutils literal"><span class="pre">Response</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.api.SearchForm.submit_assert_preconditions">
+<tt class="descname">submit_assert_preconditions</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.api.SearchForm.submit_assert_preconditions" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="prismic.api.get">
+<tt class="descclassname">prismic.api.</tt><tt class="descname">get</tt><big>(</big><em>url</em>, <em>access_token=None</em>, <em>cache=None</em><big>)</big><a class="headerlink" href="#prismic.api.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetches the prismic api JSON.
+Returns <a class="reference internal" href="#prismic.api.Api" title="prismic.api.Api"><tt class="xref py py-class docutils literal"><span class="pre">Api</span></tt></a> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>url</strong> &#8211; URL to the api of the repository (mandatory).</li>
+<li><strong>access_token</strong> &#8211; The access token (optional).</li>
+<li><strong>cache</strong> &#8211; The cache object. Optional, will default to a file-based cache if None is passed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="core-module">
+<h2><tt class="xref py py-mod docutils literal"><span class="pre">core</span></tt> Module<a class="headerlink" href="#core-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-prismic.exceptions">
+<span id="exceptions-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">exceptions</span></tt> Module<a class="headerlink" href="#module-prismic.exceptions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="prismic-exceptions">
+<h3>prismic.exceptions<a class="headerlink" href="#prismic-exceptions" title="Permalink to this headline">¶</a></h3>
+<p>This module contains the set of Prismic exceptions.</p>
+<dl class="exception">
+<dt id="prismic.exceptions.AuthorizationNeededError">
+<em class="property">exception </em><tt class="descclassname">prismic.exceptions.</tt><tt class="descname">AuthorizationNeededError</tt><a class="headerlink" href="#prismic.exceptions.AuthorizationNeededError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.exceptions.Error" title="prismic.exceptions.Error"><tt class="xref py py-class docutils literal"><span class="pre">prismic.exceptions.Error</span></tt></a></p>
+<p>You need to provide an access token to access this repository</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="prismic.exceptions.Error">
+<em class="property">exception </em><tt class="descclassname">prismic.exceptions.</tt><tt class="descname">Error</tt><a class="headerlink" href="#prismic.exceptions.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">exceptions.Exception</span></tt></p>
+<p>Base class for exceptions in this module.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="prismic.exceptions.HTTPError">
+<em class="property">exception </em><tt class="descclassname">prismic.exceptions.</tt><tt class="descname">HTTPError</tt><big>(</big><em>code</em>, <em>message</em><big>)</big><a class="headerlink" href="#prismic.exceptions.HTTPError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.exceptions.Error" title="prismic.exceptions.Error"><tt class="xref py py-class docutils literal"><span class="pre">prismic.exceptions.Error</span></tt></a></p>
+<p>HTTP error</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="prismic.exceptions.InvalidTokenError">
+<em class="property">exception </em><tt class="descclassname">prismic.exceptions.</tt><tt class="descname">InvalidTokenError</tt><a class="headerlink" href="#prismic.exceptions.InvalidTokenError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.exceptions.Error" title="prismic.exceptions.Error"><tt class="xref py py-class docutils literal"><span class="pre">prismic.exceptions.Error</span></tt></a></p>
+<p>The provided access token is either invalid or expired</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="prismic.exceptions.RefMissing">
+<em class="property">exception </em><tt class="descclassname">prismic.exceptions.</tt><tt class="descname">RefMissing</tt><a class="headerlink" href="#prismic.exceptions.RefMissing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.exceptions.Error" title="prismic.exceptions.Error"><tt class="xref py py-class docutils literal"><span class="pre">prismic.exceptions.Error</span></tt></a></p>
+<p>You need to provide the ref parameter.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="prismic.exceptions.UnexpectedError">
+<em class="property">exception </em><tt class="descclassname">prismic.exceptions.</tt><tt class="descname">UnexpectedError</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#prismic.exceptions.UnexpectedError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.exceptions.Error" title="prismic.exceptions.Error"><tt class="xref py py-class docutils literal"><span class="pre">prismic.exceptions.Error</span></tt></a></p>
+<p>Unexpected error.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-prismic.fragments">
+<span id="fragments-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">fragments</span></tt> Module<a class="headerlink" href="#module-prismic.fragments" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="prismic.fragments.Block">
+<em class="property">class </em><tt class="descclassname">prismic.fragments.</tt><tt class="descname">Block</tt><a class="headerlink" href="#prismic.fragments.Block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A block in a structured text</p>
+<dl class="class">
+<dt id="prismic.fragments.Block.Embed">
+<em class="property">class </em><tt class="descname">Embed</tt><big>(</big><em>embed</em><big>)</big><a class="headerlink" href="#prismic.fragments.Block.Embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="prismic.fragments.Block.Embed.get_embed">
+<tt class="descname">get_embed</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Block.Embed.get_embed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Block.Heading">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">Heading</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Block.Heading" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.Text" title="prismic.fragments.Text"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Text</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Block.Image">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">Image</tt><big>(</big><em>view</em><big>)</big><a class="headerlink" href="#prismic.fragments.Block.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Block image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>view</strong> &#8211; The Fragment.Image.View object</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="prismic.fragments.Block.Image.get_view">
+<tt class="descname">get_view</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Block.Image.get_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Block.ListItem">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">ListItem</tt><big>(</big><em>value</em>, <em>is_ordered=False</em><big>)</big><a class="headerlink" href="#prismic.fragments.Block.ListItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.Text" title="prismic.fragments.Text"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Text</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Block.Paragraph">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">Paragraph</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Block.Paragraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.Text" title="prismic.fragments.Text"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Text</span></tt></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment">
+<em class="property">class </em><tt class="descclassname">prismic.fragments.</tt><tt class="descname">Fragment</tt><a class="headerlink" href="#prismic.fragments.Fragment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="prismic.fragments.Fragment.BasicFragment">
+<em class="property">class </em><tt class="descname">BasicFragment</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.BasicFragment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.FragmentElement" title="prismic.fragments.FragmentElement"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.FragmentElement</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Color">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Color</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.BasicFragment</span></tt></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Color.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.Color.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Date">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Date</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.BasicFragment</span></tt></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Date.as_datetime">
+<tt class="descname">as_datetime</tt><a class="headerlink" href="#prismic.fragments.Fragment.Date.as_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Date.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.Date.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.DocumentLink">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">DocumentLink</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Link</span></tt></p>
+<dl class="method">
+<dt id="prismic.fragments.Fragment.DocumentLink.as_html">
+<tt class="descname">as_html</tt><big>(</big><em>documentlink_resolver</em>, <em>html_serializer=None</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink.as_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the DocumentLink as html.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>documentlink_resolver</strong> &#8211; A resolver function will be called with <a class="reference internal" href="#prismic.fragments.Fragment.DocumentLink" title="prismic.fragments.Fragment.DocumentLink"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Fragment.DocumentLink</span></tt></a> object as argument. Resolver function should return a string, the local url to the document.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.DocumentLink.get_document_id">
+<tt class="descname">get_document_id</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink.get_document_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.DocumentLink.get_document_slug">
+<tt class="descname">get_document_slug</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink.get_document_slug" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.DocumentLink.get_document_tags">
+<tt class="descname">get_document_tags</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink.get_document_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.DocumentLink.get_document_type">
+<tt class="descname">get_document_type</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink.get_document_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.DocumentLink.get_url">
+<tt class="descname">get_url</tt><big>(</big><em>documentlink_resolver=None</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.DocumentLink.get_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Embed">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Embed</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.FragmentElement" title="prismic.fragments.FragmentElement"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.FragmentElement</span></tt></a></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Embed.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.Embed.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.GeoPoint">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">GeoPoint</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.GeoPoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.FragmentElement" title="prismic.fragments.FragmentElement"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.FragmentElement</span></tt></a></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.GeoPoint.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.GeoPoint.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Group">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Group</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.BasicFragment</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Image">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Image</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.FragmentElement" title="prismic.fragments.FragmentElement"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.FragmentElement</span></tt></a></p>
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Image.View">
+<em class="property">class </em><tt class="descname">View</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Image.View" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.FragmentElement" title="prismic.fragments.FragmentElement"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.FragmentElement</span></tt></a></p>
+<p>View class</p>
+<dl class="method">
+<dt id="prismic.fragments.Fragment.Image.View.as_html">
+<tt class="descname">as_html</tt><big>(</big><em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Image.View.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Image.View.ratio">
+<tt class="descname">ratio</tt><a class="headerlink" href="#prismic.fragments.Fragment.Image.View.ratio" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.Image.as_html">
+<tt class="descclassname">Fragment.Image.</tt><tt class="descname">as_html</tt><big>(</big><em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Image.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.Image.get_view">
+<tt class="descclassname">Fragment.Image.</tt><tt class="descname">get_view</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Image.get_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Link">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Link</tt><a class="headerlink" href="#prismic.fragments.Fragment.Link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.fragments.FragmentElement" title="prismic.fragments.FragmentElement"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.FragmentElement</span></tt></a></p>
+<dl class="staticmethod">
+<dt id="prismic.fragments.Fragment.Link.parse">
+<em class="property">static </em><tt class="descname">parse</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Link.parse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.MediaLink">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">MediaLink</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.MediaLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Link</span></tt></p>
+<dl class="method">
+<dt id="prismic.fragments.Fragment.MediaLink.as_html">
+<tt class="descname">as_html</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.MediaLink.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.MediaLink.get_file">
+<tt class="descname">get_file</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.MediaLink.get_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.MediaLink.get_filename">
+<tt class="descname">get_filename</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.MediaLink.get_filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.MediaLink.get_url">
+<tt class="descname">get_url</tt><big>(</big><em>link_resolver=None</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.MediaLink.get_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Number">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Number</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.BasicFragment</span></tt></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Number.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.Number.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Text">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Text</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.BasicFragment</span></tt></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Text.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.Text.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.Timestamp">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">Timestamp</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.Timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.BasicFragment</span></tt></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Timestamp.as_datetime">
+<tt class="descname">as_datetime</tt><a class="headerlink" href="#prismic.fragments.Fragment.Timestamp.as_datetime" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.Timestamp.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.Timestamp.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.WebLink">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">WebLink</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WebLink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Link</span></tt></p>
+<dl class="attribute">
+<dt id="prismic.fragments.Fragment.WebLink.as_html">
+<tt class="descname">as_html</tt><a class="headerlink" href="#prismic.fragments.Fragment.WebLink.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WebLink.get_url">
+<tt class="descname">get_url</tt><big>(</big><em>link_resolver=None</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WebLink.get_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Fragment.WithFragments">
+<em class="property">class </em><tt class="descclassname">Fragment.</tt><tt class="descname">WithFragments</tt><big>(</big><em>fragments</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.as_html">
+<tt class="descname">as_html</tt><big>(</big><em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.fragments.Fragment.WithFragments.fragment_to_html">
+<em class="property">static </em><tt class="descname">fragment_to_html</tt><big>(</big><em>fragment</em>, <em>link_resolver</em>, <em>html_serializer=None</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.fragment_to_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get">
+<tt class="descname">get</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_all">
+<tt class="descname">get_all</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_color">
+<tt class="descname">get_color</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_date">
+<tt class="descname">get_date</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_date" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_embed">
+<tt class="descname">get_embed</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_embed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_field">
+<tt class="descname">get_field</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_fragment_type">
+<tt class="descname">get_fragment_type</tt><big>(</big><em>field</em>, <em>f_type</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_fragment_type" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_geopoint">
+<tt class="descname">get_geopoint</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_geopoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_group">
+<tt class="descname">get_group</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_group" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_html">
+<tt class="descname">get_html</tt><big>(</big><em>field</em>, <em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the html of a field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>field</strong> &#8211; String with a name of the field to get.</li>
+<li><strong>link_resolver</strong> &#8211; A resolver function for document links.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Will be called with <a class="reference internal" href="#prismic.fragments.Fragment.DocumentLink" title="prismic.fragments.Fragment.DocumentLink"><tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.Fragment.DocumentLink</span></tt></a>
+object as argument. Resolver function should return a string, the local url to the document.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_image">
+<tt class="descname">get_image</tt><big>(</big><em>field</em>, <em>view=u'main'</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_link">
+<tt class="descname">get_link</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_link" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_number">
+<tt class="descname">get_number</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_number" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_structured_text">
+<tt class="descname">get_structured_text</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_structured_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_text">
+<tt class="descname">get_text</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.Fragment.WithFragments.get_timestamp">
+<tt class="descname">get_timestamp</tt><big>(</big><em>field</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.WithFragments.get_timestamp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="prismic.fragments.Fragment.from_json">
+<em class="property">classmethod </em><tt class="descclassname">Fragment.</tt><tt class="descname">from_json</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.fragments.Fragment.from_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a corresponding fragment object from json.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.FragmentElement">
+<em class="property">class </em><tt class="descclassname">prismic.fragments.</tt><tt class="descname">FragmentElement</tt><a class="headerlink" href="#prismic.fragments.FragmentElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Span">
+<em class="property">class </em><tt class="descclassname">prismic.fragments.</tt><tt class="descname">Span</tt><a class="headerlink" href="#prismic.fragments.Span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="prismic.fragments.Span.Em">
+<em class="property">class </em><tt class="descname">Em</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Span.Em" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.SpanElement</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Span.Hyperlink">
+<em class="property">class </em><tt class="descclassname">Span.</tt><tt class="descname">Hyperlink</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Span.Hyperlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.SpanElement</span></tt></p>
+<dl class="method">
+<dt id="prismic.fragments.Span.Hyperlink.get_url">
+<tt class="descname">get_url</tt><big>(</big><em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.fragments.Span.Hyperlink.get_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Span.SpanElement">
+<em class="property">class </em><tt class="descclassname">Span.</tt><tt class="descname">SpanElement</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Span.SpanElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="prismic.fragments.Span.SpanElement.length">
+<tt class="descname">length</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.Span.SpanElement.length" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Span.Strong">
+<em class="property">class </em><tt class="descclassname">Span.</tt><tt class="descname">Strong</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Span.Strong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.fragments.SpanElement</span></tt></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="prismic.fragments.Span.from_json">
+<em class="property">classmethod </em><tt class="descclassname">Span.</tt><tt class="descname">from_json</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.fragments.Span.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.StructuredText">
+<em class="property">class </em><tt class="descclassname">prismic.fragments.</tt><tt class="descname">StructuredText</tt><big>(</big><em>values</em><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="prismic.fragments.StructuredText.Group">
+<em class="property">class </em><tt class="descname">Group</tt><big>(</big><em>tag</em>, <em>blocks</em><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.StructuredText.as_html">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">as_html</tt><big>(</big><em>link_resolver</em>, <em>html_serializer=None</em><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.fragments.StructuredText.block_as_html">
+<em class="property">static </em><tt class="descclassname">StructuredText.</tt><tt class="descname">block_as_html</tt><big>(</big><em>block</em>, <em>content</em>, <em>link_resolver</em>, <em>html_serializer</em><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.block_as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.StructuredText.get_first_paragraph">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">get_first_paragraph</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.get_first_paragraph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.StructuredText.get_image">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">get_image</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.get_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.fragments.StructuredText.get_title">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">get_title</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.get_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.fragments.StructuredText.span_as_html">
+<em class="property">static </em><tt class="descclassname">StructuredText.</tt><tt class="descname">span_as_html</tt><big>(</big><em>text</em>, <em>spans</em>, <em>link_resolver</em>, <em>html_serializer</em><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.span_as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.fragments.StructuredText.span_write_tag">
+<em class="property">static </em><tt class="descclassname">StructuredText.</tt><tt class="descname">span_write_tag</tt><big>(</big><em>span</em>, <em>content</em>, <em>link_resolver</em>, <em>html_serializer</em><big>)</big><a class="headerlink" href="#prismic.fragments.StructuredText.span_write_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.fragments.Text">
+<em class="property">class </em><tt class="descclassname">prismic.fragments.</tt><tt class="descname">Text</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.fragments.Text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base class for blocks</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-prismic.structured_text">
+<span id="structured-text-module"></span><h2><tt class="xref py py-mod docutils literal"><span class="pre">structured_text</span></tt> Module<a class="headerlink" href="#module-prismic.structured_text" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="prismic.structured_text.Block">
+<em class="property">class </em><tt class="descclassname">prismic.structured_text.</tt><tt class="descname">Block</tt><a class="headerlink" href="#prismic.structured_text.Block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>A block in a structured text</p>
+<dl class="class">
+<dt id="prismic.structured_text.Block.Embed">
+<em class="property">class </em><tt class="descname">Embed</tt><big>(</big><em>embed</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.Embed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="prismic.structured_text.Block.Embed.get_embed">
+<tt class="descname">get_embed</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.Embed.get_embed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Block.Heading">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">Heading</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.Heading" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.structured_text.Text" title="prismic.structured_text.Text"><tt class="xref py py-class docutils literal"><span class="pre">prismic.structured_text.Text</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Block.Image">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">Image</tt><big>(</big><em>view</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.Image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Block image</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>view</strong> &#8211; The Fragment.Image.View object</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="prismic.structured_text.Block.Image.get_view">
+<tt class="descname">get_view</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.Image.get_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Block.ListItem">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">ListItem</tt><big>(</big><em>value</em>, <em>is_ordered=False</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.ListItem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.structured_text.Text" title="prismic.structured_text.Text"><tt class="xref py py-class docutils literal"><span class="pre">prismic.structured_text.Text</span></tt></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Block.Paragraph">
+<em class="property">class </em><tt class="descclassname">Block.</tt><tt class="descname">Paragraph</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Block.Paragraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#prismic.structured_text.Text" title="prismic.structured_text.Text"><tt class="xref py py-class docutils literal"><span class="pre">prismic.structured_text.Text</span></tt></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Span">
+<em class="property">class </em><tt class="descclassname">prismic.structured_text.</tt><tt class="descname">Span</tt><a class="headerlink" href="#prismic.structured_text.Span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="prismic.structured_text.Span.Em">
+<em class="property">class </em><tt class="descname">Em</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Span.Em" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.structured_text.SpanElement</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Span.Hyperlink">
+<em class="property">class </em><tt class="descclassname">Span.</tt><tt class="descname">Hyperlink</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Span.Hyperlink" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.structured_text.SpanElement</span></tt></p>
+<dl class="method">
+<dt id="prismic.structured_text.Span.Hyperlink.get_url">
+<tt class="descname">get_url</tt><big>(</big><em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Span.Hyperlink.get_url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Span.SpanElement">
+<em class="property">class </em><tt class="descclassname">Span.</tt><tt class="descname">SpanElement</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Span.SpanElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Span.Strong">
+<em class="property">class </em><tt class="descclassname">Span.</tt><tt class="descname">Strong</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Span.Strong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">prismic.structured_text.SpanElement</span></tt></p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="prismic.structured_text.Span.from_json">
+<em class="property">classmethod </em><tt class="descclassname">Span.</tt><tt class="descname">from_json</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Span.from_json" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.StructuredText">
+<em class="property">class </em><tt class="descclassname">prismic.structured_text.</tt><tt class="descname">StructuredText</tt><big>(</big><em>values</em><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="class">
+<dt id="prismic.structured_text.StructuredText.Group">
+<em class="property">class </em><tt class="descname">Group</tt><big>(</big><em>tag</em>, <em>blocks</em><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.Group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="prismic.structured_text.StructuredText.as_html">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">as_html</tt><big>(</big><em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.structured_text.StructuredText.block_as_html">
+<em class="property">static </em><tt class="descclassname">StructuredText.</tt><tt class="descname">block_as_html</tt><big>(</big><em>block</em>, <em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.block_as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.structured_text.StructuredText.get_first_paragraph">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">get_first_paragraph</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.get_first_paragraph" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.structured_text.StructuredText.get_image">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">get_image</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.get_image" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="prismic.structured_text.StructuredText.get_title">
+<tt class="descclassname">StructuredText.</tt><tt class="descname">get_title</tt><big>(</big><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.get_title" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.structured_text.StructuredText.span_as_html">
+<em class="property">static </em><tt class="descclassname">StructuredText.</tt><tt class="descname">span_as_html</tt><big>(</big><em>text</em>, <em>spans</em>, <em>link_resolver</em><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.span_as_html" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="prismic.structured_text.StructuredText.span_write_tag">
+<em class="property">static </em><tt class="descclassname">StructuredText.</tt><tt class="descname">span_write_tag</tt><big>(</big><em>span</em>, <em>link_resolver</em>, <em>opening</em><big>)</big><a class="headerlink" href="#prismic.structured_text.StructuredText.span_write_tag" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="prismic.structured_text.Text">
+<em class="property">class </em><tt class="descclassname">prismic.structured_text.</tt><tt class="descname">Text</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#prismic.structured_text.Text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<p>Base class for blocks</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">prismic Package</a><ul>
+<li><a class="reference internal" href="#id1"><tt class="docutils literal"><span class="pre">prismic</span></tt> Package</a></li>
+<li><a class="reference internal" href="#module-prismic.api"><tt class="docutils literal"><span class="pre">api</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#prismic-api">prismic.api</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#core-module"><tt class="docutils literal"><span class="pre">core</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-prismic.exceptions"><tt class="docutils literal"><span class="pre">exceptions</span></tt> Module</a><ul>
+<li><a class="reference internal" href="#prismic-exceptions">prismic.exceptions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-prismic.fragments"><tt class="docutils literal"><span class="pre">fragments</span></tt> Module</a></li>
+<li><a class="reference internal" href="#module-prismic.structured_text"><tt class="docutils literal"><span class="pre">structured_text</span></tt> Module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Prismic&#8217;s documentation!</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/prismic.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Prismic’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Prismic 1.0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Prismic.io.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.3.
+    </div>
+  </body>
+</html>
