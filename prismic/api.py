@@ -143,7 +143,7 @@ class Api(object):
         response = self.form("everything").ref(token).query(predicates.at("document.id", main_document_id)).submit()
         if len(response.results) == 0:
             return default_url
-        return link_resolver(response.results[0].as_link())
+        return link_resolver(response.documents[0].as_link())
 
     def get_ref(self, label):
         """Get the :class:`Ref <Ref>` with a specific label.
@@ -414,7 +414,7 @@ class Document(Fragment.WithFragments):
         :return: :class:`DocumentLink <prismic.api.Fragment.DocumentLink>`
         """
         return Fragment.DocumentLink({
-            'document': self
+            'document': self._data
         })
 
     def __getattr__(self, name):
