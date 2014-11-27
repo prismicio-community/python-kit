@@ -36,11 +36,12 @@ import logging
 
 log = logging.getLogger(__name__)
 
-try:
-    import urllib3.contrib.pyopenssl
-    urllib3.contrib.pyopenssl.inject_into_urllib3()
-except ImportError:
-    pass
+# TODO: Reactivate for SNI
+# try:
+#     import urllib3.contrib.pyopenssl
+#     urllib3.contrib.pyopenssl.inject_into_urllib3()
+# except ImportError:
+#     pass
 
 http = urllib3.PoolManager()
 

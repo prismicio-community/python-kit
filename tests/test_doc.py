@@ -31,13 +31,13 @@ class DocTestCase(unittest.TestCase):
 
     def test_api(self):
         # startgist:13972e11d41ca29c0171:prismic-api.py
-        api = prismic.get("https://lesbonneschoses.cdn.prismic.io/api")
+        api = prismic.get("https://lesbonneschoses.prismic.io/api")
         # endgist
         self.assertIsNotNone(api)
 
     def test_simplequery(self):
         # startgist:848271920fc502fb82d1:prismic-simplequery.py
-        api = prismic.get("http://lesbonneschoses.prismic.io/api")
+        api = prismic.get("https://lesbonneschoses.prismic.io/api")
         response = api.form("everything").ref(api.get_master())\
             .query(predicates.at("document.type", "product"))\
             .submit()
