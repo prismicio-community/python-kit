@@ -66,7 +66,7 @@ def _get_json(url, params=None, access_token=None, cache=None, ttl=None):
         if r.status_code == 200:
             text_result = r.text
             if not isinstance(text_result, str):
-                text_result = text_result.decode('utf-8')
+                text_result = text_result
             json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
             expire = ttl or _max_age(r)
             if expire is not None:
