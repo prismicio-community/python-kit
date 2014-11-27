@@ -18,27 +18,31 @@ from collections import OrderedDict
 from prismic.experiments import Experiments
 from prismic import predicates
 
+import urllib3
 try:  # 2.7
-    import urllib.request as urlrequest
     import urllib.parse as urlparse
-    import urllib.error as urlerror
 except ImportError:  # 3.x
-    import urllib2 as urlrequest
     import urllib as urlparse
-    import urllib2 as urlerror
 
 import json
 import re
 
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
-                         HTTPError, UnexpectedError, RefMissing)
-from .fragments import Fragment, StructuredText
+                         HTTPError, InvalidURLError, RefMissing)
+from .fragments import Fragment
 from .cache import ShelveCache
 from .utils import string_types
 import logging
 
 log = logging.getLogger(__name__)
 
+try:
+    import urllib3.contrib.pyopenssl
+    urllib3.contrib.pyopenssl.inject_into_urllib3()
+except ImportError:
+    pass
+
+http = urllib3.PoolManager()
 
 def get(url, access_token=None, cache=None):
     """Fetches the prismic api JSON.
@@ -62,34 +66,32 @@ def _get_json(url, params=None, access_token=None, cache=None, ttl=None):
     if cached is not None:
         return cached
     try:
-        req = urlrequest.Request(full_url, headers={
+        r = http.request('GET', full_url, headers={
             "Accept": "application/json",
             "User-Agent": "Prismic-python-kit/%s Python/%s" % (pkg_resources.require("prismic")[0].version, platform.python_version())
         })
-        response = urlrequest.urlopen(req)
-        text_result = response.read()
-        if not isinstance(text_result, str):
-            text_result = text_result.decode('utf-8')
-        json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
-        expire = ttl or _max_age(response)
-        if expire is not None:
-            cache.set(full_url, json_result, expire)
-        return json_result
-    except urlerror.HTTPError as http_error:
-        if http_error.code == 401:
+        if r.status == 200:
+            text_result = r.data
+            if not isinstance(text_result, str):
+                text_result = text_result.decode('utf-8')
+            json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
+            expire = ttl or _max_age(r)
+            if expire is not None:
+                cache.set(full_url, json_result, expire)
+            return json_result
+        elif r.status == 401:
             if len(access_token) == 0:
                 raise AuthorizationNeededError()
             else:
                 raise InvalidTokenError()
         else:
-            print(full_url)
-            raise HTTPError(http_error.code, str(http_error.readlines()))
-    except urlerror.URLError as url_error:
-        raise UnexpectedError("Unexpected error: %s" % url_error.reason)
+            raise HTTPError(r.code, str(r.data))
+    except KeyError as e:
+        raise InvalidURLError(e)
 
 
 def _max_age(response):
-    expire_header = response.info().get("Cache-Control")
+    expire_header = response.headers["Cache-Control"]
     if expire_header is not None:
         m = re.match("max-age=(\d+)", expire_header)
         if m:

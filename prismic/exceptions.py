@@ -16,6 +16,11 @@ class Error(Exception):
         return self.__doc__
 
 
+class InvalidURLError(Error):
+    """The prodider URL is invalid"""
+    pass
+
+
 class InvalidTokenError(Error):
     """The provided access token is either invalid or expired"""
     pass

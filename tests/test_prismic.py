@@ -6,8 +6,7 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 from prismic.cache import ShelveCache
-from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, \
-    UnexpectedError
+from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, InvalidURLError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, \
     fixture_image_links, fixture_spans_labels, fixture_block_labels, fixture_custom_html
@@ -76,7 +75,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
         with self.assertRaises(AuthorizationNeededError):
             prismic.get(self.api_url, "")
 
-        with self.assertRaises(UnexpectedError):
+        with self.assertRaises(InvalidURLError):
             prismic.get("htt://wrong_on_purpose", "")
 
     def test_search_form(self):

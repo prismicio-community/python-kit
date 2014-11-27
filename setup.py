@@ -20,5 +20,11 @@ setup(
         'Operating System :: OS Independent',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 2.7'
+    ],
+    install_requires=[
+        'pyOpenSSL',
+        'ndg-httpsclient',
+        'pyasn1',
+        'urllib3'
     ]
 )
