@@ -156,11 +156,12 @@ class Fragment(object):
             if data is None:
                 return None
             hyperlink_type = data.get("type")
-            link = {
+            return {
                 "Link.web": Fragment.WebLink,
-                "Link.document": Fragment.DocumentLink
+                "Link.document": Fragment.DocumentLink,
+                "Link.image": Fragment.MediaLink,
+                "Link.file": Fragment.FileLink
             }.get(hyperlink_type, lambda x: None)(data.get("value"))
-            return link
 
     class DocumentLink(Link):
         def __init__(self, value):
@@ -212,6 +213,22 @@ class Fragment(object):
 
     class MediaLink(Link):
         def __init__(self, value):
+            self.image = value.get("image")
+            self.name = self.image.get("name")
+            self.kind = self.image.get("kind")
+            self.url = self.image.get("url")
+            self.size = self.image.get("size")
+            self.height = self.image.get("height")
+            self.width = self.image.get("width")
+
+        def as_html(self):
+            return "<a href='%(url)s'>%(name)s</a>" % self.__dict__
+
+        def get_url(self, link_resolver=None):
+            return self.url
+
+    class FileLink(Link):
+        def __init__(self, value):
             self.file = value.get("file")
             self.url = self.file.get("url")
             self.kind = self.file.get("kind")
@@ -252,13 +269,7 @@ class Fragment(object):
                 if self.link_to is None:
                     return img_tag
                 else:
-                    if isinstance(self.link_to, Fragment.DocumentLink):
-                        if self.link_to.is_broken:
-                            url = "#broken"
-                        else:
-                            url = self.link_to.get_url(link_resolver)
-                    else:
-                        url = self.link_to.get_url()
+                    url = self.link_to.get_url(link_resolver)
                     return """<a href="%(url)s">%(content)s</a>""" % {
                         'url': url,
                         'content': img_tag
@@ -288,15 +299,8 @@ class Fragment(object):
             if self.link_to is None:
                 return view_html
             else:
-                if isinstance(self.link_to, Fragment.DocumentLink):
-                    if self.link_to.is_broken:
-                        url = "#broken"
-                    else:
-                        url = self.link_to.get_url(link_resolver)
-                else:
-                    url = self.link_to.get_url()
                 return """<a href="%(url)s">%(content)s</a>""" % {
-                    'url': url,
+                    'url': self.link_to.get_url(link_resolver),
                     'content': view_html
                 }
 
@@ -600,10 +604,7 @@ class Span(object):
                 log.warning("StructuredText::Span::Hyperlink type not found: %s" % data.get('type'))
 
         def get_url(self, link_resolver):
-            if isinstance(self.link, Fragment.DocumentLink):
-                return self.link.get_url(link_resolver)
-            else:
-                return self.link.get_url()
+            return self.link.get_url(link_resolver)
 
 
 class Text(object):

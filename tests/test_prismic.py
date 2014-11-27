@@ -45,7 +45,10 @@ class PrismicTestCase(unittest.TestCase):
 
     @staticmethod
     def link_resolver(document_link):
-        return "/document/%s/%s" % (document_link.id, document_link.slug)
+        if document_link.is_broken:
+            return "#broken"
+        else:
+            return "/document/%s/%s" % (document_link.id, document_link.slug)
 
     @staticmethod
     def html_serializer(element, content):

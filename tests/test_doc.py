@@ -31,7 +31,7 @@ class DocTestCase(unittest.TestCase):
 
     def test_api(self):
         # startgist:13972e11d41ca29c0171:prismic-api.py
-        api = prismic.get("http://lesbonneschoses.prismic.io/api")
+        api = prismic.get("https://lesbonneschoses.prismic.io/api")
         # endgist
         self.assertIsNotNone(api)
 
