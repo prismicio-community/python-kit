@@ -127,6 +127,28 @@ class Fragment(object):
             fragment = self.fragments.get(field)
             return self.fragment_to_html(fragment, link_resolver)
 
+        @property
+        def linked_documents(self):
+            """
+            Return the documents linked from this document's fragments
+            :return: array<DocumentLink>
+            """
+            result = []
+            for (name, fragment) in list(self.fragments.items()):
+                if isinstance(fragment, Fragment.DocumentLink):
+                    result.append(fragment)
+                elif isinstance(fragment, Fragment.Group):
+                    for groupdoc in fragment.value:
+                        result = result + groupdoc.linked_documents
+                elif isinstance(fragment, StructuredText):
+                    for block in fragment.blocks:
+                        if isinstance(block, Text):
+                            for span in block.spans:
+                                if isinstance(span, Span.Hyperlink):
+                                    if isinstance(span.link, Fragment.DocumentLink):
+                                        result.append(span.link)
+            return result
+
         @staticmethod
         def fragment_to_html(fragment, link_resolver, html_serializer=None):
             if isinstance(fragment, StructuredText):
@@ -163,11 +185,26 @@ class Fragment(object):
                 "Link.file": Fragment.FileLink
             }.get(hyperlink_type, lambda x: None)(data.get("value"))
 
-    class DocumentLink(Link):
+    class DocumentLink(WithFragments, Link):
         def __init__(self, value):
+            Fragment.WithFragments.__init__(self, {})
+
             document = value.get("document")
 
+            fragments = document.get("data").get(self.type) if "data" in document else {}
+            for (fragment_name, fragment_value) in list(fragments.items()):
+                f_key = "%s.%s" % (self.type, fragment_name)
+
+                if isinstance(fragment_value, list):
+                    for index, fragment_value_element in enumerate(fragment_value):
+                        self.fragments["%s[%s]" % (f_key, index)] = Fragment.from_json(
+                            fragment_value_element)
+
+                elif isinstance(fragment_value, dict):
+                    self.fragments[f_key] = Fragment.from_json(fragment_value)
+
             self.id = document.get("id")
+            self.uid = document.get("uid")
             self.type = document.get("type")
             self.tags = document.get("tags")
             self.slug = document.get("slug")
