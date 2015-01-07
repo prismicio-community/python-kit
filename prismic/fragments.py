@@ -3,7 +3,7 @@
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
-from collections import namedtuple, defaultdict
+from collections import namedtuple, defaultdict, OrderedDict
 import logging
 import cgi
 import re
@@ -187,7 +187,7 @@ class Fragment(object):
 
     class DocumentLink(WithFragments, Link):
         def __init__(self, value):
-            Fragment.WithFragments.__init__(self, {})
+            Fragment.WithFragments.__init__(self, OrderedDict())
 
             document = value.get("document")
 
@@ -421,7 +421,7 @@ class Fragment(object):
         def __init__(self, value):
             self.value = []
             for elt in value:
-                fragments = {}
+                fragments = OrderedDict()
                 for name, frag in elt.items():
                     fragments[name] = Fragment.from_json(frag)
                 self.value.append(Fragment.WithFragments(fragments))

@@ -378,10 +378,12 @@ class Document(Fragment.WithFragments):
     """
 
     def __init__(self, data):
-        Fragment.WithFragments.__init__(self, {})
+        Fragment.WithFragments.__init__(self, OrderedDict())
         self._data = data
 
-        fragments = data.get("data").get(self.type) if "data" in data else {}
+        fragments = {}
+        if "data" in data:
+            fragments = data.get("data").get(self.type)
         for (fragment_name, fragment_value) in list(fragments.items()):
             f_key = "%s.%s" % (self.type, fragment_name)
 
