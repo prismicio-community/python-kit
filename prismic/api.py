@@ -288,6 +288,13 @@ class SearchForm(object):
         """
         return self.set("pageSize", nb_results)
 
+    def after(self, doc_id):
+        """Start the result set after the given id
+
+        :param doc_id: id of the reference document
+        """
+        return self.set("after", doc_id)
+
     def pageSize(self, nb_results):
         """Deprecated: use page_size instead
         """
