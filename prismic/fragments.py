@@ -191,6 +191,13 @@ class Fragment(object):
 
             document = value.get("document")
 
+            self.id = document.get("id")
+            self.uid = document.get("uid")
+            self.type = document.get("type")
+            self.tags = document.get("tags")
+            self.slug = document.get("slug")
+            self.is_broken = value.get("isBroken")
+
             fragments = document.get("data").get(self.type) if "data" in document else {}
             for (fragment_name, fragment_value) in list(fragments.items()):
                 f_key = "%s.%s" % (self.type, fragment_name)
@@ -202,13 +209,6 @@ class Fragment(object):
 
                 elif isinstance(fragment_value, dict):
                     self.fragments[f_key] = Fragment.from_json(fragment_value)
-
-            self.id = document.get("id")
-            self.uid = document.get("uid")
-            self.type = document.get("type")
-            self.tags = document.get("tags")
-            self.slug = document.get("slug")
-            self.is_broken = value.get("isBroken")
 
         def as_html(self, documentlink_resolver, html_serializer=None):
             """Get the DocumentLink as html.

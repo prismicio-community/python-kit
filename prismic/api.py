@@ -295,6 +295,24 @@ class SearchForm(object):
         """
         return self.set("after", doc_id)
 
+    def fetch(self, fields):
+        """ Restrict the results document to the specified fields
+
+        :param fields: The list of fields, array or comma separated string
+        """
+        if isinstance(fields, list):
+            fields = ",".join(list)
+        return self.set("fetch", fields)
+
+    def fetch_links(self, fields):
+        """ Include the requested fields in the DocumentLink instances in the result
+
+        :param fields: The list of fields, array or comma separated string
+        """
+        if isinstance(fields, list):
+            fields = ",".join(list)
+        return self.set("fetchLinks", fields)
+
     def pageSize(self, nb_results):
         """Deprecated: use page_size instead
         """
