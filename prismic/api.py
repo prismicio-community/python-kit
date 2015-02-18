@@ -419,7 +419,9 @@ class Document(Fragment.WithFragments):
         })
 
     def __getattr__(self, name):
-        return self._data.get(name)
+        if name.startswith('__'):
+            raise AttributeError
+        return self._data.get(name, None)
 
     @property
     def slug(self):
