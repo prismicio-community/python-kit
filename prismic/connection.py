@@ -23,12 +23,13 @@ from requests.exceptions import InvalidSchema
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, InvalidURLError)
 from .cache import ShelveCache
+from . import __version__ as prismic_version
 
 def get_using_requests(full_url):
     request = requests.get(full_url, headers={
         "Accept": "application/json",
         "User-Agent": "Prismic-python-kit/%s Python/%s" % (
-            pkg_resources.require("prismic")[0].version,
+            prismic_version,
             platform.python_version()
         )
     })
