@@ -37,6 +37,7 @@ class Fragment(object):
                 "Link.document":  Fragment.DocumentLink,
                 "Link.file":      Fragment.MediaLink,
                 "Link.web":       Fragment.WebLink,
+                "Link.image":     Fragment.ImageLink,
                 "Embed":          Fragment.Embed,
                 "GeoPoint":       Fragment.GeoPoint,
                 "Group":          Fragment.Group
@@ -283,6 +284,22 @@ class Fragment(object):
 
         def get_url(self, link_resolver=None):
             return self.url
+
+    class ImageLink(Link):
+        def __init__(self, value):
+            self.image = value.get("image")
+            self.url = self.image.get("url")
+            self.alt = self.image.get("alt", "")
+
+        @property
+        def as_html(self):
+                return """<a href="%(url)s"><img src="%(url)s" alt="%(alt)s"/></a>""" % self.__dict__
+
+        def get_image(self):
+                return self.image
+
+        def get_url(self):
+                return self.url
 
     class Image(FragmentElement):
         _View = namedtuple('View', ['url', 'width', 'height', 'linkTo'])
