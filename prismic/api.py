@@ -11,85 +11,35 @@ This module implements the Prismic API.
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 import sys
-import platform
-import pkg_resources
 from copy import copy, deepcopy
-from collections import OrderedDict
-from requests.exceptions import InvalidSchema
-from prismic.experiments import Experiments
-from prismic import predicates
-
-try:  # 2.7
-    import urllib.parse as urlparse
-except ImportError:  # 3.x
-    import urllib as urlparse
-import requests
-import json
-import re
-
-from .exceptions import (InvalidTokenError, AuthorizationNeededError,
-                         HTTPError, InvalidURLError, RefMissing)
+from .connection import get_json, urlparse
+from .experiments import Experiments
+from . import predicates
+from .exceptions import RefMissing
 from .fragments import Fragment
-from .cache import ShelveCache
+from collections import OrderedDict
+
 from .utils import string_types
 import logging
 
 log = logging.getLogger(__name__)
 
 
-def get(url, access_token=None, cache=None):
+def get(url, access_token=None, cache=None, request_handler=None):
     """Fetches the prismic api JSON.
     Returns :class:`Api <Api>` object.
 
     :param url: URL to the api of the repository (mandatory).
     :param access_token: The access token (optional).
     :param cache: The cache object. Optional, will default to a file-based cache if None is passed.
+    :param request_handler: The request handler. Optional, will default to a request handler based on requests module.
     """
-    return Api(_get_json(url, access_token=access_token, cache=cache, ttl=5), access_token, cache)
-
-
-def _get_json(url, params=None, access_token=None, cache=None, ttl=None):
-    full_params = dict() if params is None else params.copy()
-    if cache is None:
-        cache = ShelveCache(re.sub(r'/\\', '', url.split('/')[2]))
-    if access_token is not None:
-        full_params["access_token"] = access_token
-    full_url = url if len(full_params) == 0 else (url + "?" + urlparse.urlencode(full_params, doseq=1))
-    cached = cache.get(full_url)
-    if cached is not None:
-        return cached
-    try:
-        r = requests.get(full_url, headers={
-            "Accept": "application/json",
-            "User-Agent": "Prismic-python-kit/%s Python/%s" % (pkg_resources.require("prismic")[0].version, platform.python_version())
-        })
-        if r.status_code == 200:
-            text_result = r.text
-            if not isinstance(text_result, str):
-                text_result = text_result
-            json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
-            expire = ttl or _max_age(r)
-            if expire is not None:
-                cache.set(full_url, json_result, expire)
-            return json_result
-        elif r.status_code == 401:
-            if len(access_token) == 0:
-                raise AuthorizationNeededError()
-            else:
-                raise InvalidTokenError()
-        else:
-            raise HTTPError(r.status_code, str(r.text))
-    except InvalidSchema as e:
-        raise InvalidURLError(e)
-
-
-def _max_age(response):
-    expire_header = response.headers["Cache-Control"]
-    if expire_header is not None:
-        m = re.match("max-age=(\d+)", expire_header)
-        if m:
-            return int(m.group(1))
-    return None
+    return Api(
+        get_json(url, access_token=access_token, cache=cache, ttl=5, request_handler=request_handler),
+        access_token,
+        cache,
+        request_handler
+    )
 
 
 class Api(object):
@@ -103,8 +53,9 @@ class Api(object):
     :ivar str access_token: current access token (may be None)
     """
 
-    def __init__(self, data, access_token, cache):
+    def __init__(self, data, access_token, cache, request_handler):
         self.cache = cache
+        self.request_handler = request_handler
         self.refs = [Ref(ref) for ref in data.get("refs")]
         self.bookmarks = data.get("bookmarks")
         self.types = data.get("types")
@@ -134,7 +85,7 @@ class Api(object):
 
         :return: the URL to redirect the user to
         """
-        main_document_id = _get_json(token).get("mainDocument")
+        main_document_id = get_json(token, request_handler=self.request_handler).get("mainDocument")
         if main_document_id is None:
             return default_url
         response = self.form("everything").ref(token).query(predicates.at("document.id", main_document_id)).submit()
@@ -164,7 +115,7 @@ class Api(object):
         form = self.forms.get(name)
         if form is None:
             raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)))
-        return SearchForm(self.forms.get(name), self.access_token, self.cache)
+        return SearchForm(self.forms.get(name), self.access_token, self.cache, self.request_handler)
 
 
 class Ref(object):
@@ -184,7 +135,7 @@ class SearchForm(object):
     """Form to search for documents. Most of the methods return self object to allow chaining.
     """
 
-    def __init__(self, form, access_token, cache):
+    def __init__(self, form, access_token, cache, request_handler):
         self.action = form.get("action")
         self.method = form.get("method")
         self.enctype = form.get("enctype")
@@ -196,6 +147,7 @@ class SearchForm(object):
                 self.set(field, value["default"])
         self.access_token = access_token
         self.cache = cache
+        self.request_handler = request_handler
 
     def ref(self, ref):
         """:param ref: A :class:`Ref <Ref>` object or an string."""
@@ -272,7 +224,13 @@ class SearchForm(object):
         :return: :class:`Response <prismic.api.Response>`
         """
         self.submit_assert_preconditions()
-        return Response(_get_json(self.action, self.data, self.access_token, self.cache))
+        return Response(get_json(
+            self.action,
+            self.data,
+            self.access_token,
+            self.cache,
+            request_handler=self.request_handler
+        ))
 
     def page(self, page_number):
         """Set query page number
@@ -324,7 +282,7 @@ class SearchForm(object):
         return copy(self).pageSize(1).submit().total_results_size
 
     def __copy__(self):
-        cp = type(self)({}, self.access_token, self.cache)
+        cp = type(self)({}, self.access_token, self.cache, self.request_handler)
         cp.action = deepcopy(self.action)
         cp.method = deepcopy(self.method)
         cp.enctype = deepcopy(self.enctype)

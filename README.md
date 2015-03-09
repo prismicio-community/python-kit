@@ -56,6 +56,23 @@ You can pass a Memcached client to the `prismic.get` call:
 By duck typing you can pass any object that implement the `set` and `get` methods (see the `NoCache` object for the methods
 to implement).
 
+#### Using a Custom Request Handler
+
+By default, the kit will use a request handler based on the popular package [requests](http://python-requests.org). If you, for some reason, wants to use a custom request handler,
+ such as URLFetch (if you use Google AppEngine), for example. You can pass a function to the `prismic.get` call, this way:
+
+ ```python
+ >>> import prismic
+ >>> import urllib2
+ >>> def custom_request_handler(full_url):
+ ...     r = urllib2.urlopen(full_url)
+ ...     return r.getcode(), r.read(), r.info()
+ ...
+ >>> api = prismic.get("http://your-lesbonneschoses.prismic.io/api", "access_token", request_handler=custom_request_handler)
+ ```
+
+By duck typing you can pass any function that receives a URL and return a tuple containing status code, content and the headers of the response.
+
 ### Changelog
 
 Need to see what changed, or to upgrade your kit? We keep our changelog on [this repository's "Releases" tab](https://github.com/prismicio/python-kit/releases).

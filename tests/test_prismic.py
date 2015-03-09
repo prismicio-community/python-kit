@@ -37,7 +37,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_spans_labels = json.loads(fixture_spans_labels)
         self.fixture_custom_html = json.loads(fixture_custom_html)
 
-        self.api = prismic.Api(self.fixture_api, self.token, ShelveCache("prismictest"))
+        self.api = prismic.Api(self.fixture_api, self.token, ShelveCache("prismictest"), None)
 
     def tearDown(self):
         """Teardown."""
