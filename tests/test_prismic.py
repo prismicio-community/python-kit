@@ -149,6 +149,17 @@ class ApiIntegrationTestCase(PrismicTestCase):
         links = article.get_all('blog-post.relatedpost')
         self.assertEqual(links[0].get_text('blog-post.author'), 'John M. Martelle, Fine Pastry Magazine')
 
+    def test_fetch_links_list(self):
+        article = self.api\
+            .form('everything')\
+            .ref(self.api.get_master())\
+            .fetch_links(['blog-post.author', 'blog-post.title'])\
+            .query(predicates.at('document.id', 'UlfoxUnM0wkXYXbt')) \
+            .submit()\
+            .documents[0]
+        links = article.get_all('blog-post.relatedpost')
+        self.assertEqual(links[0].get_text('blog-post.author'), 'John M. Martelle, Fine Pastry Magazine')
+
 
 class ApiTestCase(PrismicTestCase):
     def test_get_ref(self):

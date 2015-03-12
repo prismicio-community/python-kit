@@ -259,7 +259,7 @@ class SearchForm(object):
         :param fields: The list of fields, array or comma separated string
         """
         if isinstance(fields, list):
-            fields = ",".join(list)
+            fields = ",".join(fields)
         return self.set("fetch", fields)
 
     def fetch_links(self, fields):
@@ -268,7 +268,7 @@ class SearchForm(object):
         :param fields: The list of fields, array or comma separated string
         """
         if isinstance(fields, list):
-            fields = ",".join(list)
+            fields = ",".join(fields)
         return self.set("fetchLinks", fields)
 
     def pageSize(self, nb_results):
