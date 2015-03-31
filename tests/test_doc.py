@@ -30,13 +30,13 @@ class DocTestCase(unittest.TestCase):
         """Teardown."""
 
     def test_api(self):
-        # startgist:13972e11d41ca29c0171:prismic-api.py
+        # startgist:4115e45d6b57cfbed844:prismic-api.py
         api = prismic.get("https://lesbonneschoses.cdn.prismic.io/api")
         # endgist
         self.assertIsNotNone(api)
 
     def test_simplequery(self):
-        # startgist:848271920fc502fb82d1:prismic-simplequery.py
+        # startgist:ab49f6c00b8688fe876b:prismic-simplequery.py
         api = prismic.get("https://lesbonneschoses.prismic.io/api")
         response = api.form("everything").ref(api.get_master())\
             .query(predicates.at("document.type", "product"))\
@@ -46,7 +46,7 @@ class DocTestCase(unittest.TestCase):
 
     def test_api_private(self):
         try:
-            # startgist:71fbe142e1078f0ff76b:prismic-apiPrivate.py
+            # startgist:b8844bdf0353cdd46c68:prismic-apiPrivate.py
             # This will fail because the token is invalid, but this is how to access a private API
             api = prismic.get('https://lesbonneschoses.prismic.io/api', 'MC5-XXXXXXX-vRfvv70')
             # endgist
@@ -55,7 +55,7 @@ class DocTestCase(unittest.TestCase):
             pass
 
     def test_references(self):
-        # startgist:8061f7a1028d4f55dd63:prismic-references.py
+        # startgist:81d114ef589118245811:prismic-references.py
         preview_token = 'MC5VbDdXQmtuTTB6Z0hNWHF3.c--_vVbvv73vv73vv73vv71EA--_vS_vv73vv70T77-9Ke-_ve-_vWfvv70ebO-_ve-_ve-_vQN377-9ce-_vRfvv70'
         api = prismic.get('https://lesbonneschoses.prismic.io/api', preview_token)
         st_patrick_ref = api.get_ref('St-Patrick specials')
@@ -70,7 +70,7 @@ class DocTestCase(unittest.TestCase):
         self.assertEqual(response.results_size, 17)
 
     def test_orderings(self):
-        # startgist:88098ee61f2f982ae9d6:prismic-orderings.py
+        # startgist:f2c310e66a5c13e225ae:prismic-orderings.py
         api = prismic.get('https://lesbonneschoses.prismic.io/api')
         response = api.form('everything')\
             .ref(api.get_master())\
@@ -84,7 +84,7 @@ class DocTestCase(unittest.TestCase):
         self.assertEqual(response.results_per_page, 100)
 
     def test_predicates(self):
-        # startgist:75f170c0950a97b57896:prismic-predicates.py
+        # startgist:771a09b9d88e0fb53705:prismic-predicates.py
         api = prismic.get("http://lesbonneschoses.prismic.io/api")
         response = api.form("everything").ref(api.get_master()) \
             .query(predicates.at("document.type", "product"),
@@ -94,7 +94,7 @@ class DocTestCase(unittest.TestCase):
         self.assertEqual(response.results_size, 0)
 
     def test_all_predicates(self):
-        # startgist:057350d746fa64a673df:prismic-allPredicates.py
+        # startgist:d0f7e2b2ae7bd3fefc94:prismic-allPredicates.py
         # "at" predicate: equality of a fragment to a value.
         at = predicates.at("document.type", "article")
         # "any" predicate: equality of a fragment to a value.
@@ -111,7 +111,7 @@ class DocTestCase(unittest.TestCase):
         api = prismic.get("http://lesbonneschoses.prismic.io/api")
         response = api.form("everything").ref(api.get_master())\
             .query(predicates.at("document.id", "UlfoxUnM0wkXYXbX")).submit()
-        # startgist:12326c99257882585e0d:prismic-asHtml.py
+        # startgist:35dfff6b09283752ac88:prismic-asHtml.py
         def link_resolver(document_link):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
         doc = response.documents[0]
@@ -120,7 +120,7 @@ class DocTestCase(unittest.TestCase):
         self.assertIsNotNone(html)
 
     def test_html_serializer(self):
-        # startgist:dcf171c8e047f43e0472:prismic-htmlSerializer.py
+        # startgist:7314e2bf9d81e750280f:prismic-htmlSerializer.py
         api = prismic.get("http://lesbonneschoses.prismic.io/api")
         response = api.form("everything").ref(api.get_master()) \
             .query(predicates.at("document.id", "UlfoxUnM0wkXYXbX")).submit()
@@ -147,7 +147,7 @@ class DocTestCase(unittest.TestCase):
         response = api.form('everything').query(predicates.at("document.id", "UlfoxUnM0wkXYXbl"))\
             .ref(api.get_master()).submit()
         doc = response.documents[0]
-        # // startgist:d06042ce84f6002c055d:prismic-getText.py
+        # // startgist:f092312c243181a45ebf:prismic-getText.py
         author = doc.get_text("blog-post.author")
         if author is None:
             author = "Anonymous"
@@ -159,7 +159,7 @@ class DocTestCase(unittest.TestCase):
         response = api.form('everything').query(predicates.at("document.id", "UlfoxUnM0wkXYXbO"))\
             .ref(api.get_master()).submit()
         doc = response.documents[0]
-        # startgist:2542ea501c2f950c597e:prismic-getNumber.py
+        # startgist:2d89caba900bb897e72b:prismic-getNumber.py
         # Number predicates
         gt = predicates.gt("my.product.price", 10)
         lt = predicates.lt("my.product.price", 20)
@@ -175,7 +175,7 @@ class DocTestCase(unittest.TestCase):
         response = api.form('everything').query(predicates.at("document.id", "UlfoxUnM0wkXYXbO")) \
             .ref(api.get_master()).submit()
         doc = response.documents[0]
-        # startgist:360d054f79680bd48679:prismic-images.py
+        # startgist:4871fb63a54185ee562f:prismic-images.py
         # Accessing image fields
         image = doc.get_image('product.image')
         # By default the 'main' view is returned
@@ -190,7 +190,7 @@ class DocTestCase(unittest.TestCase):
         response = api.form('everything').query(predicates.at("document.id", "UlfoxUnM0wkXYXbl"))\
             .ref(api.get_master()).submit()
         doc = response.documents[0]
-        # startgist:a416bcf69d3e604d5c3b:prismic-dateTimestamp.py
+        # startgist:d0df1672e30871ab6517:prismic-dateTimestamp.py
         # Date and Timestamp predicates
         date_before = predicates.date_before("my.product.releaseDate", datetime.datetime(2014, 6, 1))
         date_after = predicates.date_after("my.product.releaseDate", datetime.datetime(2014, 1, 1))
@@ -222,7 +222,7 @@ class DocTestCase(unittest.TestCase):
         document = prismic.Document(json.loads(data))
         def resolver(document_link):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
-        # startgist:8618c84784a22634ca6a:prismic-group.py
+        # startgist:8d92bf7608874546a271:prismic-group.py
         group = document.get_group("article.documents")
         docs = (group and group.value) or []
         for doc in docs:
@@ -234,7 +234,7 @@ class DocTestCase(unittest.TestCase):
     def test_link(self):
         data = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"source\":{\"type\":\"Link.document\",\"value\":{\"document\":{\"id\":\"UlfoxUnM0wkXYXbE\",\"type\":\"product\",\"tags\":[\"Macaron\"],\"slug\":\"dark-chocolate-macaron\"},\"isBroken\":false}}}}}"
         document = prismic.Document(json.loads(data))
-        # startgist:1417c3a9baf3015e34b8:prismic-link.py
+        # startgist:760b247e42170b806cdc:prismic-link.py
         def resolver(document_link):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
         source = document.get_link("article.source")
@@ -245,7 +245,7 @@ class DocTestCase(unittest.TestCase):
     def test_embed(self):
         data = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"video\":{\"type\":\"Embed\",\"value\":{\"oembed\":{\"provider_url\":\"http://www.youtube.com/\",\"type\":\"video\",\"thumbnail_height\":360,\"height\":270,\"thumbnail_url\":\"http://i1.ytimg.com/vi/baGfM6dBzs8/hqdefault.jpg\",\"width\":480,\"provider_name\":\"YouTube\",\"html\":\"<iframe width=\\\"480\\\" height=\\\"270\\\" src=\\\"http://www.youtube.com/embed/baGfM6dBzs8?feature=oembed\\\" frameborder=\\\"0\\\" allowfullscreen></iframe>\",\"author_name\":\"Siobhan Wilson\",\"version\":\"1.0\",\"author_url\":\"http://www.youtube.com/user/siobhanwilsonsongs\",\"thumbnail_width\":480,\"title\":\"Siobhan Wilson - All Dressed Up\",\"embed_url\":\"https://www.youtube.com/watch?v=baGfM6dBzs8\"}}}}}}"
         document = prismic.Document(json.loads(data))
-        # startgist:f405d95bc1d987aedeaa:prismic-embed.py
+        # startgist:e07df5ce3494ee96eb42:prismic-embed.py
         video = document.get_embed("article.video")
         # Html is the code to include to embed the object, and depends on the embedded service
         html = video and video.as_html
@@ -255,7 +255,7 @@ class DocTestCase(unittest.TestCase):
     def test_color(self):
         data = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"background\":{\"type\":\"Color\",\"value\":\"#000000\"}}}}"
         document = prismic.Document(json.loads(data))
-        # startgist:85a630064368ebabf2e6:prismic-color.py
+        # startgist:c9ebba9bcbce4b4cc785:prismic-color.py
         bgcolor = document.get_color("article.background")
         hex = bgcolor.value
         # endgist
@@ -264,7 +264,7 @@ class DocTestCase(unittest.TestCase):
     def test_geopoint(self):
         data = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"location\":{\"type\":\"GeoPoint\",\"value\":{\"latitude\":48.877108,\"longitude\":2.333879}}}}}"
         document = prismic.Document(json.loads(data))
-        # startgist:316cb72c1a5789fd2049:prismic-geopoint.py
+        # startgist:2213275b6f437e7a87f3:prismic-geopoint.py
         # "near" predicate for GeoPoint fragments
         near = predicates.near("my.store.location", 48.8768767, 2.3338802, 10)
 
@@ -275,7 +275,7 @@ class DocTestCase(unittest.TestCase):
         self.assertEqual(coordinates, "48.877108,2.333879")
 
     def test_cache(self):
-        # startgist:11a75574ad42c60ff6de:prismic-cache.py
+        # startgist:1a43283f77383d57ce02:prismic-cache.py
         # Just implement your own cache object by duck-typing
         # https://github.com/prismicio/python-kit/blob/master/prismic/cache.py
         no_cache = NoCache()
