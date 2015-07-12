@@ -17,7 +17,6 @@ import requests
 import json
 import re
 import platform
-import pkg_resources
 from collections import OrderedDict
 from requests.exceptions import InvalidSchema
 from .exceptions import (InvalidTokenError, AuthorizationNeededError,
