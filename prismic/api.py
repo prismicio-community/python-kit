@@ -160,7 +160,7 @@ class SearchForm(object):
     @staticmethod
     def _serialize(field):
         if isinstance(field, string_types):
-            if field.startswith('my.') or field.startswith('document.'):
+            if field.startswith('my.') or field.startswith('document.') or field == 'document':
                 return field
             else:
                 return '"' + field + '"'
