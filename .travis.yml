@@ -6,6 +6,7 @@ python:
 - '3.4'
 install: pip install .
 script: nosetests
+sudo: false
 deploy:
   provider: pypi
   user: erwan
