@@ -8,8 +8,8 @@ from __future__ import (absolute_import, division, print_function, unicode_liter
 from prismic.cache import ShelveCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, InvalidURLError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
-    fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, \
-    fixture_image_links, fixture_spans_labels, fixture_block_labels, fixture_custom_html
+    fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, fixture_image_links, \
+    fixture_spans_labels, fixture_block_labels, fixture_custom_html, fixture_slices
 import time
 import json
 import logging
@@ -36,6 +36,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_image_links = json.loads(fixture_image_links)
         self.fixture_spans_labels = json.loads(fixture_spans_labels)
         self.fixture_custom_html = json.loads(fixture_custom_html)
+        self.fixture_slices = json.loads(fixture_slices)
 
         self.api = prismic.Api(self.fixture_api, self.token, ShelveCache("prismictest"), None)
 
@@ -186,7 +187,16 @@ class TestSearchFormTestCase(PrismicTestCase):
     def test_as_html(self):
         doc_json = self.fixture_search[0]
         doc = prismic.Document(doc_json)
-        expected_html = """<section data-field="product.allergens"><span class="text">Contains almonds, eggs, milk</span></section><section data-field="product.image"><img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png" width="500" height="500"></section><section data-field="product.short_lede"><h2>Crispiness and softness, rolled into one</h2></section><section data-field="product.testimonial_author[0]"><h3>Chef Guillaume Bort</h3></section><section data-field="product.related[0]"><a href="document/UdUjvt_mqVNObPeO">dark-chocolate-macaron</a></section><section data-field="product.name"><h1>Vanilla Macaron</h1></section><section data-field="product.related[1]"><a href="document/UdUjsN_mqT1ObPeM">salted-caramel-macaron</a></section><section data-field="product.testimonial_quote[0]"><p>The taste of pure vanilla is very hard to tame, and therefore, most cooks resort to substitutes. <strong>It takes a high-skill chef to know how to get the best of tastes, and <strong><em></strong>Les Bonnes Choses<strong></em></strong>'s vanilla macaron does just that</strong>. The result is more than a success, it simply is a gastronomic piece of art.</p></section><section data-field="product.flavour[0]"><span class="text">Vanilla</span></section><section data-field="product.price"><span class="number">3.55</span></section><section data-field="product.color"><span class="color">#ffeacd</span></section><section data-field="product.description"><p>Experience the ultimate vanilla experience. Our vanilla Macarons are made with our very own (in-house) <strong>pure extract of Madagascar vanilla</strong>, and subtly dusted with <strong>our own vanilla sugar</strong> (which we make from real vanilla beans).</p></section>"""
+        expected_html = ("""<section data-field="product.allergens"><span class="text">Contains almonds, eggs, milk</span></section>"""
+                         """<section data-field="product.image"><img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png" alt="" width="500" height="500" /></section>"""
+                         """<section data-field="product.short_lede"><h2>Crispiness and softness, rolled into one</h2></section>"""
+                         """<section data-field="product.testimonial_author[0]"><h3>Chef Guillaume Bort</h3></section><section data-field="product.related[0]"><a href="document/UdUjvt_mqVNObPeO">dark-chocolate-macaron</a></section>"""
+                         """<section data-field="product.name"><h1>Vanilla Macaron</h1></section>"""
+                         """<section data-field="product.related[1]"><a href="document/UdUjsN_mqT1ObPeM">salted-caramel-macaron</a></section>"""
+                         """<section data-field="product.testimonial_quote[0]"><p>The taste of pure vanilla is very hard to tame, and therefore, most cooks resort to substitutes. <strong>It takes a high-skill chef to know how to get the best of tastes, and <strong><em></strong>Les Bonnes Choses<strong></em></strong>'s vanilla macaron does just that</strong>. The result is more than a success, it simply is a gastronomic piece of art.</p></section>"""
+                         """<section data-field="product.flavour[0]"><span class="text">Vanilla</span></section>"""
+                         """<section data-field="product.price"><span class="number">3.55</span></section><section data-field="product.color"><span class="color">#ffeacd</span></section>"""
+                         """<section data-field="product.description"><p>Experience the ultimate vanilla experience. Our vanilla Macarons are made with our very own (in-house) <strong>pure extract of Madagascar vanilla</strong>, and subtly dusted with <strong>our own vanilla sugar</strong> (which we make from real vanilla beans).</p></section>""")
         doc_html = doc.as_html(lambda link_doc: "document/%s" % link_doc.id)
         # Comparing len rather than actual strings because json loading is not in a deterministic order for now
         self.assertEqual(len(expected_html), len(doc_html))
@@ -237,7 +247,7 @@ class TestFragmentsTestCase(PrismicTestCase):
         expected_html = \
             ("""<img """
              """src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" """
-             """width="250" height="250">""")
+             """alt="" width="250" height="250" />""")
         self.assertEqual(expected_html, doc.get_image("product.image", "icon").as_html(PrismicTestCase.link_resolver))
 
     def test_number(self):
@@ -362,23 +372,33 @@ class TestFragmentsTestCase(PrismicTestCase):
         links = contributor.get_group("contributor.links")
         self.assertEquals(len(links.value), 2)
 
+    def test_slicezone(self):
+        self.maxDiff = 10000
+        doc = prismic.Document(self.fixture_slices)
+        slices = doc.get_slice_zone("article.blocks")
+        self.assertEquals(
+            slices.as_html(PrismicTestCase.link_resolver),
+            ("""<div data-slicetype="features" class="slice"><section data-field="illustration"><img src="https://wroomdev.s3.amazonaws.com/toto/db3775edb44f9818c54baa72bbfc8d3d6394b6ef_hsf_evilsquall.jpg" alt="" width="4285" height="709" /></section>"""
+            """<section data-field="title"><span class="text">c'est un bloc features</span></section></div>\n"""
+            """<div data-slicetype="text" class="slice"><p>C'est un bloc content</p></div>"""))
+
     def test_image_links(self):
         self.maxDiff = 10000
         text = prismic.fragments.StructuredText(self.fixture_image_links.get('value'))
 
         self.assertEqual(
             text.as_html(PrismicTestCase.link_resolver),
-            ('<p>Here is some introductory text.</p>'
-             '<p>The following image is linked.</p>'
-             '<p class=\"block-img\"><a href=\"http://google.com/\">'
-             '<img src=\"http://fpoimg.com/129x260\" width=\"260\" height=\"129\"></a></p>'
-             '<p><strong>More important stuff</strong></p><p>The next is linked to a valid document:</p>'
-             '<p class=\"block-img\"><a href=\"/document/UxCQFFFFFFFaaYAH/something-fantastic\">'
-             '<img src=\"http://fpoimg.com/400x400\" width=\"400\" height=\"400\"></a></p>'
-             '<p>The next is linked to a broken document:</p><p class=\"block-img\"><a href=\"#broken\">'
-             '<img src=\"http://fpoimg.com/250x250\" width=\"250\" height=\"250\"></a></p>'
-             '<p>One more image, this one is not linked:</p><p class=\"block-img\">'
-             '<img src=\"http://fpoimg.com/199x300\" width=\"300\" height=\"199\"></p>'))
+            ("""<p>Here is some introductory text.</p>"""
+             """<p>The following image is linked.</p>"""
+             """<p class="block-img"><a href="http://google.com/">"""
+             """<img src="http://fpoimg.com/129x260" alt="" width="260" height="129" /></a></p>"""
+             """<p><strong>More important stuff</strong></p><p>The next is linked to a valid document:</p>"""
+             """<p class="block-img"><a href="/document/UxCQFFFFFFFaaYAH/something-fantastic">"""
+             """<img src="http://fpoimg.com/400x400" alt="" width="400" height="400" /></a></p>"""
+             """<p>The next is linked to a broken document:</p><p class="block-img"><a href="#broken">"""
+             """<img src="http://fpoimg.com/250x250" alt="" width="250" height="250" /></a></p>"""
+             """<p>One more image, this one is not linked:</p><p class="block-img">"""
+             """<img src="http://fpoimg.com/199x300" alt="" width="300" height="199" /></p>"""))
 
     def test_custom_html(self):
         self.maxDiff = 10000
@@ -386,18 +406,18 @@ class TestFragmentsTestCase(PrismicTestCase):
 
         self.assertEqual(
             text.as_html(PrismicTestCase.link_resolver, PrismicTestCase.html_serializer),
-            ('<p>Here is some introductory text.</p>'
-             '<p>The following image is linked.</p>'
-             '<a href=\"http://google.com/\"><img src=\"http://fpoimg.com/129x260\" width=\"260\" height=\"129\"></a>'
-             '<p><strong>More important stuff</strong></p><p>The next is linked to a valid document:</p>'
-             '<a href=\"/document/UxCQFFFFFFFaaYAH/something-fantastic\">'
-             '<img src=\"http://fpoimg.com/400x400\" width=\"400\" height=\"400\"></a>'
-             '<p>The next is linked to a broken document:</p><a href=\"#broken\">'
-             '<img src=\"http://fpoimg.com/250x250\" width=\"250\" height=\"250\"></a>'
-             '<p>One more image, this one is not linked:</p>'
-             '<img src=\"http://fpoimg.com/199x300\" width=\"300\" height=\"199\">'
-             '<p>This <a class="some-link" href="/document/UlfoxUnM0wkXYXbu/les-bonnes-chosess-internship-a-testimony">'
-             'paragraph</a> contains an hyperlink.</p>'))
+            ("""<p>Here is some introductory text.</p>"""
+             """<p>The following image is linked.</p>"""
+             """<a href="http://google.com/"><img src="http://fpoimg.com/129x260" alt="" width="260" height="129" /></a>"""
+             """<p><strong>More important stuff</strong></p><p>The next is linked to a valid document:</p>"""
+             """<a href="/document/UxCQFFFFFFFaaYAH/something-fantastic">"""
+             """<img src="http://fpoimg.com/400x400" alt="" width="400" height="400" /></a>"""
+             """<p>The next is linked to a broken document:</p><a href="#broken">"""
+             """<img src="http://fpoimg.com/250x250" alt="" width="250" height="250" /></a>"""
+             """<p>One more image, this one is not linked:</p>"""
+             """<img src="http://fpoimg.com/199x300" alt="" width="300" height="199" />"""
+             """<p>This <a class="some-link" href="/document/UlfoxUnM0wkXYXbu/les-bonnes-chosess-internship-a-testimony">"""
+             """paragraph</a> contains an hyperlink.</p>"""))
 
 
 class PredicatesTestCase(PrismicTestCase):
@@ -454,7 +474,6 @@ class PredicatesTestCase(PrismicTestCase):
             .query(predicates.near('my.store.coordinates', 40.689757, -74.0451453, 15))
         self.assertEqual(f.data['q'], ['[[:d = geopoint.near(my.store.coordinates, 40.689757, -74.0451453, 15)]]'])
 
-
 class TestCache(unittest.TestCase):
 
     def setUp(self):
@@ -472,4 +491,3 @@ class TestCache(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

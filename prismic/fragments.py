@@ -40,7 +40,8 @@ class Fragment(object):
                 "Link.image":     Fragment.ImageLink,
                 "Embed":          Fragment.Embed,
                 "GeoPoint":       Fragment.GeoPoint,
-                "Group":          Fragment.Group
+                "Group":          Fragment.Group,
+                "SliceZone":      Fragment.SliceZone
             }
 
         fragment_type = data.get("type")
@@ -116,6 +117,9 @@ class Fragment(object):
 
         def get_structured_text(self, field):
             return self.get_fragment_type(field, StructuredText)
+
+        def get_slice_zone(self, field):
+            return self.get_fragment_type(field, Fragment.SliceZone)
 
         def get_html(self, field, link_resolver):
             """Get the html of a field.
@@ -311,14 +315,17 @@ class Fragment(object):
                 self.url = data["url"]
                 self.width = data["dimensions"]["width"]
                 self.height = data["dimensions"]["height"]
+                self.alt = data.get("alt")
+                self.copyright = data.get("copyright")
                 self.link_to = Fragment.Link.parse(data.get("linkTo"))
                 self.label = data.get("label")
 
             def as_html(self, link_resolver):
-                img_tag = """<img src="%(url)s" width="%(width)s" height="%(height)s">""" % {
+                img_tag = """<img src="%(url)s" alt="%(alt)s" width="%(width)s" height="%(height)s" />""" % {
                     'url': self.url,
                     'width': self.width,
-                    'height': self.height
+                    'height': self.height,
+                    'alt': self.alt if (self.alt is not None) else ""
                 }
                 if self.link_to is None:
                     return img_tag
@@ -442,6 +449,47 @@ class Fragment(object):
                 for name, frag in elt.items():
                     fragments[name] = Fragment.from_json(frag)
                 self.value.append(Fragment.WithFragments(fragments))
+
+        def as_html(self, link_resolver):
+            html = []
+            for group_doc in self.value:
+                html.append(group_doc.as_html(link_resolver))
+            return "\n".join(html)
+
+
+    class Slice(FragmentElement):
+
+        def __init__(self, slice_type, label, value):
+            self.slice_type = slice_type
+            self.label = label
+            self.value = value
+
+        def as_html(self, link_resolver):
+            classes = ['slice']
+            if self.label is not None:
+                classes.append(self.label)
+            return '<div data-slicetype="%(slice_type)s" class="%(classes)s">%(body)s</div>' % {
+                "slice_type": self.slice_type,
+                "classes": ' '.join(classes),
+                "body": self.value.as_html(link_resolver)
+            }
+
+
+    class SliceZone(FragmentElement):
+
+        def __init__(self, value):
+            self.slices = []
+            for elt in value:
+                slice_type = elt['slice_type']
+                label = elt.get('label')
+                fragment = Fragment.from_json(elt['value'])
+                self.slices.append(Fragment.Slice(slice_type, label, fragment))
+
+        def as_html(self, link_resolver):
+            html = []
+            for slice in self.slices:
+                html.append(slice.as_html(link_resolver))
+            return "\n".join(html)
 
 
 class StructuredText(object):
