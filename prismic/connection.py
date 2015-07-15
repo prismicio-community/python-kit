@@ -66,7 +66,7 @@ def get_json(url, params=None, access_token=None, cache=None, ttl=None, request_
 
 
 def get_max_age(headers):
-    expire_header = headers["Cache-Control"]
+    expire_header = headers.get("Cache-Control")
     if expire_header is not None:
         m = re.match("max-age=(\d+)", expire_header)
         if m:
