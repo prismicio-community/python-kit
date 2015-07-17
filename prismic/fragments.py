@@ -459,15 +459,15 @@ class Fragment(object):
 
     class Slice(FragmentElement):
 
-        def __init__(self, slice_type, label, value):
+        def __init__(self, slice_type, slice_label, value):
             self.slice_type = slice_type
-            self.label = label
+            self.slice_label = slice_label
             self.value = value
 
         def as_html(self, link_resolver):
             classes = ['slice']
-            if self.label is not None:
-                classes.append(self.label)
+            if self.slice_label is not None:
+                classes.append(self.slice_label)
             return '<div data-slicetype="%(slice_type)s" class="%(classes)s">%(body)s</div>' % {
                 "slice_type": self.slice_type,
                 "classes": ' '.join(classes),
@@ -481,9 +481,9 @@ class Fragment(object):
             self.slices = []
             for elt in value:
                 slice_type = elt['slice_type']
-                label = elt.get('label')
+                slice_label = elt.get('slice_label')
                 fragment = Fragment.from_json(elt['value'])
-                self.slices.append(Fragment.Slice(slice_type, label, fragment))
+                self.slices.append(Fragment.Slice(slice_type, slice_label, fragment))
 
         def as_html(self, link_resolver):
             html = []
