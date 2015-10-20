@@ -25,6 +25,6 @@ setup(
         'pyOpenSSL',
         'ndg-httpsclient',
         'pyasn1',
-        'requests'
+        'requests >= 2.7'
     ]
 )
