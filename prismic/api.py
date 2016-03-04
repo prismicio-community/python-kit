@@ -85,7 +85,7 @@ class Api(object):
 
         :return: the URL to redirect the user to
         """
-        main_document_id = get_json(token, request_handler=self.request_handler).get("mainDocument")
+        main_document_id = get_json(token, request_handler=self.request_handler, cache=self.cache).get("mainDocument")
         if main_document_id is None:
             return default_url
         response = self.form("everything").ref(token).query(predicates.at("document.id", main_document_id)).submit()
