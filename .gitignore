@@ -7,3 +7,4 @@ prismic.egg-info/
 cache.db
 node_modules/
 
+.eggs
