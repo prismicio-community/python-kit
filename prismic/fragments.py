@@ -31,6 +31,7 @@ class Fragment(object):
                 "Text":           Fragment.Text,
                 "Select":         Fragment.Text,
                 "Number":         Fragment.Number,
+                "Range":          Fragment.Range,
                 "Date":           Fragment.Date,
                 "Timestamp":      Fragment.Timestamp,
                 "StructuredText": StructuredText,
@@ -82,6 +83,9 @@ class Fragment(object):
 
         def get_number(self, field):
             return self.get_fragment_type(field, Fragment.Number)
+
+        def get_range(self, field):
+            return self.get_fragment_type(field, Fragment.Range)
 
         def get_color(self, field):
             return self.get_fragment_type(field, Fragment.Color)
@@ -407,6 +411,12 @@ class Fragment(object):
         @property
         def as_html(self):
             return """<span class="number">%g</span>""" % self.value
+
+    class Range(BasicFragment):
+
+        @property
+        def as_html(self):
+            return """<span class="range">%s</span>""" % self.value
 
     class Color(BasicFragment):
 

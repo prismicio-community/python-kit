@@ -118,6 +118,15 @@ class DocTestCase(unittest.TestCase):
         price = doc.get_number("all.number").value
         self.assertEqual(price, 20.0)
 
+    def test_get_range(self):
+         api = prismic.get('https://micro.prismic.io/api')
+         response = api.form('everything').query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
+             .ref(api.get_master()).submit()
+         doc = response.documents[0]
+
+         price = doc.get_range("all.range").value
+         self.assertEqual(price, "38")
+
     def test_images(self):
         api = prismic.get('https://micro.prismic.io/api')
         response = api.form('everything').query(predicates.at("document.id", "WHx-gSYAAMkyXYX_")) \
