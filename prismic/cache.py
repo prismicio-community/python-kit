@@ -36,7 +36,7 @@ class ShelveCache(object):
 
     def _init_db(self):
         if self.db is None:
-            cache_dir = os.path.join(tempfile.gettempdir(), "prismic-cache")
+            cache_dir = os.path.join(tempfile.mkdtemp(), "prismic-cache")
             if not os.path.exists(cache_dir):
                 os.makedirs(cache_dir)
             self.db = shelve.open(os.path.join(cache_dir, self.filename))
