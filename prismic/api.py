@@ -88,10 +88,10 @@ class Api(object):
         main_document_id = get_json(token, request_handler=self.request_handler).get("mainDocument")
         if main_document_id is None:
             return default_url
-        response = self.form("everything").ref(token).query(predicates.at("document.id", main_document_id)).submit()
-        if len(response.results) == 0:
+        doc = self.get_by_id(main_document_id, ref=token)
+        if doc is None == 0:
             return default_url
-        return link_resolver(response.documents[0].as_link())
+        return link_resolver(doc.as_link())
 
     def get_ref(self, label):
         """Get the :class:`Ref <Ref>` with a specific label.
@@ -145,7 +145,15 @@ class Api(object):
         return self.query_first(predicates.at('document.id', id), ref)
 
     def get_by_ids(self, ids, ref=None, page_size=None, page=None, orderings=None, after=None, fetch_links=None):
-        return self.query(predicates.in_('document.id', ids), ref, page_size, page, orderings, after, fetch_links)
+        return self.query(
+            predicates.in_('document.id', ids),
+            ref,
+            page_size=page_size,
+            page=page,
+            orderings=orderings,
+            after=after,
+            fetch_links=fetch_links
+        )
 
     def get_single(self, type, ref=None):
         return self.query_first(predicates.at('document.type', type), ref)

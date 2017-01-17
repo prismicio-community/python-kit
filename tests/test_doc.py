@@ -33,7 +33,7 @@ class DocTestCase(unittest.TestCase):
         api = prismic.get("https://micro.prismic.io/api")
         self.assertIsNotNone(api)
 
-    def test_simplequery(self):
+    def test_form(self):
         api = prismic.get("https://micro.prismic.io/api")
         response = api.form("everything").ref(api.get_master())\
             .query(predicates.at("document.type", "all"))\
@@ -52,38 +52,27 @@ class DocTestCase(unittest.TestCase):
         preview_token = 'MC5VcXBHWHdFQUFONDZrbWp4.77-9cDx6C3lgJu-_vXZafO-_vXPvv73vv73vv70777-9Ju-_ve-_vSLvv73vv73vv73vv70O77-977-9Me-_vQ'
         api = prismic.get('https://micro.prismic.io/api', preview_token)
         release_ref = api.get_ref('myrelease')
-        response = api.form("everything")\
-            .ref(release_ref)\
-            .query(predicates.at("document.type", "all"))\
-            .submit()
+        response = api.query(predicates.at("document.type", "all"), ref=release_ref)
         self.assertGreaterEqual(response.results_size, 1)
 
     def test_orderings(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything')\
-            .ref(api.get_master())\
-            .query(predicates.at("document.type", "all"))\
-            .pageSize(100)\
-            .orderings('[my.all.number desc]')\
-            .submit()
+        response = api.query(predicates.at("document.type", "all"), page_size=2, orderings='[my.all.number desc]')
         # The documents are now ordered using the 'number' field, highest first
-        results = response.results
-        self.assertEqual(response.results_per_page, 100)
+        docs = response.documents
+        self.assertGreaterEqual(docs[0].get_number('all.number').value, docs[1].get_number('all.number').value)
 
     def test_as_html(self):
         api = prismic.get("http://micro.prismic.io/api")
-        response = api.form("everything").ref(api.get_master())\
-            .query(predicates.at("document.id", "V_OplCUAACQAE0lA")).submit()
+        doc = api.get_by_uid('all', 'all')
         def link_resolver(document_link):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
-        doc = response.documents[0]
         html = doc.as_html(link_resolver)
         self.assertIsNotNone(html)
 
     def test_html_serializer(self):
         api = prismic.get("http://micro.prismic.io/api")
-        response = api.form("everything").ref(api.get_master()) \
-            .query(predicates.at("document.id", "WHx-gSYAAMkyXYX_")).submit()
+        doc = api.get_by_uid('all', 'all')
 
         def link_resolver(document_link):
             return "/document/%s/%s" % (document_link.id, document_link.slug)
@@ -97,41 +86,30 @@ class DocTestCase(unittest.TestCase):
                 return """<a class="some-link" href="%s">""" % element.get_url(link_resolver) + content + "</a>"
             return None
 
-        doc = response.documents[0]
         html = doc.get_structured_text("all.stext").as_html(link_resolver, html_serializer)
         self.assertIsNotNone(html)
 
     def test_get_text(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything').query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
+        doc = api.get_by_uid('all', 'all')
         author = doc.get_text("all.text")
         self.assertEqual(author, "all")
 
     def test_get_number(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything').query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
-
+        doc = api.get_by_uid('all', 'all')
         price = doc.get_number("all.number").value
         self.assertEqual(price, 20.0)
 
     def test_get_range(self):
-         api = prismic.get('https://micro.prismic.io/api')
-         response = api.form('everything').query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-             .ref(api.get_master()).submit()
-         doc = response.documents[0]
-
-         price = doc.get_range("all.range").value
-         self.assertEqual(price, "38")
+        api = prismic.get('https://micro.prismic.io/api')
+        doc = api.get_by_uid('all', 'all')
+        price = doc.get_range("all.range").value
+        self.assertEqual(price, '38')
 
     def test_images(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything').query(predicates.at("document.id", "WHx-gSYAAMkyXYX_")) \
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
+        doc = api.get_by_uid('all', 'all')
         url = doc.get_image('all.image').url
         self.assertEqual(
             url,
@@ -139,40 +117,27 @@ class DocTestCase(unittest.TestCase):
 
     def test_date(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything')\
-            .query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
-
+        doc = api.get_by_uid('all', 'all')
         date = doc.get_date("all.date")
         self.assertEqual(date.as_datetime, datetime.datetime(2017, 1, 16, 0, 0))
 
     def test_date_html(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything')\
-            .query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
+        doc = api.get_by_uid('all', 'all')
 
         date = doc.get_date("all.date")
         self.assertEqual(date.as_html, u'<time>2017-01-16</time>')
 
     def test_timestamp(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything')\
-            .query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
+        doc = api.get_by_uid('all', 'all')
 
         timestamp = doc.get_timestamp("all.timestamp")
         self.assertEqual(timestamp.as_datetime, datetime.datetime(2017, 1, 16, 7, 25, 35))
 
     def test_timestamp_html(self):
         api = prismic.get('https://micro.prismic.io/api')
-        response = api.form('everything')\
-            .query(predicates.at("document.id", "WHx-gSYAAMkyXYX_"))\
-            .ref(api.get_master()).submit()
-        doc = response.documents[0]
+        doc = api.get_by_uid('all', 'all')
 
         timestamp = doc.get_timestamp("all.timestamp")
         self.assertEqual(timestamp.as_html, u'<time>2017-01-16T07:25:35+0000</time>')

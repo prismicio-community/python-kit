@@ -31,14 +31,9 @@ You can find the documentation of the Python kit right here: http://prismic.read
 Here is a basic example of use:
 ```python
 >>> import prismic
->>> api = prismic.get("http://your-lesbonneschoses.prismic.io/api", "access_token")
->>> form = api.form("everything")
-
->>> # Set the ref and the query to get all documents of type "product"
->>> form.ref(api.get_master()).query("""[[:d = any(document.type, ["product"])]]""")
-
->>> response = form.submit()
->>> response.documents[0].get_text("product.name")
+>>> api = prismic.get("http://your-repo.prismic.io/api", "access_token")
+>>> doc = api.get_by_uid("speculoos-macaron")
+>>> doc.get_text("product.name")
 u'Speculoos Macaron'
 ```
 
