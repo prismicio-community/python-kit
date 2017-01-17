@@ -13,6 +13,8 @@ import datetime
 def at(fragment, value):
     return ['at', fragment, value]
 
+def not_(fragment, value):
+    return ['not', fragment, value]
 
 def any(fragment, values):
     return ['any', fragment, values]

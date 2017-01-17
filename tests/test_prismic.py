@@ -429,6 +429,13 @@ class PredicatesTestCase(PrismicTestCase):
             .query(predicates.at('document.id', 'UlfoxUnM0wkXYXbZ'))
         self.assertEqual(f.data['q'], ["[[:d = at(document.id, \"UlfoxUnM0wkXYXbZ\")]]"])
 
+    def test_not(self):
+        f = self.api\
+            .form("everything")\
+            .ref(self.api.get_master())\
+            .query(predicates.not_('document.id', 'UlfoxUnM0wkXYXbZ'))
+        self.assertEqual(f.data['q'], ["[[:d = not(document.id, \"UlfoxUnM0wkXYXbZ\")]]"])
+
     def test_any(self):
         f = self.api \
             .form("everything") \
