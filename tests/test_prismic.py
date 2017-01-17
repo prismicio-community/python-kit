@@ -194,10 +194,13 @@ class ApiIntegrationTestCase(PrismicTestCase):
 
 
 class ApiTestCase(PrismicTestCase):
-    def test_get_ref(self):
+    def test_get_ref_master(self):
         self.assertEqual(self.api.get_ref("Master").ref, "UgjWQN_mqa8HvPJY")
 
-    def test_master(self):
+    def test_get_ref(self):
+        self.assertEqual(self.api.get_ref("San Francisco Grand opening").ref, "UgjWRd_mqbYHvPJa")
+
+    def test_get_master(self):
         self.assertEqual(self.api.get_master().ref, "UgjWQN_mqa8HvPJY")
         self.assertEqual(self.api.get_master().id, "master")
 
