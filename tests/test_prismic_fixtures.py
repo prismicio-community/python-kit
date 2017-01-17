@@ -31,7 +31,7 @@ fixture_api = """
         "everything": {
             "method": "GET",
             "enctype": "application/x-www-form-urlencoded",
-            "action": "http://lesbonneschoses.wroom.io/api/documents/search",
+            "action": "http://micro.wroom.io/api/documents/search",
             "fields": {
                 "ref": {
                     "type": "String"
@@ -46,7 +46,7 @@ fixture_api = """
            "method":"GET",
            "rel":"collection",
            "enctype":"application/x-www-form-urlencoded",
-           "action":"http://lesbonneschoses.prismic.io/api/documents/search",
+           "action":"http://micro.prismic.io/api/documents/search",
            "fields":{
               "ref":{
                  "type":"String"
@@ -58,14 +58,14 @@ fixture_api = """
            }
         }
     },
-    "oauth_initiate": "http://lesbonneschoses.wroom.io/auth",
-    "oauth_token": "http://lesbonneschoses.wroom.io/auth/token"
+    "oauth_initiate": "http://micro.wroom.io/auth",
+    "oauth_token": "http://micro.wroom.io/auth/token"
 }"""
 fixture_search = """[
     {
         "id": "UdUkXt_mqZBObPeS",
         "type": "product",
-        "href": "http://lesbonneschoses.wroom.io/api/documents/search?ref=UgjWQN_mqa8HvPJY&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UdUkXt_mqZBObPeS%22%29+%5D%5D",
+        "href": "http://micro.wroom.io/api/documents/search?ref=UgjWQN_mqa8HvPJY&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UdUkXt_mqZBObPeS%22%29+%5D%5D",
         "tags": [
             "Macaron"
         ],
@@ -78,7 +78,7 @@ fixture_search = """[
                     "type": "Image",
                     "value": {
                         "main": {
-                            "url": "https://wroomio.s3.amazonaws.com/lesbonneschoses/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png",
+                            "url": "https://wroomio.s3.amazonaws.com/micro/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png",
                             "dimensions": {
                                 "width": 500,
                                 "height": 500
@@ -86,7 +86,7 @@ fixture_search = """[
                         },
                         "views": {
                             "icon": {
-                                "url": "https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png",
+                                "url": "https://wroomio.s3.amazonaws.com/micro/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png",
                                 "dimensions": {
                                     "width": 250,
                                     "height": 250
@@ -235,7 +235,7 @@ fixture_search = """[
     {
         "id": "UdUjsN_mqT1ObPeM",
         "type": "product",
-        "href": "http://lesbonneschoses.wroom.io/api/documents/search?ref=UgjWQN_mqa8HvPJY&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UdUjsN_mqT1ObPeM%22%29+%5D%5D",
+        "href": "http://micro.wroom.io/api/documents/search?ref=UgjWQN_mqa8HvPJY&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UdUjsN_mqT1ObPeM%22%29+%5D%5D",
         "tags": [
             "Macaron"
         ],
@@ -248,7 +248,7 @@ fixture_search = """[
                     "type": "Image",
                     "value": {
                         "main": {
-                            "url": "https://wroomio.s3.amazonaws.com/lesbonneschoses/06074de2d9590adddcdb50547108d811af0d9913.png",
+                            "url": "https://wroomio.s3.amazonaws.com/micro/06074de2d9590adddcdb50547108d811af0d9913.png",
                             "dimensions": {
                                 "width": 500,
                                 "height": 500
@@ -256,7 +256,7 @@ fixture_search = """[
                         },
                         "views": {
                             "icon": {
-                                "url": "https://wroomio.s3.amazonaws.com/lesbonneschoses/7accefd1e7204bbca06e8f13b8ef25fdb673ec67.png",
+                                "url": "https://wroomio.s3.amazonaws.com/micro/7accefd1e7204bbca06e8f13b8ef25fdb673ec67.png",
                                 "dimensions": {
                                     "width": 250,
                                     "height": 250
@@ -433,7 +433,7 @@ fixture_search = """[
     {
         "id": "UebQ4N_mqYEJYF7N",
         "type": "product",
-        "href": "http://lesbonneschoses.wroom.io/api/documents/search?ref=UgjWQN_mqa8HvPJY&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UebQ4N_mqYEJYF7N%22%29+%5D%5D",
+        "href": "http://micro.wroom.io/api/documents/search?ref=UgjWQN_mqa8HvPJY&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UebQ4N_mqYEJYF7N%22%29+%5D%5D",
         "tags": [
             "Pie"
         ],
@@ -446,7 +446,7 @@ fixture_search = """[
                     "type": "Image",
                     "value": {
                         "main": {
-                            "url": "https://wroomio.s3.amazonaws.com/lesbonneschoses/d88b287f7971c0d5f6d17c90176ac186fcd5ba22.png",
+                            "url": "https://wroomio.s3.amazonaws.com/micro/d88b287f7971c0d5f6d17c90176ac186fcd5ba22.png",
                             "dimensions": {
                                 "width": 500,
                                 "height": 500
@@ -454,7 +454,7 @@ fixture_search = """[
                         },
                         "views": {
                             "icon": {
-                                "url": "https://wroomio.s3.amazonaws.com/lesbonneschoses/4a4acae4e5f3dd466ba2d8c9d2083a411439431d.png",
+                                "url": "https://wroomio.s3.amazonaws.com/micro/4a4acae4e5f3dd466ba2d8c9d2083a411439431d.png",
                                 "dimensions": {
                                     "width": 250,
                                     "height": 250
@@ -580,7 +580,7 @@ fixture_structured_lists = """[
     {
         "id": "UinbYMuvzesP4mix",
         "type": "article",
-        "href": "http://lesbonneschoses-uinbymuvzesp4mie.prismic.io/api/documents/search?ref=UjnQi8uvzXIAAYEM&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UinbYMuvzesP4mix%22%29+%5D%5D",
+        "href": "http://micro-uinbymuvzesp4mie.prismic.io/api/documents/search?ref=UjnQi8uvzXIAAYEM&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UinbYMuvzesP4mix%22%29+%5D%5D",
         "tags": [],
         "slugs": [
             "about-us"
@@ -712,7 +712,7 @@ fixture_block_labels = """{
 fixture_store_geopoint = """{
     "id": "UlfoxUnM0wkXYXbq",
     "type": "store",
-    "href": "https:\/\/lesbonneschoses-uxlacoaacgazciu.prismic.io\/api\/documents\/search?ref=U_yGzjAAAC8AsL1a&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UlfoxUnM0wkXYXbq%22%29+%5D%5D",
+    "href": "https:\/\/micro-uxlacoaacgazciu.prismic.io\/api\/documents\/search?ref=U_yGzjAAAC8AsL1a&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22UlfoxUnM0wkXYXbq%22%29+%5D%5D",
     "tags": [
 
     ],
@@ -776,7 +776,7 @@ fixture_store_geopoint = """{
                 "type": "Image",
                 "value": {
                     "main": {
-                        "url": "https:\/\/prismic-io.s3.amazonaws.com\/lesbonneschoses-uxlacoaacgazciu\/eb85bc78fdf0f18a0fd3b7a3fc829768e66ea4f0.jpg",
+                        "url": "https:\/\/prismic-io.s3.amazonaws.com\/micro-uxlacoaacgazciu\/eb85bc78fdf0f18a0fd3b7a3fc829768e66ea4f0.jpg",
                         "alt": "",
                         "copyright": "",
                         "dimensions": {
@@ -786,7 +786,7 @@ fixture_store_geopoint = """{
                     },
                     "views": {
                         "medium": {
-                            "url": "https:\/\/prismic-io.s3.amazonaws.com\/lesbonneschoses-uxlacoaacgazciu\/7b8d054ea5428009ee6f2cdace249dc89c68199d.jpg",
+                            "url": "https:\/\/prismic-io.s3.amazonaws.com\/micro-uxlacoaacgazciu\/7b8d054ea5428009ee6f2cdace249dc89c68199d.jpg",
                             "alt": "",
                             "copyright": "",
                             "dimensions": {
@@ -795,7 +795,7 @@ fixture_store_geopoint = """{
                             }
                         },
                         "icon": {
-                            "url": "https:\/\/prismic-io.s3.amazonaws.com\/lesbonneschoses-uxlacoaacgazciu\/0ca27446c40d08cb0d732d4b9726e2001fa7d552.jpg",
+                            "url": "https:\/\/prismic-io.s3.amazonaws.com\/micro-uxlacoaacgazciu\/0ca27446c40d08cb0d732d4b9726e2001fa7d552.jpg",
                             "alt": "",
                             "copyright": "",
                             "dimensions": {

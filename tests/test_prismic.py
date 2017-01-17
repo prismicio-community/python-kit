@@ -24,8 +24,8 @@ import unittest
 class PrismicTestCase(unittest.TestCase):
     def setUp(self):
         """Init the api url and the token identifier."""
-        self.api_url = "http://lesbonneschoses.prismic.io/api"
-        self.token = "MC5VZ2phOGRfbXFaOEl2UEpj.dO-_ve-_ve-_ve-_vSFRBzXvv71V77-977-9BO-_vVbvv71k77-9Cu-_ve-_vQTvv71177-9eQpcUE3vv70"
+        self.api_url = "http://micro.prismic.io/api"
+        self.token = "MC5VcXBHWHdFQUFONDZrbWp4.77-9cDx6C3lgJu-_vXZafO-_vXPvv73vv73vv70777-9Ju-_ve-_vSLvv73vv73vv73vv70O77-977-9Me-_vQ"
         self.fixture_api = json.loads(fixture_api)
         self.fixture_search = json.loads(fixture_search)
         self.fixture_structured_lists = json.loads(fixture_structured_lists)
@@ -67,7 +67,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
         self.api = prismic.get(self.api_url, self.token)
 
     def test_get_api(self):
-        self.assertTrue(len(self.api.forms) > 0)
+        self.assertGreater(len(self.api.forms), 0)
 
     def test_api_get_errors(self):
         with self.assertRaises(InvalidTokenError):
@@ -80,115 +80,114 @@ class ApiIntegrationTestCase(PrismicTestCase):
             prismic.get("htt://wrong_on_purpose", "")
 
     def test_search_form(self):
-        blog = self.api.form("blog")
-        blog.ref(self.api.get_master())
-        docs = blog.submit().documents
-        self.assertEqual(len(docs), 6)
-        self.assertEqual(docs[0].type, "blog-post")
+        form = self.api.form("everything")
+        form.ref(self.api.get_master())
+        docs = form.submit().documents
+        self.assertGreaterEqual(len(docs), 2)
 
     def test_search_form_orderings(self):
-        blog = self.api.form("blog")
-        blog.ref(self.api.get_master())
-        blog.orderings("""[my.blog-post.date]""")
-        docs = blog.submit().documents
-        self.assertEqual(docs[0].slug, 'les-bonnes-chosess-internship-a-testimony')
-        self.assertEqual(docs[1].slug, 'get-the-right-approach-to-ganache')
+        form = self.api.form("everything")
+        form.ref(self.api.get_master())
+        form.query('[[:q = at(document.type, "all")]]')
+        form.orderings("[my.all.number]")
+        docs = form.submit().documents
+        self.assertEqual(docs[0].uid, 'all')
+        self.assertEqual(docs[1].uid, 'all1')
+        self.assertEqual(docs[2].uid, 'all2')
 
     def test_search_form_page_size(self):
-        blog = self.api.form("blog").page_size(2)
-        blog.ref(self.api.get_master())
-        response = blog.submit()
+        form = self.api.form("everything").page_size(2)
+        form.ref(self.api.get_master())
+        response = form.submit()
         self.assertEqual(len(response.documents), 2)
         self.assertEqual(response.results_per_page, 2)
 
     def test_search_form_first_page(self):
-        blog = self.api.form("blog").pageSize(4)
-        blog.ref(self.api.get_master())
-        response = blog.submit()
+        form = self.api.form("everything").pageSize(2)
+        form.ref(self.api.get_master())
+        response = form.submit()
         self.assertEqual(response.page, 1)
-        self.assertEqual(len(response.documents), 4)
+        self.assertEqual(len(response.documents), 2)
         self.assertEqual(response.results_size, len(response.documents))
         self.assertIsNone(response.prev_page)
-        self.assertEqual(response.next_page,
-                         'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=2&pageSize=4')
+        self.assertIsNotNone(response.next_page)
 
-    def test_search_form_last_page(self):
-        blog = self.api.form("blog").pageSize(4).page(2)
-        blog.ref(self.api.get_master())
-        response = blog.submit()
+    def test_search_form_page(self):
+        form = self.api.form("everything").pageSize(2).page(2)
+        form.ref(self.api.get_master())
+        response = form.submit()
         self.assertEqual(response.page, 2)
         self.assertEqual(len(response.documents), 2)
         self.assertEqual(response.results_size, len(response.documents))
-        self.assertIsNone(response.next_page)
-        self.assertEqual(response.prev_page,
-                         'http://lesbonneschoses.prismic.io/api/documents/search?ref=UlfoxUnM08QWYXdl&q=%5B%5B%3Ad+%3D+any%28document.type%2C+%5B%22blog-post%22%5D%29%5D%5D&page=1&pageSize=4')
+        self.assertIsNotNone(response.prev_page)
+        self.assertIsNotNone(response.next_page)
 
     def test_search_form_count(self):
-        blog = self.api.form("blog")
-        blog.ref(self.api.get_master())
-        nb_docs = blog.count()
-        self.assertEqual(nb_docs, 6)
+        form = self.api.form("everything")
+        form.ref(self.api.get_master())
+        nb_docs = form.count()
+        self.assertGreaterEqual(nb_docs, 2)
 
     def test_linked_documents(self):
-        gift_box = self.api\
+        doc = self.api\
             .form("everything")\
             .ref(self.api.get_master())\
-            .query("[[:d = at(document.id, \"UlfoxUnM0wkXYXbZ\")]]")\
+            .query("[[:d = at(document.id, \"WHx-gSYAAMkyXYX_\")]]")\
             .submit()\
             .documents[0]
-        linked = gift_box.linked_documents
-        self.assertEqual(len(linked), 3)
+        self.assertEqual(len(doc.linked_documents), 2)
 
     def test_fetch_links(self):
         article = self.api\
             .form('everything')\
             .ref(self.api.get_master())\
-            .fetch_links('blog-post.author')\
-            .query(predicates.at('document.id', 'UlfoxUnM0wkXYXbt')) \
+            .fetch_links('all.text')\
+            .query(predicates.at('document.id', 'WHx-gSYAAMkyXYX_')) \
             .submit()\
             .documents[0]
-        links = article.get_all('blog-post.relatedpost')
-        self.assertEqual(links[0].get_text('blog-post.author'), 'John M. Martelle, Fine Pastry Magazine')
+        links = article.get_all('all.link_document')
+        self.assertEqual(links[0].get_text('all.text'), 'all1')
 
     def test_fetch_links_list(self):
         article = self.api\
             .form('everything')\
             .ref(self.api.get_master())\
-            .fetch_links(['blog-post.author', 'blog-post.title'])\
-            .query(predicates.at('document.id', 'UlfoxUnM0wkXYXbt')) \
+            .fetch_links(['all.text', 'all.number'])\
+            .query(predicates.at('document.id', 'WH2PaioAALYBEgug')) \
             .submit()\
             .documents[0]
-        links = article.get_all('blog-post.relatedpost')
-        self.assertEqual(links[0].get_text('blog-post.author'), 'John M. Martelle, Fine Pastry Magazine')
+        links = article.get_all('all.link_document')
+        self.assertEqual(links[0].get_text('all.text'), 'all')
+        self.assertEqual(links[0].get_text('all.number'), 20.0)
 
 
 class ApiTestCase(PrismicTestCase):
     def test_get_ref(self):
-        self.assertTrue(self.api.get_ref("Master").ref == "UgjWQN_mqa8HvPJY")
+        self.assertEqual(self.api.get_ref("Master").ref, "UgjWQN_mqa8HvPJY")
 
     def test_master(self):
-        self.assertTrue(self.api.get_master().ref == "UgjWQN_mqa8HvPJY")
-        self.assertTrue(self.api.get_master().id == "master")
+        self.assertEqual(self.api.get_master().ref, "UgjWQN_mqa8HvPJY")
+        self.assertEqual(self.api.get_master().id, "master")
 
 
 class TestSearchFormTestCase(PrismicTestCase):
     def test_document(self):
         docs = [prismic.Document(doc) for doc in self.fixture_search]
-        self.assertTrue(len(docs) == 3)
+        self.assertEqual(len(docs), 3)
         doc = docs[0]
-        self.assertTrue(doc.slug == "vanilla-macaron")
+        self.assertEqual(doc.slug, "vanilla-macaron")
 
     def test_empty_slug(self):
         doc_json = self.fixture_search[0]
         doc_json["slugs"] = None
         doc = prismic.Document(doc_json)
-        self.assertTrue(doc.slug == "-")
+        self.assertEqual(doc.slug, "-")
 
     def test_as_html(self):
         doc_json = self.fixture_search[0]
         doc = prismic.Document(doc_json)
         expected_html = ("""<section data-field="product.allergens"><span class="text">Contains almonds, eggs, milk</span></section>"""
-                         """<section data-field="product.image"><img src="https://wroomio.s3.amazonaws.com/lesbonneschoses/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png" alt="" width="500" height="500" /></section>"""
+                         """<section data-field="product.image"><img src="https://wroomio.s3.amazonaws.com/micro/0417110ebf2dc34a3e8b7b28ee4e06ac82473b70.png" alt="" width="500" height="500" /></section>"""
                          """<section data-field="product.short_lede"><h2>Crispiness and softness, rolled into one</h2></section>"""
                          """<section data-field="product.testimonial_author[0]"><h3>Chef Guillaume Bort</h3></section><section data-field="product.related[0]"><a href="document/UdUjvt_mqVNObPeO">dark-chocolate-macaron</a></section>"""
                          """<section data-field="product.name"><h1>Vanilla Macaron</h1></section>"""
@@ -201,37 +200,36 @@ class TestSearchFormTestCase(PrismicTestCase):
         # Comparing len rather than actual strings because json loading is not in a deterministic order for now
         self.assertEqual(len(expected_html), len(doc_html))
 
-    def test_default_params(self):
-        blog = self.api.form("blog")
-        self.assertEqual(len(blog.data), 1)
-        self.assertEqual(blog.data["q"], ["[[any(document.type, [\"blog-post\"])]]"])
+    def test_default_params_empty(self):
+        form = self.api.form("everything")
+        self.assertEqual(len(form.data), 0)
 
     def test_query_append_value(self):
-        blog = self.api.form("blog")
-        blog.query("[[bar]]")
-        self.assertEqual(len(blog.data), 1)
-        self.assertEqual(blog.data["q"], ["[[any(document.type, [\"blog-post\"])]]", "[[bar]]"])
+        form = self.api.form("everything")
+        form.query("[[bar]]")
+        self.assertEqual(len(form.data), 1)
+        self.assertEqual(form.data["q"], ["[[bar]]"])
 
     def test_ref_replace_value(self):
-        blog = self.api.form("blog")
-        blog.ref("foo")
-        self.assertEqual(len(blog.data), 2)
-        self.assertEqual(blog.data["ref"], "foo")
-        blog.ref("bar")
-        self.assertEqual(len(blog.data), 2)
-        self.assertEqual(blog.data["ref"], "bar")
+        form = self.api.form("everything")
+        form.ref("foo")
+        self.assertEqual(len(form.data), 1)
+        self.assertEqual(form.data["ref"], "foo")
+        form.ref("bar")
+        self.assertEqual(len(form.data), 1)
+        self.assertEqual(form.data["ref"], "bar")
 
     def test_set_page_size(self):
-        blog = self.api.form("blog")
-        blog.page_size(3)
-        self.assertEqual(len(blog.data), 2)
-        self.assertEqual(blog.data["pageSize"], 3)
+        form = self.api.form("everything")
+        form.page_size(3)
+        self.assertEqual(len(form.data), 1)
+        self.assertEqual(form.data["pageSize"], 3)
 
     def test_set_page(self):
-        blog = self.api.form("blog")
-        blog.page(3)
-        self.assertEqual(len(blog.data), 2)
-        self.assertEqual(blog.data["page"], 3)
+        form = self.api.form("everything")
+        form.page(3)
+        self.assertEqual(len(form.data), 1)
+        self.assertEqual(form.data["page"], 3)
 
 
 class TestFragmentsTestCase(PrismicTestCase):
@@ -246,7 +244,7 @@ class TestFragmentsTestCase(PrismicTestCase):
         self.assertEqual(doc.get_image("product.image", "icon").width, 250)
         expected_html = \
             ("""<img """
-             """src="https://wroomio.s3.amazonaws.com/lesbonneschoses/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" """
+             """src="https://wroomio.s3.amazonaws.com/micro/babdc3421037f9af77720d8f5dcf1b84c912c6ba.png" """
              """alt="" width="250" height="250" />""")
         self.assertEqual(expected_html, doc.get_image("product.image", "icon").as_html(PrismicTestCase.link_resolver))
 
@@ -343,7 +341,7 @@ class TestFragmentsTestCase(PrismicTestCase):
                         "type": "Link.document",
                         "value": {
                             "document": {
-                                "id": "UbiYbN_mqXkBOgE2", "type": "article", "tags": ["blog"], "slug": "-"
+                                "id": "UbiYbN_mqXkBOgE2", "type": "article", "tags": ["form"], "slug": "-"
                             },
                             "isBroken": False
                         }
@@ -435,8 +433,8 @@ class PredicatesTestCase(PrismicTestCase):
         f = self.api \
             .form("everything") \
             .ref(self.api.get_master()) \
-            .query(predicates.any('document.type', ['article', 'blog-post']))
-        self.assertEqual(f.data['q'], ['[[:d = any(document.type, ["article", "blog-post"])]]'])
+            .query(predicates.any('document.type', ['article', 'form-post']))
+        self.assertEqual(f.data['q'], ['[[:d = any(document.type, ["article", "form-post"])]]'])
 
     def test_similar(self):
         f = self.api \
@@ -450,17 +448,17 @@ class PredicatesTestCase(PrismicTestCase):
             .form("everything") \
             .ref(self.api.get_master()) \
             .query(
-                predicates.month_after('my.blog-post.publication-date', 4),
-                predicates.month_before('my.blog-post.publication-date', 'December')
+                predicates.month_after('my.form-post.publication-date', 4),
+                predicates.month_before('my.form-post.publication-date', 'December')
             )
-        self.assertEqual(f.data['q'], ['[[:d = date.month-after(my.blog-post.publication-date, 4)][:d = date.month-before(my.blog-post.publication-date, "December")]]'])
+        self.assertEqual(f.data['q'], ['[[:d = date.month-after(my.form-post.publication-date, 4)][:d = date.month-before(my.form-post.publication-date, "December")]]'])
 
     def test_number_lt(self):
         f = self.api \
             .form("everything") \
             .ref(self.api.get_master()) \
-            .query(predicates.lt('my.blog-post.publication-date', 4))
-        self.assertEqual(f.data['q'], ['[[:d = number.lt(my.blog-post.publication-date, 4)]]'])
+            .query(predicates.lt('my.form-post.publication-date', 4))
+        self.assertEqual(f.data['q'], ['[[:d = number.lt(my.form-post.publication-date, 4)]]'])
 
     def test_number_in_range(self):
         f = self.api \
