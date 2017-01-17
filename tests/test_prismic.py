@@ -138,6 +138,10 @@ class ApiIntegrationTestCase(PrismicTestCase):
         doc = self.api.query_first(predicates.at('document.id', 'WHx-gSYAAMkyXYX_'))
         self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
 
+    def test_query_first_no_result(self):
+        doc = self.api.query_first(predicates.at('document.id', 'NotAValidId'))
+        self.assertIsNone(doc)
+
     def test_get_by_uid(self):
         doc = self.api.get_by_uid('all', 'all')
         self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')

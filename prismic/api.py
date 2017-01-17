@@ -134,7 +134,9 @@ class Api(object):
         return form.query(q).submit()
 
     def query_first(self, q, ref=None):
-        return self.query(q, ref, page_size=1, page=1).documents[0]
+        documents = self.query(q, ref, page_size=1, page=1).documents
+        if len(documents) > 0:
+            return documents[0]
 
     def get_by_uid(self, type, uid, ref=None):
         return self.query_first(predicates.at('my.' + type + '.uid', uid), ref)
