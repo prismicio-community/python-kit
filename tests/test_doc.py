@@ -126,7 +126,7 @@ class DocTestCase(unittest.TestCase):
         doc = api.get_by_uid('all', 'all')
 
         date = doc.get_date("all.date")
-        self.assertEqual(date.as_html, u'<time>2017-01-16</time>')
+        self.assertEqual(date.as_html, '<time>2017-01-16</time>')
 
     def test_timestamp(self):
         api = prismic.get('https://micro.prismic.io/api')
@@ -140,7 +140,7 @@ class DocTestCase(unittest.TestCase):
         doc = api.get_by_uid('all', 'all')
 
         timestamp = doc.get_timestamp("all.timestamp")
-        self.assertEqual(timestamp.as_html, u'<time>2017-01-16T07:25:35+0000</time>')
+        self.assertEqual(timestamp.as_html, '<time>2017-01-16T07:25:35+0000</time>')
 
     def test_group(self):
         data = "{\"id\":\"abcd\",\"type\":\"article\",\"href\":\"\",\"slugs\":[],\"tags\":[],\"data\":{\"article\":{\"documents\":{\"type\":\"Group\",\"value\":[{\"linktodoc\":{\"type\":\"Link.document\",\"value\":{\"document\":{\"id\":\"UrDejAEAAFwMyrW9\",\"type\":\"doc\",\"tags\":[],\"slug\":\"installing-meta-micro\"},\"isBroken\":false}},\"desc\":{\"type\":\"StructuredText\",\"value\":[{\"type\":\"paragraph\",\"text\":\"A detailed step by step point of view on how installing happens.\",\"spans\":[]}]}},{\"linktodoc\":{\"type\":\"Link.document\",\"value\":{\"document\":{\"id\":\"UrDmKgEAALwMyrXA\",\"type\":\"doc\",\"tags\":[],\"slug\":\"using-meta-micro\"},\"isBroken\":false}}}]}}}}"

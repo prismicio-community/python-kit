@@ -152,9 +152,9 @@ class ApiIntegrationTestCase(PrismicTestCase):
 
     def test_get_by_ids(self):
         result = self.api.get_by_ids(['WHx-gSYAAMkyXYX_', 'WHyJqyYAAHgyXbcj'])
-        docs = sorted(result.documents, cmp = lambda a, b: cmp(a.id, b.id))
-        self.assertEqual(docs[0].id, 'WHx-gSYAAMkyXYX_')
-        self.assertEqual(docs[1].id, 'WHyJqyYAAHgyXbcj')
+        ids = sorted([doc.id for doc in result.documents])
+        self.assertEqual(ids[0], 'WHx-gSYAAMkyXYX_')
+        self.assertEqual(ids[1], 'WHyJqyYAAHgyXbcj')
 
     def test_get_single(self):
         doc = self.api.get_single('single')
