@@ -19,6 +19,8 @@ def not_(fragment, value):
 def any(fragment, values):
     return ['any', fragment, values]
 
+def in_(fragment, values):
+    return ['in', fragment, values]
 
 def fulltext(fragment, values):
     return ['fulltext', fragment, values]

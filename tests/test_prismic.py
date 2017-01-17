@@ -128,11 +128,39 @@ class ApiIntegrationTestCase(PrismicTestCase):
         nb_docs = form.count()
         self.assertGreaterEqual(nb_docs, 2)
 
+    def test_query(self):
+        doc = self.api\
+            .query(predicates.at('document.id', 'WHx-gSYAAMkyXYX_'))\
+            .documents[0]
+        self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
+
+    def test_query_first(self):
+        doc = self.api.query_first(predicates.at('document.id', 'WHx-gSYAAMkyXYX_'))
+        self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
+
+    def test_get_by_uid(self):
+        doc = self.api.get_by_uid('all', 'all')
+        self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
+
+    def test_get_by_id(self):
+        doc = self.api.get_by_id('WHx-gSYAAMkyXYX_')
+        self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
+
+    def test_get_by_ids(self):
+        result = self.api.get_by_ids(['WHx-gSYAAMkyXYX_', 'WHyJqyYAAHgyXbcj'])
+        docs = sorted(result.documents, cmp = lambda a, b: cmp(a.id, b.id))
+        self.assertEqual(docs[0].id, 'WHx-gSYAAMkyXYX_')
+        self.assertEqual(docs[1].id, 'WHyJqyYAAHgyXbcj')
+
+    def test_get_single(self):
+        doc = self.api.get_single('single')
+        self.assertEqual(doc.id, 'V_OplCUAACQAE0lA')
+
     def test_linked_documents(self):
         doc = self.api\
             .form("everything")\
             .ref(self.api.get_master())\
-            .query("[[:d = at(document.id, \"WHx-gSYAAMkyXYX_\")]]")\
+            .query('[[:d = at(document.id, "WHx-gSYAAMkyXYX_")]]')\
             .submit()\
             .documents[0]
         self.assertEqual(len(doc.linked_documents), 2)
@@ -158,7 +186,7 @@ class ApiIntegrationTestCase(PrismicTestCase):
             .documents[0]
         links = article.get_all('all.link_document')
         self.assertEqual(links[0].get_text('all.text'), 'all')
-        self.assertEqual(links[0].get_text('all.number'), 20.0)
+        self.assertEqual(links[0].get_text('all.number'), 20)
 
 
 class ApiTestCase(PrismicTestCase):

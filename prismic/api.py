@@ -117,6 +117,36 @@ class Api(object):
             raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)))
         return SearchForm(self.forms.get(name), self.access_token, self.cache, self.request_handler)
 
+    def query(self, q, ref=None, page_size=None, page=None, orderings=None, after=None, fetch_links=None):
+        if ref is None:
+            ref = self.get_master()
+        form = self.form('everything').ref(ref)
+        if page_size is not None:
+            form.page_size(page_size)
+        if page is not None:
+            form.page(page)
+        if orderings is not None:
+            form.orderings(orderings)
+        if after is not None:
+            form.after(after)
+        if fetch_links is not None:
+            form.fetch_links(fetch_links)
+        return form.query(q).submit()
+
+    def query_first(self, q, ref=None):
+        return self.query(q, ref, page_size=1, page=1).documents[0]
+
+    def get_by_uid(self, type, uid, ref=None):
+        return self.query_first(predicates.at('my.' + type + '.uid', uid), ref)
+
+    def get_by_id(self, id, ref=None):
+        return self.query_first(predicates.at('document.id', id), ref)
+
+    def get_by_ids(self, ids, ref=None, page_size=None, page=None, orderings=None, after=None, fetch_links=None):
+        return self.query(predicates.in_('document.id', ids), ref, page_size, page, orderings, after, fetch_links)
+
+    def get_single(self, type, ref=None):
+        return self.query_first(predicates.at('document.type', type), ref)
 
 class Ref(object):
     """
