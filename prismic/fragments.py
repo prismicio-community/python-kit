@@ -162,7 +162,9 @@ class Fragment(object):
         def fragment_to_html(fragment, link_resolver, html_serializer=None):
             if isinstance(fragment, StructuredText):
                 return fragment.as_html(link_resolver, html_serializer)
-            if isinstance(fragment, Fragment.DocumentLink)\
+            if isinstance(fragment, Fragment.Group)\
+                    or isinstance(fragment, Fragment.SliceZone)\
+                    or isinstance(fragment, Fragment.DocumentLink)\
                     or isinstance(fragment, Fragment.Image)\
                     or isinstance(fragment, Fragment.Image.View):
                 return fragment.as_html(link_resolver)
