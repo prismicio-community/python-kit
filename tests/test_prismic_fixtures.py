@@ -1246,3 +1246,138 @@ fixture_slices = """
     }
 }
 """
+
+fixture_composite_slices = """
+{
+    "alternate_languages": [],
+    "data": {
+        "test": {
+            "body": {
+                "type": "SliceZone",
+                "value": [
+                    {
+                        "non-repeat": {
+                            "non-repeat-text": {
+                                "type": "StructuredText",
+                                "value": [
+                                    {
+                                        "spans": [],
+                                        "text": "Slice A non-repeat text",
+                                        "type": "paragraph"
+                                    }
+                                ]
+                            },
+                            "non-repeat-title": {
+                                "type": "StructuredText",
+                                "value": [
+                                    {
+                                        "spans": [],
+                                        "text": "Slice A non-repeat title",
+                                        "type": "heading1"
+                                    }
+                                ]
+                            }
+                        },
+                        "repeat": [
+                            {
+                                "repeat-text": {
+                                    "type": "StructuredText",
+                                    "value": [
+                                        {
+                                            "spans": [],
+                                            "text": "Repeatable text A",
+                                            "type": "paragraph"
+                                        }
+                                    ]
+                                },
+                                "repeat-title": {
+                                    "type": "StructuredText",
+                                    "value": [
+                                        {
+                                            "spans": [],
+                                            "text": "Repeatable title A",
+                                            "type": "heading1"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "repeat-text": {
+                                    "type": "StructuredText",
+                                    "value": [
+                                        {
+                                            "spans": [],
+                                            "text": "Repeatable text B",
+                                            "type": "paragraph"
+                                        }
+                                    ]
+                                },
+                                "repeat-title": {
+                                    "type": "StructuredText",
+                                    "value": [
+                                        {
+                                            "spans": [],
+                                            "text": "Repeatable title B",
+                                            "type": "heading1"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "slice_label": null,
+                        "slice_type": "slice-a",
+                        "type": "Slice"
+                    },
+                    {
+                        "non-repeat": {
+                            "image": {
+                                "type": "Image",
+                                "value": {
+                                    "main": {
+                                        "alt": null,
+                                        "copyright": null,
+                                        "dimensions": {
+                                            "height": 500,
+                                            "width": 800
+                                        },
+                                        "url": "https://prismic-io.s3.amazonaws.com/tails/014c1fe46e3ceaf04b7cc925b2ea7e8027dc607a_mobile_header_tp.png"
+                                    },
+                                    "views": {}
+                                }
+                            },
+                            "title": {
+                                "type": "StructuredText",
+                                "value": [
+                                    {
+                                        "spans": [],
+                                        "text": "Slice A non-repeat title",
+                                        "type": "heading1"
+                                    }
+                                ]
+                            }
+                        },
+                        "repeat": [
+                            {}
+                        ],
+                        "slice_label": null,
+                        "slice_type": "slice-b",
+                        "type": "Slice"
+                    }
+                ]
+            }
+        }
+    },
+    "first_publication_date": "2017-10-10T11:30:08+0000",
+    "href": "http://tails.prismic.io/api/v1/documents/search?ref=WdyvQCsAAOgSj_r0&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22WdyvPCsAAOMSj_rf%22%29+%5D%5D",
+    "id": "WdyvPCsAAOMSj_rf",
+    "lang": "en-gb",
+    "last_publication_date": "2017-10-10T11:30:08+0000",
+    "linked_documents": [],
+    "slugs": [
+        "slice-a-non-repeat-title"
+    ],
+    "tags": [],
+    "type": "test",
+    "uid": "test"
+}
+"""

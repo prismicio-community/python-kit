@@ -9,7 +9,7 @@ from prismic.cache import ShelveCache
 from prismic.exceptions import InvalidTokenError, AuthorizationNeededError, InvalidURLError
 from .test_prismic_fixtures import fixture_api, fixture_search, fixture_groups, \
     fixture_structured_lists, fixture_empty_paragraph, fixture_store_geopoint, fixture_image_links, \
-    fixture_spans_labels, fixture_block_labels, fixture_custom_html, fixture_slices
+    fixture_spans_labels, fixture_block_labels, fixture_custom_html, fixture_slices, fixture_composite_slices
 import time
 import json
 import logging
@@ -37,6 +37,7 @@ class PrismicTestCase(unittest.TestCase):
         self.fixture_spans_labels = json.loads(fixture_spans_labels)
         self.fixture_custom_html = json.loads(fixture_custom_html)
         self.fixture_slices = json.loads(fixture_slices)
+        self.fixture_composite_slices = json.loads(fixture_composite_slices)
 
         self.api = prismic.Api(self.fixture_api, self.token, ShelveCache("prismictest"), None)
 
@@ -409,13 +410,23 @@ class TestFragmentsTestCase(PrismicTestCase):
         self.maxDiff = 10000
         doc = prismic.Document(self.fixture_slices)
         slices = doc.get_slice_zone("article.blocks")
-        slices_html =slices.as_html(PrismicTestCase.link_resolver)
+        slices_html = slices.as_html(PrismicTestCase.link_resolver)
         expected_html = (
             """<div data-slicetype="features" class="slice"><section data-field="illustration"><img src="https://wroomdev.s3.amazonaws.com/toto/db3775edb44f9818c54baa72bbfc8d3d6394b6ef_hsf_evilsquall.jpg" alt="" width="4285" height="709" /></section>"""
             """<section data-field="title"><span class="text">c'est un bloc features</span></section></div>\n"""
             """<div data-slicetype="text" class="slice"><p>C'est un bloc content</p></div>""")
         # Comparing len rather than actual strings because json loading is not in a deterministic order for now
         self.assertEqual(len(expected_html), len(slices_html))
+
+    def test_composite_slices(self):
+        self.maxDiff = 1000
+        doc = prismic.Document(self.fixture_composite_slices)
+        slices = doc.get_slice_zone("test.body")
+        slices_html = slices.as_html(PrismicTestCase.link_resolver)
+        expected_html = """<div data-slicetype="slice-a" class="slice"><section data-field="non-repeat-text"><p>Slice A non-repeat text</p></section><section data-field="non-repeat-title"><h1>Slice A non-repeat title</h1></section><section data-field="repeat-title"><h1>Repeatable title A</h1></section><section data-field="repeat-text"><p>Repeatable text A</p></section>
+<section data-field="repeat-title"><h1>Repeatable title B</h1></section><section data-field="repeat-text"><p>Repeatable text B</p></section></div>
+<div data-slicetype="slice-b" class="slice"><section data-field="image"><img src="https://prismic-io.s3.amazonaws.com/tails/014c1fe46e3ceaf04b7cc925b2ea7e8027dc607a_mobile_header_tp.png" alt="" width="800" height="500" /></section><section data-field="title"><h1>Slice A non-repeat title</h1></section></div>"""
+        self.assertEqual(expected_html, slices_html)
 
     def test_image_links(self):
         self.maxDiff = 10000
@@ -515,6 +526,7 @@ class PredicatesTestCase(PrismicTestCase):
             .ref(self.api.get_master()) \
             .query(predicates.near('my.store.coordinates', 40.689757, -74.0451453, 15))
         self.assertEqual(f.data['q'], ['[[:d = geopoint.near(my.store.coordinates, 40.689757, -74.0451453, 15)]]'])
+
 
 class TestCache(unittest.TestCase):
 

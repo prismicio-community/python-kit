@@ -178,7 +178,23 @@ class Fragment(object):
                 html.append("""<section data-field="%s">""" % key)
                 html.append(self.fragment_to_html(fragment, link_resolver))
                 html.append("""</section>""")
+
             return ''.join(html)
+
+        def __getitem__(self, name):
+            return self.fragments[name]
+
+        def __iter__(self):
+            return iter(self.fragments)
+
+        def keys(self):
+            return self.fragments.keys()
+
+        def items(self):
+            return self.fragments.items()
+
+        def values(self):
+            return self.fragments.values()
 
     # Links
 
@@ -224,13 +240,21 @@ class Fragment(object):
         def as_html(self, documentlink_resolver, html_serializer=None):
             """Get the DocumentLink as html.
 
-            :param documentlink_resolver: A resolver function will be called with :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as argument. Resolver function should return a string, the local url to the document.
+            :param documentlink_resolver: A resolver function will be called with
+            :class:`prismic.fragments.Fragment.DocumentLink <prismic.fragments.Fragment.DocumentLink>` object as
+            argument. Resolver function should return a string, the local url to the document.
             """
-            return """<a href="%(link)s">%(slug)s</a>""" % {"link": self.get_url(documentlink_resolver), "slug": self.slug}
+            return """<a href="%(link)s">%(slug)s</a>""" % {
+                "link": self.get_url(documentlink_resolver),
+                "slug": self.slug
+            }
 
         def get_url(self, documentlink_resolver=None):
             if not hasattr(documentlink_resolver, '__call__'):
-                raise Exception("documentlink_resolver should be a callable object, but it's: %s" % type(documentlink_resolver))
+                raise Exception(
+                    "documentlink_resolver should be a callable object, but it's: %s"
+                    % type(documentlink_resolver)
+                )
             return documentlink_resolver(self)
 
         def get_document_id(self):
@@ -468,6 +492,8 @@ class Fragment(object):
                 html.append(group_doc.as_html(link_resolver))
             return "\n".join(html)
 
+        def __iter__(self):
+            return iter(self.value)
 
     class Slice(FragmentElement):
 
@@ -486,6 +512,48 @@ class Fragment(object):
                 "body": self.value.as_html(link_resolver)
             }
 
+    class CompositeSlice(FragmentElement):
+
+        def __init__(self, slice_type, slice_label, elt):
+            self.slice_type = slice_type
+            self.slice_label = slice_label
+            self.repeat = []
+            self.non_repeat = {}
+
+            _repeat = elt.get('repeat')
+            _non_repeat = elt.get('non-repeat')
+
+            if any(_repeat):
+                self.repeat = self.parse_repeat(_repeat)
+
+            if _non_repeat:
+                self.non_repeat = self.parse_non_repeat(_non_repeat)
+
+        @staticmethod
+        def parse_repeat(repeat):
+            return Fragment.Group(repeat)
+
+        @staticmethod
+        def parse_non_repeat(non_repeat):
+            return Fragment.Group([non_repeat])
+
+        def as_html(self, link_resolver):
+            classes = ['slice']
+            if self.slice_label:
+                classes.append(self.slice_label)
+
+            body = ""
+            if self.non_repeat:
+                body += self.non_repeat.as_html(link_resolver)
+
+            if self.repeat:
+                body += self.repeat.as_html(link_resolver)
+
+            return '<div data-slicetype="%(slice_type)s" class="%(classes)s">%(body)s</div>' % {
+                "slice_type": self.slice_type,
+                "classes": ' '.join(classes),
+                "body": body
+            }
 
     class SliceZone(FragmentElement):
 
@@ -494,14 +562,23 @@ class Fragment(object):
             for elt in value:
                 slice_type = elt['slice_type']
                 slice_label = elt.get('slice_label')
-                fragment = Fragment.from_json(elt['value'])
-                self.slices.append(Fragment.Slice(slice_type, slice_label, fragment))
+
+                # Old style slice
+                if 'value' in elt:
+                    fragment = Fragment.from_json(elt['value'])
+                    self.slices.append(Fragment.Slice(slice_type, slice_label, fragment))
+                else:
+                    Fragment.CompositeSlice(slice_type, slice_label, elt)
+                    self.slices.append(Fragment.CompositeSlice(slice_type, slice_label, elt))
 
         def as_html(self, link_resolver):
             html = []
             for slice in self.slices:
                 html.append(slice.as_html(link_resolver))
             return "\n".join(html)
+
+        def __iter__(self):
+            return iter(self.slices)
 
 
 class StructuredText(object):
