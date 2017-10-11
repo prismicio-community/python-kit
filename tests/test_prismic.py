@@ -423,8 +423,8 @@ class TestFragmentsTestCase(PrismicTestCase):
         doc = prismic.Document(self.fixture_composite_slices)
         slices = doc.get_slice_zone("test.body")
         slices_html = slices.as_html(PrismicTestCase.link_resolver)
-        expected_html = """<div data-slicetype="slice-a" class="slice"><section data-field="non-repeat-text"><p>Slice A non-repeat text</p></section><section data-field="non-repeat-title"><h1>Slice A non-repeat title</h1></section><section data-field="repeat-title"><h1>Repeatable title A</h1></section><section data-field="repeat-text"><p>Repeatable text A</p></section>
-<section data-field="repeat-title"><h1>Repeatable title B</h1></section><section data-field="repeat-text"><p>Repeatable text B</p></section></div>
+        expected_html = """<div data-slicetype="slice-a" class="slice"><section data-field="non-repeat-text"><p>Slice A non-repeat text</p></section><section data-field="non-repeat-title"><h1>Slice A non-repeat title</h1></section><section data-field="repeat-text"><p>Repeatable text A</p></section><section data-field="repeat-title"><h1>Repeatable title A</h1></section>
+<section data-field="repeat-text"><p>Repeatable text B</p></section><section data-field="repeat-title"><h1>Repeatable title B</h1></section></div>
 <div data-slicetype="slice-b" class="slice"><section data-field="image"><img src="https://prismic-io.s3.amazonaws.com/tails/014c1fe46e3ceaf04b7cc925b2ea7e8027dc607a_mobile_header_tp.png" alt="" width="800" height="500" /></section><section data-field="title"><h1>Slice A non-repeat title</h1></section></div>"""
         self.assertEqual(expected_html, slices_html)
 
