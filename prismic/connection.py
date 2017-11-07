@@ -14,6 +14,7 @@ except ImportError:  # 3.x
     import urllib as urlparse
 
 import requests
+import hashlib
 import json
 import re
 import platform
@@ -23,6 +24,7 @@ from .exceptions import (InvalidTokenError, AuthorizationNeededError,
                          HTTPError, InvalidURLError)
 from .cache import ShelveCache
 from . import __version__ as prismic_version
+
 
 def get_using_requests(full_url):
     request = requests.get(full_url, headers={
@@ -34,6 +36,7 @@ def get_using_requests(full_url):
     })
     return request.status_code, request.text, request.headers
 
+
 def get_json(url, params=None, access_token=None, cache=None, ttl=None, request_handler=None):
     full_params = dict() if params is None else params.copy()
     if cache is None:
@@ -43,7 +46,8 @@ def get_json(url, params=None, access_token=None, cache=None, ttl=None, request_
     if access_token is not None:
         full_params["access_token"] = access_token
     full_url = url if len(full_params) == 0 else (url + "?" + urlparse.urlencode(full_params, doseq=1))
-    cached = cache.get(full_url)
+    url_key = make_key(full_url)
+    cached = cache.get(url_key)
     if cached is not None:
         return cached
     try:
@@ -52,7 +56,7 @@ def get_json(url, params=None, access_token=None, cache=None, ttl=None, request_
             json_result = json.loads(text_result, object_pairs_hook=OrderedDict)
             expire = ttl or get_max_age(headers)
             if expire is not None:
-                cache.set(full_url, json_result, expire)
+                cache.set(url_key, json_result, expire)
             return json_result
         elif status_code == 401:
             if len(access_token) == 0:
@@ -63,6 +67,19 @@ def get_json(url, params=None, access_token=None, cache=None, ttl=None, request_
             raise HTTPError(status_code, str(text_result))
     except InvalidSchema as e:
         raise InvalidURLError(e)
+
+
+def make_key(full_url):
+    """
+    Make a key suitable for use with caching backends
+
+    Some backends don't accept keys longer than 250 characters
+    """
+    try:
+        k =  hashlib.md5(full_url).hexdigest()
+    except TypeError:
+        k = hashlib.md5(full_url.encode('utf8')).hexdigest()
+    return 'prismic-' + k
 
 
 def get_max_age(headers):

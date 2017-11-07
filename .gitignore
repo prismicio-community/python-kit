@@ -8,3 +8,5 @@ cache.db
 node_modules/
 
 .eggs
+.envrc
+.direnv
