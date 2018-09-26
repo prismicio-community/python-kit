@@ -117,7 +117,8 @@ class Api(object):
             raise Exception("Bad form name %s, valid form names are: %s" % (name, ', '.join(self.forms)))
         return SearchForm(self.forms.get(name), self.access_token, self.cache, self.request_handler)
 
-    def query(self, q, ref=None, page_size=None, page=None, orderings=None, after=None, fetch_links=None):
+    def query(self, q, ref=None, page_size=None, page=None, orderings=None,
+              after=None, fetch_links=None, lang=None):
         if ref is None:
             ref = self.get_master()
         form = self.form('everything').ref(ref)
@@ -131,20 +132,25 @@ class Api(object):
             form.after(after)
         if fetch_links is not None:
             form.fetch_links(fetch_links)
+        if lang is not None:
+            form.lang(lang)
         return form.query(q).submit()
 
-    def query_first(self, q, ref=None):
-        documents = self.query(q, ref, page_size=1, page=1).documents
+    def query_first(self, q, ref=None, lang=None):
+        documents = self.query(q, ref, page_size=1, page=1, lang=lang).documents
         if len(documents) > 0:
             return documents[0]
 
-    def get_by_uid(self, type, uid, ref=None):
-        return self.query_first(predicates.at('my.' + type + '.uid', uid), ref)
+    def get_by_uid(self, type, uid, ref=None, lang=None):
+        return self.query_first(
+            predicates.at('my.' + type + '.uid', uid), ref, lang=lang)
 
-    def get_by_id(self, id, ref=None):
-        return self.query_first(predicates.at('document.id', id), ref)
+    def get_by_id(self, id, ref=None, lang=None):
+        return self.query_first(predicates.at('document.id', id), ref, lang=lang)
 
-    def get_by_ids(self, ids, ref=None, page_size=None, page=None, orderings=None, after=None, fetch_links=None):
+    def get_by_ids(self, ids, ref=None, page_size=None,
+                   page=None, orderings=None, after=None,
+                   fetch_links=None, lang=None):
         return self.query(
             predicates.in_('document.id', ids),
             ref,
@@ -152,11 +158,13 @@ class Api(object):
             page=page,
             orderings=orderings,
             after=after,
-            fetch_links=fetch_links
+            fetch_links=fetch_links,
+            lang=lang,
         )
 
-    def get_single(self, type, ref=None):
-        return self.query_first(predicates.at('document.type', type), ref)
+    def get_single(self, type, ref=None, lang=None):
+        return self.query_first(predicates.at('document.type', type), ref, lang=lang)
+
 
 class Ref(object):
     """
@@ -315,6 +323,14 @@ class SearchForm(object):
         """Deprecated: use page_size instead
         """
         return self.page_size(nb_results)
+
+    def lang(self, lang):
+        """
+        Set query language
+
+        :param lang: string
+        """
+        return self.set("lang", lang)
 
     def count(self):
         """Count the total number of results
