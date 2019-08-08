@@ -1381,3 +1381,111 @@ fixture_composite_slices = """
     "uid": "test"
 }
 """
+
+fixture_vtiger = """
+{
+    "data": {
+        "canvas": {
+            "body": {
+                "value": [
+                    {
+                        "non-repeat": {
+                            "head_para": {
+                                "value": [],
+                                "type": "StructuredText"
+                            },
+                            "heading": {
+                                "value": [
+                                ],
+                                "type": "StructuredText"
+                            }
+                        },
+                        "repeat": [
+                            {
+                                "bullet": {
+                                    "value": [
+                                        {
+                                            "spans": [],
+                                            "text": "Browser information (type and language)",
+                                            "type": "list-item"
+                                        },
+                                        {
+                                            "spans": [],
+                                            "text": "IP address",
+                                            "type": "list-item"
+                                        },
+                                        {
+                                            "spans": [],
+                                            "text": "Open / Click-through tracking URL: In some of our email  communications, we use a “click-through tracking URL” that, when  clicked, sends you to a different web address, which logs your click,  before redirecting you to your expected destination.",
+                                            "type": "list-item"
+                                        },
+                                        {
+                                            "spans": [],
+                                            "text": "The actions you take on our websites (such as the web pages viewed and the links clicked, and time spent).",
+                                            "type": "list-item"
+                                        },
+                                        {
+                                            "spans": [],
+                                            "text": "Referrer information",
+                                            "type": "list-item"
+                                        },
+                                        {
+                                            "spans": [],
+                                            "text": "Event registrations",
+                                            "type": "list-item"
+                                        }
+                                    ],
+                                    "type": "StructuredText"
+                                },
+                                "text": {
+                                    "value": [
+                                    ],
+                                    "type": "StructuredText"
+                                },
+                                "sub_heading": {
+                                    "value": [
+                                    ],
+                                    "type": "StructuredText"
+                                }
+                            }
+                        ],
+                        "slice_label": null,
+                        "slice_type": "privacy_policy",
+                        "type": "Slice"
+                    }
+                ],
+                "type": "SliceZone"
+            },
+            "show_navbar": {
+                "value": "True",
+                "type": "Select"
+            },
+            "page_title": {
+                "value": [
+                    {
+                        "spans": [],
+                        "text": "Privacy Policy",
+                        "type": "heading1"
+                    }
+                ],
+                "type": "StructuredText"
+            }
+        }
+    },
+    "alternate_languages": [],
+    "lang": "en-us",
+    "linked_documents": [],
+    "slugs": [
+        "privacy-policy",
+        "who-we-are",
+        "true"
+    ],
+    "last_publication_date": "2019-08-08T11:08:57+0000",
+    "first_publication_date": "2019-07-24T09:31:15+0000",
+    "tags": [],
+    "href": "https://vtiger-website.cdn.prismic.io/api/v1/documents/search?ref=XUwCyRMAACIAhW1t&q=%5B%5B%3Ad+%3D+at%28document.id%2C+%22XTgcHxEAACcAXtBJ%22%29+%5D%5D",
+    "type": "canvas",
+    "uid": "privacy_policies",
+    "id": "XTgcHxEAACcAXtBJ"
+}
+"""
