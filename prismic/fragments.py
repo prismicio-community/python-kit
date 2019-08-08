@@ -639,7 +639,12 @@ class StructuredText(object):
                 else:
                     groups.append(StructuredText.Group(None, [block]))
             else:
-                groups.append(StructuredText.Group(None, [block]))
+                if isinstance(block, Block.ListItem) and not block.is_ordered:
+                    groups.append(StructuredText.Group("ul", [block]))
+                elif isinstance(block, Block.ListItem) and block.is_ordered:
+                    groups.append(StructuredText.Group("ol", [block]))
+                else:
+                    groups.append(StructuredText.Group(None, [block]))
 
         html = []
         for group in groups:
