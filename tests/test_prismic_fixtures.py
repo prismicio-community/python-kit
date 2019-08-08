@@ -591,21 +591,6 @@ fixture_structured_lists = """[
                     "type": "StructuredText",
                     "value": [
                         {
-                            "type": "heading2",
-                            "text": "A tale of pastry and passion",
-                            "spans": []
-                        },
-                       {
-                            "type": "heading2",
-                            "text": "Here we'll test a list",
-                            "spans": []
-                        },
-                        {
-                            "type": "paragraph",
-                            "text": "Unordered list:",
-                            "spans": []
-                        },
-                        {
                             "type": "list-item",
                             "text": "Element1",
                             "spans": []
