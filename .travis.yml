@@ -7,6 +7,7 @@ script: nosetests
 sudo: false
 deploy:
   provider: pypi
+  skip_cleanup: true
   user: erwan
   password:
     secure: iLvzBQ8BnTzX370/GniKXKn0WeilJEEcuNpB16Q28mGhXMlS2WGQjUQXItAtv+2KtZhRsO4Y5n49Ia0XXhXqS7CAq3FHPnN4AHuUJutWD6U0MNVs3f3KxwgckcuGmxZdpkQWLIXLOUqetRdUaKVtYgdbuYTp9ldSU5giVz3U4AY=
