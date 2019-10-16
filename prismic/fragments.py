@@ -589,6 +589,8 @@ class StructuredText(object):
             "heading2": Block.Heading,
             "heading3": Block.Heading,
             "heading4": Block.Heading,
+            "heading5": Block.Heading,
+            "heading6": Block.Heading,
             "paragraph": Block.Paragraph,
             "list-item": Block.ListItem,
             "o-list-item": lambda val: Block.ListItem(val, True),
