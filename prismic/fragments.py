@@ -36,7 +36,7 @@ class Fragment(object):
                 "Timestamp":      Fragment.Timestamp,
                 "StructuredText": StructuredText,
                 "Link.document":  Fragment.DocumentLink,
-                "Link.file":      Fragment.MediaLink,
+                "Link.file":      Fragment.FileLink,
                 "Link.web":       Fragment.WebLink,
                 "Link.image":     Fragment.ImageLink,
                 "Embed":          Fragment.Embed,
