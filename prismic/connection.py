@@ -42,7 +42,8 @@ def get_json(url, params=None, access_token=None, cache=None, ttl=None, request_
         request_handler = get_using_requests
     if access_token is not None:
         full_params["access_token"] = access_token
-    full_url = url if len(full_params) == 0 else (url + "?" + urlparse.urlencode(full_params, doseq=1))
+    sorted_params = OrderedDict(sorted(full_params.items(), key=lambda t: t[0]))
+    full_url = url if len(full_params) == 0 else (url + "?" + urlparse.urlencode(sorted_params, doseq=1))
     cached = cache.get(full_url)
     if cached is not None:
         return cached
