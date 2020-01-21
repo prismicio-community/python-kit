@@ -125,7 +125,7 @@ class Fragment(object):
         def get_slice_zone(self, field):
             return self.get_fragment_type(field, Fragment.SliceZone)
 
-        def get_html(self, field, link_resolver):
+        def get_html(self, field, link_resolver, html_serializer=None):
             """Get the html of a field.
 
             :param field: String with a name of the field to get.
@@ -134,7 +134,7 @@ class Fragment(object):
             object as argument. Resolver function should return a string, the local url to the document.
             """
             fragment = self.fragments.get(field)
-            return self.fragment_to_html(fragment, link_resolver)
+            return self.fragment_to_html(fragment, link_resolver, html_serializer)
 
         @property
         def linked_documents(self):
@@ -172,11 +172,11 @@ class Fragment(object):
                 return fragment.as_html
             return None
 
-        def as_html(self, link_resolver):
+        def as_html(self, link_resolver, html_serializer=None):
             html = []
             for key, fragment in list(self.fragments.items()):
                 html.append("""<section data-field="%s">""" % key)
-                html.append(self.fragment_to_html(fragment, link_resolver))
+                html.append(self.fragment_to_html(fragment, link_resolver, html_serializer))
                 html.append("""</section>""")
 
             return ''.join(html)
@@ -486,10 +486,10 @@ class Fragment(object):
                     fragments[name] = Fragment.from_json(frag)
                 self.value.append(Fragment.WithFragments(fragments))
 
-        def as_html(self, link_resolver):
+        def as_html(self, link_resolver, html_serializer=None):
             html = []
             for group_doc in self.value:
-                html.append(group_doc.as_html(link_resolver))
+                html.append(group_doc.as_html(link_resolver, html_serializer))
             return "\n".join(html)
 
         def __iter__(self):
@@ -502,14 +502,14 @@ class Fragment(object):
             self.slice_label = slice_label
             self.value = value
 
-        def as_html(self, link_resolver):
+        def as_html(self, link_resolver, html_serializer=None):
             classes = ['slice']
             if self.slice_label is not None:
                 classes.append(self.slice_label)
             return '<div data-slicetype="%(slice_type)s" class="%(classes)s">%(body)s</div>' % {
                 "slice_type": self.slice_type,
                 "classes": ' '.join(classes),
-                "body": self.value.as_html(link_resolver)
+                "body": self.value.as_html(link_resolver, html_serializer)
             }
 
     class CompositeSlice(FragmentElement):
@@ -537,17 +537,17 @@ class Fragment(object):
         def parse_non_repeat(non_repeat):
             return Fragment.Group([non_repeat])
 
-        def as_html(self, link_resolver):
+        def as_html(self, link_resolver, html_serializer=None):
             classes = ['slice']
             if self.slice_label:
                 classes.append(self.slice_label)
 
             body = ""
             if self.non_repeat:
-                body += self.non_repeat.as_html(link_resolver)
+                body += self.non_repeat.as_html(link_resolver, html_serializer)
 
             if self.repeat:
-                body += self.repeat.as_html(link_resolver)
+                body += self.repeat.as_html(link_resolver, html_serializer)
 
             return '<div data-slicetype="%(slice_type)s" class="%(classes)s">%(body)s</div>' % {
                 "slice_type": self.slice_type,
