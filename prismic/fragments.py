@@ -50,6 +50,11 @@ class Fragment(object):
 
         if f_type:
             return f_type(data.get("value"))
+        else:
+            try:
+                return StructuredText([data])
+            except:
+                pass
 
         log.warning("fragment_type not found: %s" % fragment_type)
 
