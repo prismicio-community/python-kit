@@ -147,12 +147,26 @@ class ApiIntegrationTestCase(PrismicTestCase):
         doc = self.api.get_by_uid('all', 'all')
         self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
 
+    def test_get_by_uid_lang(self):
+        doc = self.api.get_by_uid('all', 'all', lang = 'en-us')
+        self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
+
     def test_get_by_id(self):
         doc = self.api.get_by_id('WHx-gSYAAMkyXYX_')
         self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
 
+    def test_get_by_id_lang(self):
+        doc = self.api.get_by_id('WHx-gSYAAMkyXYX_', lang='en-us')
+        self.assertEqual(doc.id, 'WHx-gSYAAMkyXYX_')
+
     def test_get_by_ids(self):
         result = self.api.get_by_ids(['WHx-gSYAAMkyXYX_', 'WHyJqyYAAHgyXbcj'])
+        ids = sorted([doc.id for doc in result.documents])
+        self.assertEqual(ids[0], 'WHx-gSYAAMkyXYX_')
+        self.assertEqual(ids[1], 'WHyJqyYAAHgyXbcj')
+
+    def test_get_by_ids_lang(self):
+        result = self.api.get_by_ids(['WHx-gSYAAMkyXYX_', 'WHyJqyYAAHgyXbcj'], lang="en-us")
         ids = sorted([doc.id for doc in result.documents])
         self.assertEqual(ids[0], 'WHx-gSYAAMkyXYX_')
         self.assertEqual(ids[1], 'WHyJqyYAAHgyXbcj')

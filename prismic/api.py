@@ -140,14 +140,14 @@ class Api(object):
         if len(documents) > 0:
             return documents[0]
 
-    def get_by_uid(self, type, uid, ref=None, lang=None):
+    def get_by_uid(self, type, uid, ref=None, lang='*'):
         return self.query_first(predicates.at('my.' + type + '.uid', uid), ref, lang=lang)
 
-    def get_by_id(self, id, ref=None, lang=None):
+    def get_by_id(self, id, ref=None, lang='*'):
         return self.query_first(predicates.at('document.id', id), ref, lang=lang)
 
     def get_by_ids(self, ids, ref=None, page_size=None, page=None, orderings=None,
-                   after=None, fetch_links=None, lang=None):
+                   after=None, fetch_links=None, lang='*'):
         return self.query(
             predicates.in_('document.id', ids),
             ref,
