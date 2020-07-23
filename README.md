@@ -88,6 +88,8 @@ Please write tests for any bugfix or new feature.
 
 If you find existing code that is not optimally tested and wish to make it better, we really appreciate it; but you should document it on its own branch and its own pull request.
 
+You can launch tests using: `python setup.py test`.
+
 #### Documentation
 
 Please document any bugfix or new feature.

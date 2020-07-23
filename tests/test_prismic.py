@@ -350,10 +350,7 @@ class TestFragmentsTestCase(PrismicTestCase):
         doc_json = self.fixture_structured_lists[0]
         doc = prismic.Document(doc_json)
         doc_html = doc.get_structured_text("article.content").as_html(lambda x: "/x")
-        expected = ("""<h2>A tale of pastry and passion</h2>"""
-                    """<h2>Here we'll test a list</h2>"""
-                    """<p>Unordered list:</p>"""
-                    """<ul><li>Element1</li><li>Element2</li><li>Element3</li></ul>"""
+        expected = ("""<ul><li>Element1</li><li>Element2</li><li>Element3</li></ul>"""
                     """<p>Ordered list:</p><ol><li>Element1</li><li>Element2</li><li>Element3</li></ol>""")
         self.assertEqual(doc_html, expected)
 

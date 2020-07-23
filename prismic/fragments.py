@@ -36,7 +36,7 @@ class Fragment(object):
                 "Timestamp":      Fragment.Timestamp,
                 "StructuredText": StructuredText,
                 "Link.document":  Fragment.DocumentLink,
-                "Link.file":      Fragment.MediaLink,
+                "Link.file":      Fragment.FileLink,
                 "Link.web":       Fragment.WebLink,
                 "Link.image":     Fragment.ImageLink,
                 "Embed":          Fragment.Embed,
@@ -589,6 +589,8 @@ class StructuredText(object):
             "heading2": Block.Heading,
             "heading3": Block.Heading,
             "heading4": Block.Heading,
+            "heading5": Block.Heading,
+            "heading6": Block.Heading,
             "paragraph": Block.Paragraph,
             "list-item": Block.ListItem,
             "o-list-item": lambda val: Block.ListItem(val, True),
@@ -639,7 +641,12 @@ class StructuredText(object):
                 else:
                     groups.append(StructuredText.Group(None, [block]))
             else:
-                groups.append(StructuredText.Group(None, [block]))
+                if isinstance(block, Block.ListItem) and not block.is_ordered:
+                    groups.append(StructuredText.Group("ul", [block]))
+                elif isinstance(block, Block.ListItem) and block.is_ordered:
+                    groups.append(StructuredText.Group("ol", [block]))
+                else:
+                    groups.append(StructuredText.Group(None, [block]))
 
         html = []
         for group in groups:
