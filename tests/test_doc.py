@@ -113,7 +113,7 @@ class DocTestCase(unittest.TestCase):
         url = doc.get_image('all.image').url
         self.assertEqual(
             url,
-            'https://micro.cdn.prismic.io/micro/e185bb021862c2c03a96bea92e170830908c39a3_thermometer.png')
+            'https://images.prismic.io/micro/e185bb021862c2c03a96bea92e170830908c39a3_thermometer.png?auto=compress,format')
 
     def test_date(self):
         api = prismic.get('https://micro.prismic.io/api')
