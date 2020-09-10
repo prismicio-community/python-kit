@@ -4,8 +4,8 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 
 from collections import namedtuple, defaultdict, OrderedDict
+from html import escape
 import logging
-import cgi
 import re
 import datetime
 
@@ -454,7 +454,7 @@ class Fragment(object):
 
         @property
         def as_html(self):
-            return """<span class="text">%s</span>""" % cgi.escape(self.value)
+            return """<span class="text">%s</span>""" % escape(self.value)
 
     class Date(BasicFragment):
 
@@ -744,10 +744,10 @@ class StructuredText(object):
                     })
             if len(stack) == 0:
                 # Top-level text
-                html.append(cgi.escape(letter))
+                html.append(escape(letter))
             else:
                 # Inner text of a span
-                stack[-1]["content"] += cgi.escape(letter)
+                stack[-1]["content"] += escape(letter)
 
         # Check for the tags after the end of the string
         while len(stack) > 0:
