@@ -275,6 +275,7 @@ class Fragment(object):
     class WebLink(Link):
         def __init__(self, value):
             self.url = value.get("url")
+            self.target = value.get("target", None)
 
         @property
         def as_html(self):
@@ -702,6 +703,12 @@ class StructuredText(object):
         elif isinstance(span, Span.Strong):
             return "<strong>" + content + "</strong>"
         elif isinstance(span, Span.Hyperlink):
+            if span.get_target():
+                return """<a href="%(url)s" target="%(target)s">"%(content)s"</a>""" % {
+                    "url": span.get_url(link_resolver),
+                    "target": span.get_target(),
+                    "content": content
+                }
             return """<a href="%s">""" % span.get_url(link_resolver) + content + "</a>"
         else:
             cls = ""
@@ -803,6 +810,9 @@ class Span(object):
 
         def get_url(self, link_resolver):
             return self.link.get_url(link_resolver)
+
+        def get_target(self):
+            return self.link.target
 
 
 class Text(object):
